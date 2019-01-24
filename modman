@@ -1,0 +1,6 @@
+admin/controller/extension/module/* 			upload/admin/controller/extension/module/
+admin/language/en-gb/extension/module/* 		upload/admin/language/en-gb/extension/module/
+admin/view/template/extension/module/* 			upload/admin/view/template/extension/module/
+catalog/controller/event/*						upload/catalog/controller/event/
+catalog/model/*									upload/catalog/model/
+catalog/view/theme/default/template/*			upload/catalog/view/theme/default/template/

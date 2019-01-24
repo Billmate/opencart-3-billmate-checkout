@@ -29,7 +29,7 @@
                         <label class="col-sm-2 control-label" for="input-status">{{ entry_billmate_status }}</label>
                         <div class="col-sm-10">
                             <select name="module_billmate_checkout_status" id="input-status" class="form-control">
-                                {% if status %}
+                                {% if module_billmate_checkout_status %}
                                     <option value="1" selected="selected">{{ text_enabled }}</option>
                                     <option value="0">{{ text_disabled }}</option>
                                 {% else %}
@@ -42,21 +42,21 @@
                     <div class="form-group required">
                         <label class="col-sm-2 control-label" for="input-payable">{{ entry_billmate_id }}</label>
                         <div class="col-sm-10">
-                            <input type="text" name="billmate_checkout_bm_id" value="{{ billmate_checkout_bm_id }}" placeholder="{{ entry_billmate_id }}" id="input-bm-id" class="form-control" />
+                            <input type="text" name="module_billmate_checkout_bm_id" value="{{ module_billmate_checkout_bm_id }}" placeholder="{{ entry_billmate_id }}" id="input-bm-id" class="form-control" />
                         </div>
                     </div>
                     <div class="form-group required">
                         <label class="col-sm-2 control-label" for="input-payable">{{ entry_billmate_secret }}</label>
                         <div class="col-sm-10">
-                            <input type="text" name="billmate_checkout_secret" value="{{ billmate_checkout_secret }}" placeholder="{{ entry_billmate_secret }}" id="input-secret" class="form-control" />
+                            <input type="text" name="module_billmate_checkout_secret" value="{{ module_billmate_checkout_secret }}" placeholder="{{ entry_billmate_secret }}" id="input-secret" class="form-control" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-status">{{ entry_enable_test_mode }}</label>
                         <div class="col-sm-10">
-                            <select name="billmate_checkout_test_mode" id="input-test-mode" class="form-control">
+                            <select name="module_billmate_checkout_test_mode" id="input-test-mode" class="form-control">
 
-                                {% if billmate_checkout_test_mode %}
+                                {% if module_billmate_checkout_test_mode %}
                                     <option value="1" selected="selected">{{ text_enabled }}</option>
                                     <option value="0">{{ text_disabled }}</option>
                                 {% else %}
@@ -70,12 +70,9 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-order-status">{{ entry_default_order_status }}</label>
                         <div class="col-sm-10">
-                            <select name="billmate_checkout_order_status_id" id="input-order-status" class="form-control">
-                                <pre>
-                                       {# {{ dump(billmate_checkout_order_status_id) }}#}
-                                    </pre>
+                            <select name="module_billmate_checkout_order_status_id" id="input-order-status" class="form-control">
                                 {% for order_status in order_statuses %}
-                                    {% if order_status.order_status_id == billmate_checkout_order_status_id %}
+                                    {% if order_status.order_status_id == module_billmate_checkout_order_status_id %}
                                         <option value="{{ order_status.order_status_id }}" selected="selected">
                                             {{ order_status.name }}
                                         </option>
@@ -96,7 +93,7 @@
                             </span>
                         </label>
                         <div class="col-sm-10">
-                            <input type="text" name="billmate_checkout_gdpr_link" value="{{ billmate_checkout_gdpr_link }}" id="input-total" class="form-control" />
+                            <input type="text" name="module_billmate_checkout_gdpr_link" value="{{ module_billmate_checkout_gdpr_link }}" id="input-total" class="form-control" />
                         </div>
                     </div>
                 </form>

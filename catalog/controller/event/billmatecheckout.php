@@ -8,9 +8,14 @@ class ControllerEventBillmatecheckout extends Controller {
     protected $domDocument;
 
     /**
-     * @var ModelBillmateCheckout
+     * @var string
      */
-    protected $model_billmate_checkout;
+    protected $htmlContent;
+
+    protected $removeBlockSelectors = [
+        'collapse-payment-method',
+        'collapse-checkout-confirm'
+    ];
 
     public function __construct($registry)
     {
@@ -19,6 +24,10 @@ class ControllerEventBillmatecheckout extends Controller {
     }
 
     public function replaceTotal(&$route, &$args, &$output) {
+        if (!$this->config->get('module_billmate_checkout_status')) {
+            return;
+        }
+
         $this->htmlContent = $output;
         $this->removePaymentConfirm();
         $this->appendBMCheckout();
@@ -46,12 +55,14 @@ class ControllerEventBillmatecheckout extends Controller {
      */
     protected function removePaymentConfirm() {
         $dom = $this->getDomDocument();
-        $paymentMethods = $dom->getElementById('collapse-payment-method');
-        $nodePaymentMethods = $paymentMethods->parentNode;
-        $nodePaymentMethods->parentNode->removeChild($nodePaymentMethods);
-        $confirmBlock = $dom->getElementById('collapse-checkout-confirm');
-        $nodeConfirm = $confirmBlock->parentNode;
-        $nodeConfirm->parentNode->removeChild($nodeConfirm);
+        foreach ($this->removeBlockSelectors as $blockId) {
+            $removeBlock = $dom->getElementById($blockId);
+            if($removeBlock) {
+                $nodeRemoveBlock = $removeBlock->parentNode;
+                $nodeRemoveBlock->parentNode->removeChild($nodeRemoveBlock);
+            }
+        }
+
         return $this;
     }
 
@@ -67,6 +78,9 @@ class ControllerEventBillmatecheckout extends Controller {
         return $this;
     }
 
+    /**
+     * @return string
+     */
     protected function getBMcheckoutContent() {
         $data = $this->model_billmate_checkout->getCheckoutData();
         return $this->load->view('billmate/checkout', $data);

@@ -2,15 +2,15 @@
 class ControllerExtensionModuleBillmateCheckout extends Controller {
 
     const DEFAULT_MODULE_SETTINGS = [
-        'module_billmate_checkout_status' => '',
-        'billmate_checkout_bm_id' => '',
-        'billmate_checkout_secret' => '',
-        'billmate_checkout_test_mode' => 1,
-        'billmate_checkout_order_status_id' => 15,
-        'billmate_checkout_gdpr_link' => ''
+        'module_billmate_checkout_status' => 0,
+        'module_billmate_checkout_bm_id' => '',
+        'module_billmate_checkout_secret' => '',
+        'module_billmate_checkout_test_mode' => 1,
+        'module_billmate_checkout_order_status_id' => 15,
+        'module_billmate_checkout_gdpr_link' => ''
     ];
 
-    const MODULE_CODE = 'billmate_checkout';
+    const MODULE_CODE = 'module_billmate_checkout';
 
     public function __construct($registry)
     {
@@ -53,11 +53,12 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
     }
 
     public function validate() {
-        $this->config->set('billmate_checkout_bm_id', $this->request->post['billmate_checkout_bm_id']);
-        $this->config->set('billmate_checkout_secret', $this->request->post['billmate_checkout_secret']);
-        $this->config->set('billmate_checkout_test_mode', $this->request->post['billmate_checkout_test_mode']);
-        $this->config->set('billmate_checkout_order_status_id', $this->request->post['billmate_checkout_order_status_id']);
-        $this->config->set('billmate_checkout_gdpr_link', $this->request->post['billmate_checkout_gdpr_link']);
+        $this->config->set('module_billmate_checkout_status', $this->request->post['module_billmate_checkout_status']);
+        $this->config->set('module_billmate_checkout_bm_id', $this->request->post['module_billmate_checkout_bm_id']);
+        $this->config->set('module_billmate_checkout_secret', $this->request->post['module_billmate_checkout_secret']);
+        $this->config->set('module_billmate_checkout_test_mode', $this->request->post['module_billmate_checkout_test_mode']);
+        $this->config->set('module_billmate_checkout_order_status_id', $this->request->post['module_billmate_checkout_order_status_id']);
+        $this->config->set('module_billmate_checkout_gdpr_link', $this->request->post['module_billmate_checkout_gdpr_link']);
          return true;
     }
 
@@ -74,7 +75,7 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
 
     public function uninstall() {
         $this->model_setting_setting->deleteSetting(self::MODULE_CODE);
-        $this->model_setting_event->deleteEvent('billmate_checkout_page');
+        $this->model_setting_event->deleteEventByCode('billmate_checkout_page');
     }
 
     /**
@@ -82,7 +83,6 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
      */
     protected function loadModels() {
         $this->load->language('extension/module/billmate_checkout');
-
         return $this;
     }
 
@@ -114,11 +114,12 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
      * @return $this
      */
     protected function loadConfiguredValues() {
-        $this->templateData['billmate_checkout_bm_id'] = $this->config->get('billmate_checkout_bm_id');
-        $this->templateData['billmate_checkout_secret'] = $this->config->get('billmate_checkout_secret');
-        $this->templateData['billmate_checkout_test_mode'] = $this->config->get('billmate_checkout_test_mode');
-        $this->templateData['billmate_checkout_order_status_id'] = $this->config->get('billmate_checkout_order_status_id');
-        $this->templateData['billmate_checkout_gdpr_link'] = $this->config->get('billmate_checkout_gdpr_link');
+        $this->templateData['module_billmate_checkout_status'] = $this->config->get('module_billmate_checkout_status');
+        $this->templateData['module_billmate_checkout_bm_id'] = $this->config->get('module_billmate_checkout_bm_id');
+        $this->templateData['module_billmate_checkout_secret'] = $this->config->get('module_billmate_checkout_secret');
+        $this->templateData['module_billmate_checkout_test_mode'] = $this->config->get('module_billmate_checkout_test_mode');
+        $this->templateData['module_billmate_checkout_order_status_id'] = $this->config->get('module_billmate_checkout_order_status_id');
+        $this->templateData['module_billmate_checkout_gdpr_link'] = $this->config->get('module_billmate_checkout_gdpr_link');
         return $this;
     }
 
