@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', true);
 class ControllerEventBillmatecheckout extends Controller {
 
     /**
@@ -73,7 +72,7 @@ class ControllerEventBillmatecheckout extends Controller {
         $dom = $this->getDomDocument();
         $contentBlock = $dom->getElementById('content');
         $billmateCheckoutBlock = $dom->createDocumentFragment();
-        $billmateCheckoutBlock->appendXML($this->getBMcheckoutContent());
+        $billmateCheckoutBlock->appendXML(utf8_encode($this->getBMcheckoutContent()));
         $contentBlock->appendChild($billmateCheckoutBlock);
         return $this;
     }

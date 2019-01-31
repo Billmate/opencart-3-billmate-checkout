@@ -1,3 +1,8 @@
-<iframe id="checkout" src="{{ iframe_url }}" style="width: 100%; min-height: 800px; border:none;"
-        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation" scrolling="no">
-</iframe>
+{%  if iframe_url  %}
+    <iframe id="billmate-checkout" src="{{ iframe_url }}" style="width: 100%; min-height: 800px; border:none;"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation" scrolling="no">
+    </iframe>
+{% endif %}
+{%  if error_message  %}
+    <div class="ui-state-error-text"> {{ error_message }}</div>
+{% endif %}
