@@ -16,31 +16,36 @@ class ModelBillmateCheckoutRequest extends Model {
     protected $requestData = [];
 
     /**
+     * @var HelperBillmate
+     */
+    protected $helperBillmate;
+
+    /**
+     * ModelBillmateCheckoutRequest constructor.
+     *
+     * @param $registry
+     */
+    public function __construct($registry)
+    {
+        parent::__construct($registry);
+        $this->helperBillmate  = new Helperbm($registry);
+    }
+
+    /**
      * @return mixed
      */
     public function getResponse()
     {
-        $billmateConnection = $this->getBillmateConnection();
+        $billmateConnection = $this->helperBillmate->getBillmateConnection();
         $requestCartData = $this->model_billmate_checkout_request->getCartData();
-        if (isset($this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE])) {
-            $billmateHash = $this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE];
-            $requestData = ['PaymentData' => ['hash' => $billmateHash]];
+        $billmateHash = $this->helperBillmate->getSessionBmHash();
+        if ($billmateHash) {
+            $requestData = [
+                'PaymentData' => ['hash' => $billmateHash]
+            ];
             return $billmateConnection->getCheckout($requestData);
         }
         return $billmateConnection->initCheckout($requestCartData);
-    }
-
-
-    /**
-     * @return Billmate
-     */
-    public function getBillmateConnection()
-    {
-        $id = $this->config->get('module_billmate_checkout_bm_id');
-        $secret = $this->config->get('module_billmate_checkout_secret');
-        $isTestMode = $this->config->get('module_billmate_checkout_test_mode');
-        $billmateConnection = new Billmate($id, $secret, true, (bool)$isTestMode);
-        return $billmateConnection;
     }
 
     /**

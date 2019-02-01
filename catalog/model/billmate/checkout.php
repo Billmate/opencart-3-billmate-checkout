@@ -1,12 +1,21 @@
 <?php
 class ModelBillmateCheckout extends Model {
 
-    const SESSION_HASH_CODE = 'billmate_checkout_hash';
+    /**
+     * @var HelperBillmate
+     */
+    protected $helperBillmate;
 
+    /**
+     * ModelBillmateCheckout constructor.
+     *
+     * @param $registry
+     */
     public function __construct($registry)
     {
         parent::__construct($registry);
         $this->load->model('billmate/checkout/request');
+        $this->helperBillmate  = new Helperbm($registry);
     }
 
     /**
@@ -14,14 +23,14 @@ class ModelBillmateCheckout extends Model {
      */
     public function getCheckoutData() {
         $checkoutData = [];
-
+        //unset($this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE]);
         $bmResponse = $this->model_billmate_checkout_request->getResponse();
 
         if (isset($bmResponse['url'])) {
 
             $hash = $this->getHashFromUrl($bmResponse['url']);
             if ($hash) {
-                $this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE] = $hash;
+                $this->helperBillmate->setSessionBmHash($hash);
             }
 
             $checkoutData['iframe_url'] = $bmResponse['url'];
@@ -46,7 +55,9 @@ class ModelBillmateCheckout extends Model {
     {
         $parts = explode('/',$url);
         $sum = count($parts);
-        $hash = ($parts[$sum-1] == 'test') ? str_replace('\\','',$parts[$sum-2]) : str_replace('\\','',$parts[$sum-1]);
+        $hash = ($parts[$sum-1] == 'test')
+            ? str_replace('\\','',$parts[$sum-2])
+            : str_replace('\\','',$parts[$sum-1]);
         return $hash;
     }
 }

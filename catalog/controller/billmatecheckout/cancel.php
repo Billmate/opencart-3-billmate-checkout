@@ -1,8 +1,8 @@
 <?php
 class ControllerBillmatecheckoutCancel extends Controller {
-    
-    public function index($config)
+    public function index()
     {
-        $config = $config;
+        $this->response->setOutput('hello');
+
     }
 }
