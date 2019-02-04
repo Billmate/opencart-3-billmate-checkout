@@ -75,4 +75,10 @@ class Helperbm
             unset($this->session->data[self::SESSION_HASH_CODE]);
         }
     }
+
+    public function log($data)
+    {
+        $log = new Log('billmate_checkout.log');
+        $log->write($data);
+    }
 }

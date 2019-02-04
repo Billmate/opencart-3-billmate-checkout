@@ -1,9 +1,28 @@
 <?php
 ini_set('display_errors', true);
 class ControllerBillmatecheckoutCallback extends Controller {
-    
+
+    /**
+     * @var HelperBillmate
+     */
+    protected $helperBillmate;
+
+    /**
+     * ControllerBillmatecheckoutAccept constructor.
+     *
+     * @param $registry
+     */
+    public function __construct($registry)
+    {
+        parent::__construct($registry);
+        $this->helperBillmate  = new Helperbm($registry);
+    }
+
     public function index()
     {
+
+        $this->helperBillmate->log(__CLASS__);
+        $this->helperBillmate->log($_REQUEST);
 
         $testRequest = '{
             "credentials": {

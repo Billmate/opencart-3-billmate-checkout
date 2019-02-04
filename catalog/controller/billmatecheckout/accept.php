@@ -18,6 +18,9 @@ class ControllerBillmatecheckoutAccept extends Controller {
 
     public function index()
     {
+        $this->helperBillmate->log(__CLASS__);
+        $this->helperBillmate->log($_REQUEST);
+
         $this->helperBillmate->resetSessionBmHash();
         $this->response->setOutput('tasdfasdf');
     }
