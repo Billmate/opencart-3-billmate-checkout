@@ -55,7 +55,7 @@ class Helperbm
      */
     public function setSessionBmHash($hash)
     {
-        $this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE] = $hash;
+        $this->session->data[self::SESSION_HASH_CODE] = $hash;
     }
 
     /**
@@ -63,16 +63,16 @@ class Helperbm
      */
     public function getSessionBmHash()
     {
-        if (isset($this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE])) {
-            return $this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE];
+        if (isset($this->session->data[self::SESSION_HASH_CODE])) {
+            return $this->session->data[self::SESSION_HASH_CODE];
         }
         return '';
     }
 
     public function resetSessionBmHash()
     {
-        if (isset($this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE])) {
-            unset($this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE]);
+        if (isset($this->session->data[self::SESSION_HASH_CODE])) {
+            unset($this->session->data[self::SESSION_HASH_CODE]);
         }
     }
 }
