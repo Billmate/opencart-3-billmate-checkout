@@ -39,9 +39,14 @@ class ControllerBillmatecheckoutCallback extends Controller {
         }';
 
         $postData = json_decode($testRequest, true);
+        $verifyData = $this->helperBillmate
+            ->getBillmateConnection()
+            ->getPaymentinfo( [
+                'number' => '840000'
+            ]);
         /** @var @ $billmateRequest ModelBillmateCheckoutRequest */
         $this->load->model('billmate/checkout/request');
-        $verifyData = $this->helperBillmate->getBillmateConnection()->verify_hash($_REQUEST);
+
 
         //$this->response->addHeader('Content-Type: application/json');
         $successMessage = 'OK';
