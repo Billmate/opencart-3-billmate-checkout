@@ -11,19 +11,34 @@ class ControllerEventBillmatecheckout extends Controller {
      */
     protected $htmlContent;
 
+    /**
+     * @var array
+     */
     protected $removeBlockSelectors = [
         'collapse-payment-method',
         'collapse-checkout-confirm'
     ];
 
+
+    /**
+     * @var HelperBillmate
+     */
+    protected $helperBillmate;
+
+    /**
+     * ControllerEventBillmatecheckout constructor.
+     *
+     * @param $registry
+     */
     public function __construct($registry)
     {
         parent::__construct($registry);
+        $this->helperBillmate  = new Helperbm($registry);
         $this->load->model('billmate/checkout');
     }
 
     public function replaceTotal(&$route, &$args, &$output) {
-        if (!$this->config->get('module_billmate_checkout_status')) {
+        if (!$this->helperBillmate->isBmCheckoutEnabled()) {
             return;
         }
 

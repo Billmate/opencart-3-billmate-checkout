@@ -4,6 +4,17 @@ class Helperbm
     const SESSION_HASH_CODE = 'billmate_checkout_hash';
 
     /**
+     * @var array
+     */
+    protected $mapperPaymentMethods = [
+        1 => 'Invoice',
+        2 => 'Invoiceservice',
+        4 => 'Partpay',
+        8 => 'Cardpay',
+        16 => 'Bankpay'
+    ];
+
+    /**
      * HelperBillmate constructor.
      *
      * @param $registry
@@ -12,6 +23,7 @@ class Helperbm
     {
         $this->config = $registry->get('config');
         $this->session = $registry->get('session');
+        $this->cart = $registry->get('cart');
     }
 
     /**
@@ -51,6 +63,22 @@ class Helperbm
     }
 
     /**
+     * @return bool
+     */
+    public function isBmCheckoutEnabled()
+    {
+        return  (bool)$this->config->get('module_billmate_checkout_status');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getNewOrderStatusId()
+    {
+        return  $this->config->get('module_billmate_checkout_order_status_id');
+    }
+
+    /**
      * @param $hash string
      */
     public function setSessionBmHash($hash)
@@ -69,6 +97,19 @@ class Helperbm
         return '';
     }
 
+    /**
+     * @param $code
+     *
+     * @return bool|mixed
+     */
+    public function getPaymentMethodByCode($code)
+    {
+        if (isset($this->mapperPaymentMethods[$code])) {
+            return $this->mapperPaymentMethods[$code];
+        }
+        return false;
+    }
+
     public function resetSessionBmHash()
     {
         if (isset($this->session->data[self::SESSION_HASH_CODE])) {
@@ -80,5 +121,28 @@ class Helperbm
     {
         $log = new Log('billmate_checkout.log');
         $log->write($data);
+    }
+
+    /**
+     * @return bool
+     */
+    public function unsetCart()
+    {
+
+        $this->cart->clear();
+
+        unset($this->session->data['shipping_method']);
+        unset($this->session->data['shipping_methods']);
+        unset($this->session->data['payment_method']);
+        unset($this->session->data['payment_methods']);
+        unset($this->session->data['guest']);
+        unset($this->session->data['comment']);
+        unset($this->session->data['order_id']);
+        unset($this->session->data['coupon']);
+        unset($this->session->data['reward']);
+        unset($this->session->data['voucher']);
+        unset($this->session->data['vouchers']);
+        unset($this->session->data['totals']);
+        return true;
     }
 }
