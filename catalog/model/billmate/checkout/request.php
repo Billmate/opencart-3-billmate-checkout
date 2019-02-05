@@ -141,9 +141,8 @@ class ModelBillmateCheckoutRequest extends Model {
      */
     protected function addDiscountData()
     {
-
-        $couponCode = $this->session->data['coupon'];
-        if ($couponCode) {
+        if (isset($this->session->data['coupon'])) {
+            $couponCode = $this->session->data['coupon'];
             $subTotal = $this->cart->getSubTotal();
             $couponDiscount = $this->model_extension_total_coupon->getCoupon($couponCode);
             $discountAmount = 0;
