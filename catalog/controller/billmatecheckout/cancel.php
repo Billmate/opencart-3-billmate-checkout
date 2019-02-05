@@ -22,7 +22,8 @@ class ControllerBillmatecheckoutCancel extends Controller {
         $this->helperBillmate->log(__CLASS__);
         $this->helperBillmate->log($_REQUEST);
 
-        $this->response->setOutput('hello');
+        $this->helperBillmate->resetSessionBmHash();
+        $this->response->setOutput('cancelled');
 
     }
 }

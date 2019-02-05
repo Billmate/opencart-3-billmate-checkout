@@ -89,7 +89,7 @@ class ModelBillmateCheckoutRequest extends Model {
                     '',
                     $this->request->server['HTTPS']
                 ),
-                'returnmethod' => ($this->request->server['HTTPS'] == "on") ?'POST' : 'GET',
+                'returnmethod' => 'POST',
             ];
 
         return $this;
