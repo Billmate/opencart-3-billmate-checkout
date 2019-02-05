@@ -39,9 +39,10 @@ class ControllerBillmatecheckoutCallback extends Controller {
         $postData = json_decode($testRequest, true);
         /** @var @ $billmateRequest ModelBillmateCheckoutRequest */
         $this->load->model('billmate/checkout/request');
-        $verifyData = $this->model_billmate_checkout_request->getBillmateConnection()->verify_hash($postData);
+        $verifyData = $this->helperBillmate->getBillmateConnection()->verify_hash($postData);
 
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode(['test' => 'hello']));
+        //$this->response->addHeader('Content-Type: application/json');
+        $successMessage = 'OK';
+        $this->response->setOutput($successMessage);
     }
 }
