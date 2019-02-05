@@ -76,17 +76,17 @@ class ModelBillmateCheckoutRequest extends Model {
                 'logo' => '',
                 'accepturl' => $this->url->link(
                     'billmatecheckout/accept',
-                    'method=checkout',
+                    '',
                     $this->request->server['HTTPS']
                 ),
                 'cancelurl' => $this->url->link(
                     'billmatecheckout/cancel',
-                    'method=checkout',
+                    '',
                     $this->request->server['HTTPS']
                 ),
                 'callbackurl' => $this->url->link(
                     'billmatecheckout/callback',
-                    'method=checkout',
+                    '',
                     $this->request->server['HTTPS']
                 ),
                 'returnmethod' => ($this->request->server['HTTPS'] == "on") ?'POST' : 'GET',
