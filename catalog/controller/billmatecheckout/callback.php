@@ -20,9 +20,11 @@ class ControllerBillmatecheckoutCallback extends Controller {
 
     public function index()
     {
+        $post = file_get_contents('php://input');
 
         $this->helperBillmate->log(__CLASS__);
         $this->helperBillmate->log($_REQUEST);
+        $this->helperBillmate->log($post);
 
         $testRequest = '{
             "credentials": {
@@ -39,7 +41,7 @@ class ControllerBillmatecheckoutCallback extends Controller {
         $postData = json_decode($testRequest, true);
         /** @var @ $billmateRequest ModelBillmateCheckoutRequest */
         $this->load->model('billmate/checkout/request');
-        $verifyData = $this->helperBillmate->getBillmateConnection()->verify_hash($postData);
+        $verifyData = $this->helperBillmate->getBillmateConnection()->verify_hash($_REQUEST);
 
         //$this->response->addHeader('Content-Type: application/json');
         $successMessage = 'OK';
