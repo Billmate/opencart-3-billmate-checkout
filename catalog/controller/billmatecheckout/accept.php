@@ -22,6 +22,6 @@ class ControllerBillmatecheckoutAccept extends Controller {
         $this->helperBillmate->log($_REQUEST);
 
         $this->helperBillmate->resetSessionBmHash();
-        $this->response->setOutput('tasdfasdf');
+        $this->response->setOutput('accepted');
     }
 }
