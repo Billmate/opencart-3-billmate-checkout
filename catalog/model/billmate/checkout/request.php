@@ -37,15 +37,44 @@ class ModelBillmateCheckoutRequest extends Model {
     public function getResponse()
     {
         $billmateConnection = $this->helperBillmate->getBillmateConnection();
-        $requestCartData = $this->model_billmate_checkout_request->getCartData();
         $billmateHash = $this->helperBillmate->getSessionBmHash();
+        $requestCartData = $this->getCartData();
         if ($billmateHash) {
             $requestData = [
                 'PaymentData' => ['hash' => $billmateHash]
             ];
-            return $billmateConnection->getCheckout($requestData);
+            $bmCheckoutData = $billmateConnection->getCheckout($requestData);
+            $updateCheckoutData = $this->getUpdateDataFromComparison($bmCheckoutData, $requestCartData);
+            if ($updateCheckoutData) {
+                return $billmateConnection->updateCheckout($updateCheckoutData);
+            }
+            return $bmCheckoutData;
         }
+
         return $billmateConnection->initCheckout($requestCartData);
+    }
+
+    /**
+     * @param $bmCheckoutData
+     * @param $requestCartData
+     *
+     * @return array
+     */
+    protected function getUpdateDataFromComparison($bmCheckoutData, $requestCartData)
+    {
+        $updateData = [];
+
+        if (
+            $bmCheckoutData['Cart']['Total']['withouttax']
+            != $requestCartData['Cart']['Total']['withouttax']
+        ) {
+            unset($requestCartData['PaymentData']);
+            $requestCartData['PaymentData']['number']  = $bmCheckoutData['PaymentData']['number'];
+            $requestCartData['PaymentData']['orderid'] = $bmCheckoutData['PaymentData']['orderid'];
+            $updateData = $requestCartData;
+        }
+
+        return $updateData;
     }
 
     /**
@@ -143,18 +172,9 @@ class ModelBillmateCheckoutRequest extends Model {
     {
         if (isset($this->session->data['coupon'])) {
             $couponCode = $this->session->data['coupon'];
-            $subTotal = $this->cart->getSubTotal();
             $couponDiscount = $this->model_extension_total_coupon->getCoupon($couponCode);
-            $discountAmount = 0;
-            switch ($couponDiscount['type']) {
-                case 'P':
-                    $discountAmount = ($subTotal/100) * $couponDiscount['discount'];
-                    break;
-                case 'F':
-                    $discountAmount = $couponDiscount['discount'];
-                    break;
-            }
-            $discountAmount = $this->convert($discountAmount);
+
+            $discountAmount = $this->getDiscountAmount($couponDiscount);
             $this->requestData['Articles'][] = [
                 'quantity' => 1,
                 'title' => $couponDiscount['name'],
@@ -252,6 +272,27 @@ class ModelBillmateCheckoutRequest extends Model {
     }
 
     /**
+     * @param $couponCode
+     *
+     * @return float|int
+     */
+    protected function getDiscountAmount($couponCode)
+    {
+        $subTotal = $this->cart->getSubTotal();
+        $couponDiscount = $this->model_extension_total_coupon->getCoupon($couponCode);
+        $discountAmount = 0;
+        switch ($couponDiscount['type']) {
+            case 'P':
+                $discountAmount = ($subTotal/100) * $couponDiscount['discount'];
+                break;
+            case 'F':
+                $discountAmount = $couponDiscount['discount'];
+                break;
+        }
+        return $this->convert($discountAmount);
+    }
+
+    /**
      * @param $value
      *
      * @return float
@@ -276,6 +317,9 @@ class ModelBillmateCheckoutRequest extends Model {
         );
     }
 
+    /**
+     * @return string
+     */
     protected function generateBillmateOrderId()
     {
         $products = $this->cart->getProducts();

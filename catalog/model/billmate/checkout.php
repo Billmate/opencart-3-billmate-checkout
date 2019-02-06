@@ -21,9 +21,10 @@ class ModelBillmateCheckout extends Model {
     /**
      * @return array
      */
-    public function getCheckoutData() {
+    public function getCheckoutData()
+    {
         $checkoutData = [];
-        //unset($this->session->data[ModelBillmateCheckout::SESSION_HASH_CODE]);
+
         $bmResponse = $this->model_billmate_checkout_request->getResponse();
 
         if (isset($bmResponse['url'])) {

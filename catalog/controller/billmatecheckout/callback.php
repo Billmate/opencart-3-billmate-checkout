@@ -56,10 +56,10 @@ class ControllerBillmatecheckoutCallback extends Controller {
                                 'sort_order' => '9',
                             ),
                     ),
-                'invoice_prefix' => 'INV-2019-00',
-                'store_id' => 0,
-                'store_name' => 'Your Store',
-                'store_url' => 'http://opencartbm.loc/upload/',
+                'invoice_prefix' => $this->config->get('config_invoice_prefix'),
+                'store_id' =>  $this->config->get('config_store_id'),
+                'store_name' => $this->config->get('config_name'),
+                'store_url' => $this->config->get('config_url'),
                 'customer_id' => '1',
                 'customer_group_id' => '1',
                 'firstname' => $paymentInfo['Customer']['Billing']['firstname'],
@@ -141,7 +141,8 @@ class ControllerBillmatecheckoutCallback extends Controller {
                 'accept_language' => 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
             );
 
-
+            /*$this->load->model('billmate/order');
+            $this->registry->set('model_checkout_order', $this->model_billmate_order);*/
             $orderId = $this->model_checkout_order->addOrder($order_data);
             $this->model_checkout_order->addOrderHistory($orderId, $this->helperBillmate->getNewOrderStatusId());
             $this->helperBillmate->unsetCart();
