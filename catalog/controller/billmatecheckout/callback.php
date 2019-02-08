@@ -41,6 +41,10 @@ class ControllerBillmatecheckoutCallback extends Controller
         $this->response->setOutput($responseMessage);
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     protected function getRequestData()
     {
         if (isset($this->request->request['data'])) {

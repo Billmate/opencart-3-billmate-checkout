@@ -3,6 +3,8 @@ class ModelBillmateOrder extends ModelCheckoutOrder
 {
     const BILLMATE_METHOD_IDN = 'Billmate checkout';
 
+    const BILLMATE_METHOD_CODE = 'bmch';
+
     /**
      * @var array
      */
@@ -35,7 +37,6 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     public function createBmOrder($paymentInfo)
     {
-
         $this->paymentInfo = $paymentInfo;
         $order_data = $this->collectOrderData();
 
@@ -73,21 +74,19 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             'store_id' =>  $this->config->get('config_store_id'),
             'store_name' => $this->config->get('config_name'),
             'store_url' => $this->config->get('config_url'),
+            'language_id' => $this->config->get('config_language_id'),
+            'currency_id' => $this->paymentInfo['PaymentData']['currency'],
+            'currency_code' => $this->paymentInfo['PaymentData']['currency'],
+            'currency_value' => $this->currency->getValue($this->session->data['currency']),
             'customer_id' => 0,
             'customer_group_id' => 0,
-            'vouchers' =>
-                array (
-                ),
+            'vouchers' =>[],
             'comment' => '',
             'affiliate_id' => 0,
             'commission' => 0,
             'marketing_id' => 0,
             'tracking' => '',
-            'language_id' => $this->config->get('config_language_id'),
-            'currency_id' => $this->paymentInfo['PaymentData']['currency'],
-            'currency_code' => $this->paymentInfo['PaymentData']['currency'],
-            'currency_value' => '0.10000000',
-            'ip' => '127.0.0.1',
+            'ip' => '',
             'forwarded_ip' => '',
             'user_agent' => '',
             'accept_language' => '',
@@ -102,22 +101,23 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     protected function addShippingData()
     {
+        $shippingBmData = $this->getBmShippingData();
         $shippingData = [
-            'shipping_firstname' => 'Alexey',
-            'shipping_lastname' => 'customer',
-            'shipping_company' => '',
-            'shipping_address_1' => 'Mira 20',
+            'shipping_firstname' => $shippingBmData['firstname'],
+            'shipping_lastname' => $shippingBmData['lastname'],
+            'shipping_address_1' => $shippingBmData['street'],
+            'shipping_city' => $shippingBmData['city'],
+            'shipping_postcode' => $shippingBmData['zip'],
             'shipping_address_2' => '',
-            'shipping_city' => 'Chist',
-            'shipping_postcode' => '222321',
-            'shipping_zone' => 'Horad Minsk',
-            'shipping_zone_id' => '339',
-            'shipping_country' => 'Belarus',
-            'shipping_country_id' => '20',
+            'shipping_company' => '',
+            'shipping_zone' => '',
+            'shipping_zone_id' => '',
+            'shipping_country' => '',
+            'shipping_country_id' => '',
             'shipping_address_format' => '',
             'shipping_custom_field' =>[],
-            'shipping_method' => 'Flat Shipping Rate',
-            'shipping_code' => 'flat.flat'
+            'shipping_method' => $this->getShippingMethodName(),
+            'shipping_code' => $this->getShippingMethodCode()
         ];
 
         return $this->appendToOrderData($shippingData);
@@ -128,33 +128,29 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     protected function addBillingData()
     {
-            $paymentMethod = $this->helperBillmate->getPaymentMethodByCode(
-                $this->paymentInfo['PaymentData']['method']
-            );
-            $billingData = [
-            'firstname' => $this->paymentInfo['Customer']['Billing']['firstname'],
-            'lastname' => $this->paymentInfo['Customer']['Billing']['lastname'],
-            'email' => $this->paymentInfo['Customer']['Billing']['email'],
-            'telephone' => $this->paymentInfo['Customer']['Billing']['phone'],
+        $billingBmData = $this->getBmBillingData();
+        $billingData = [
+            'firstname' => $billingBmData['firstname'],
+            'lastname' => $billingBmData['lastname'],
+            'email' => $billingBmData['email'],
+            'telephone' => $billingBmData['phone'],
             'custom_field' => NULL,
-            'payment_firstname' => $this->paymentInfo['Customer']['Billing']['firstname'],
-            'payment_lastname' => $this->paymentInfo['Customer']['Billing']['lastname'],
-            'payment_company' => '',
-            'payment_address_1' => $this->paymentInfo['Customer']['Billing']['street'],
+            'payment_firstname' => $billingBmData['firstname'],
+            'payment_lastname' => $billingBmData['lastname'],
+            'payment_address_1' => $billingBmData['street'],
+            'payment_city' => $billingBmData['city'],
+            'payment_postcode' => $billingBmData['zip'],
+            'payment_method' => self::BILLMATE_METHOD_IDN . ' - ' . $this->getTypeBmPayment(),
+            'payment_code' => self::BILLMATE_METHOD_CODE,
             'payment_address_2' => '',
-            'payment_city' => $this->paymentInfo['Customer']['Billing']['city'],
-            'payment_postcode' => $this->paymentInfo['Customer']['Billing']['zip'],
+            'payment_company' => '',
             'payment_zone' => '',
             'payment_zone_id' => '',
             'payment_country' => '',
             'payment_country_id' => '',
             'payment_address_format' => '',
-            'payment_custom_field' =>
-                array (
-                ),
-            'payment_method' => self::BILLMATE_METHOD_IDN . ' - ' . $paymentMethod,
-            'payment_code' => 'bmch'
-            ];
+            'payment_custom_field' =>[]
+        ];
 
         return $this->appendToOrderData($billingData);
     }
@@ -168,23 +164,26 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             [
                 'code' => 'sub_total',
                 'title' => 'Sub-Total',
-                'value' => 101.0,
-                'sort_order' => '1',
+                'value' =>$this->centsToPrice(
+                    $this->paymentInfo['Cart']['Shipping']['sub_total']
+                ),
             ],
             [
                 'code' => 'shipping',
                 'title' => 'Flat Shipping Rate',
-                'value' => '5.00',
-                'sort_order' => '3',
+                'value' => $this->centsToPrice(
+                    $this->paymentInfo['Cart']['Shipping']['withouttax']
+                ),
             ],
             [
                 'code' => 'total',
                 'title' => 'Total',
-                'value' => 106.0,
-                'sort_order' => '9',
+                'value' => $this->centsToPrice(
+                    $this->paymentInfo['Cart']['Total']['withtax']
+                ),
             ]
         ];
-        $totals['total'] = 106.0;
+        $totals['total'] = $this->centsToPrice($this->paymentInfo['Cart']['Total']['withtax']);
 
         return $this->appendToOrderData($totals);
     }
@@ -194,28 +193,25 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     protected function addProductsData()
     {
-        $products =  [
-            'products' =>
-                [
-                    array (
-                        'product_id' => '40',
-                        'name' => 'iPhone',
-                        'model' => 'product 11',
-                        'option' =>
-                            array (
-                            ),
-                        'download' =>
-                            array (
-                            ),
-                        'quantity' => '1',
-                        'subtract' => '1',
-                        'price' => 101.0,
-                        'total' => 101.0,
-                        'tax' => 0,
-                        'reward' => 0,
-                    ),
-                ]
-        ];
+        $bmRequestProducts = $this->getOrderedProducts();
+        $bmProducts = [];
+        foreach ($bmRequestProducts as $_product) {
+            $bmProducts[] = [
+                'product_id' => 0,
+                'name' => $_product['title'],
+                'model' => $_product['title'],
+                'option' => [],
+                'download' => [],
+                'quantity' => $_product['quantity'],
+                'subtract' => '1',
+                'price' => $this->centsToPrice($_product['aprice']),
+                'total' => $this->centsToPrice($_product['total_article']),
+                'tax' => 0,
+                'reward' => 0,
+            ];
+        }
+
+        $products['products'] = $bmProducts;
         return $this->appendToOrderData($products);
     }
 
@@ -228,5 +224,68 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     {
         $this->order_data = array_merge($this->order_data, $data);
         return $this;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return float|int
+     */
+    protected function centsToPrice($value)
+    {
+        return ($value / 100);
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getOrderedProducts()
+    {
+        return $this->paymentInfo['Articles'];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getBmBillingData()
+    {
+        return $this->paymentInfo['Customer']['Billing'];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getBmShippingData()
+    {
+        if (isset($this->paymentInfo['Customer']['Shipping'])) {
+            return $this->paymentInfo['Customer']['Shipping'];
+        }
+        return $this->getBmBillingData();
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTypeBmPayment()
+    {
+        return $this->helperBillmate->getPaymentMethodByCode(
+            $this->paymentInfo['PaymentData']['method']
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getShippingMethodName()
+    {
+        return $this->paymentInfo['Cart']['Shipping']['method'];
+    }
+
+    /**
+     * @return string
+     */
+    protected function getShippingMethodCode()
+    {
+        return $this->paymentInfo['Cart']['Shipping']['method_code'];
     }
 }

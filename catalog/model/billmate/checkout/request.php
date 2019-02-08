@@ -111,11 +111,12 @@ class ModelBillmateCheckoutRequest extends Model {
         $this->requestData['PaymentData'] = [
                 'method' => self::METHOD_CODE,
                 'currency' => strtoupper($this->session->data['currency']),
+                'currency_value' => strtoupper($this->session->data['currency']),
                 'language' => 'sv',
                 'country' => 'SE',
                 'orderid' => $this->generateBillmateOrderId(),
                 'sessionid' => $this->generateBillmateOrderId(),
-                'logo' => '',
+                'logo' => $this->helperBillmate->getLogoName(),
                 'accepturl' => $this->url->link(
                     'billmatecheckout/accept',
                     '',
@@ -213,10 +214,13 @@ class ModelBillmateCheckoutRequest extends Model {
                 array (
                     'withouttax' => $this->toCents($cartTotals['total_shipping']),
                     'taxrate' => 0.0,
+                    'method' => $this->getShippingMethodName(),
+                    'method_code' => $this->getShippingMethodCode()
                 ),
             'Total' =>
                 array (
                     'withouttax' => $this->toCents($cartTotals['total_without_tax']),
+                    'sub_total' => $this->toCents($cartTotals['sub_total']),
                     'tax' => 0.0,
                     'rounding' => 0.0,
                     'withtax' => $this->toCents($cartTotals['total_with_tax']),
@@ -236,7 +240,7 @@ class ModelBillmateCheckoutRequest extends Model {
 
         $taxes = $this->cart->getTaxes();
         $total = $this->cart->getTotal();
-
+        $subtotal = $this->cart->getSubTotal();
         $total_data = array(
             'totals' => &$totals,
             'taxes'  => &$taxes,
@@ -251,6 +255,7 @@ class ModelBillmateCheckoutRequest extends Model {
 
         $cartTotals['total_shipping'] = $this->convert($shippingPrice);
         $cartTotals['total_without_tax'] = $cartTotals['total_with_tax'] = $this->convert($total);
+        $cartTotals['sub_total'] = $this->convert($subtotal);
 
         return $cartTotals;
     }
@@ -336,5 +341,27 @@ class ModelBillmateCheckoutRequest extends Model {
     protected function generateBillmateOrderId()
     {
         return $this->session->getId();
+    }
+
+    /**
+     * @return string
+     */
+    protected function getShippingMethodCode()
+    {
+        if (isset($this->session->data['shipping_method']['code'])) {
+           return $this->session->data['shipping_method']['code'];
+        }
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getShippingMethodName()
+    {
+       if (isset($this->session->data['shipping_method']['title'])) {
+           return $this->session->data['shipping_method']['title'];
+       }
+       return '';
     }
 }

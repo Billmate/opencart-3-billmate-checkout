@@ -27,6 +27,7 @@ class ControllerEventBillmatehash extends Controller {
         }
         if(!$this->cart->hasProducts()) {
             $this->helperBillmate->resetSessionBmHash();
+            $this->cart->clear();
         }
         $this->event->unregister('controller/*/before','event/billmatehash/validate');
     }

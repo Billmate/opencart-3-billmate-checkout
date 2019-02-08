@@ -102,14 +102,14 @@ class Helperbm
     /**
      * @param $code
      *
-     * @return bool|mixed
+     * @return string
      */
     public function getPaymentMethodByCode($code)
     {
         if (isset($this->mapperPaymentMethods[$code])) {
             return $this->mapperPaymentMethods[$code];
         }
-        return false;
+        return '';
     }
 
     public function resetSessionBmHash()
@@ -148,6 +148,14 @@ class Helperbm
             ? str_replace('\\','',$parts[$sum-2])
             : str_replace('\\','',$parts[$sum-1]);
         return $hash;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogoName()
+    {
+        return '';
     }
 
     /**
