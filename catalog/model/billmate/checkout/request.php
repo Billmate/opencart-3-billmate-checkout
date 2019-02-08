@@ -39,19 +39,31 @@ class ModelBillmateCheckoutRequest extends Model {
         $billmateConnection = $this->helperBillmate->getBillmateConnection();
         $billmateHash = $this->helperBillmate->getSessionBmHash();
         $requestCartData = $this->getCartData();
-        if ($billmateHash) {
-            $requestData = [
-                'PaymentData' => ['hash' => $billmateHash]
-            ];
-            $bmCheckoutData = $billmateConnection->getCheckout($requestData);
-            $updateCheckoutData = $this->getUpdateDataFromComparison($bmCheckoutData, $requestCartData);
-            if ($updateCheckoutData) {
-                return $billmateConnection->updateCheckout($updateCheckoutData);
-            }
-            return $bmCheckoutData;
+        if (!$billmateHash) {
+            return $billmateConnection->initCheckout($requestCartData);
         }
 
-        return $billmateConnection->initCheckout($requestCartData);
+        $requestData = [
+            'PaymentData' => ['hash' => $billmateHash]
+        ];
+        $bmCheckoutData = $billmateConnection->getCheckout($requestData);
+
+        if (!$this->isSameCartUsed($requestCartData, $bmCheckoutData)) {
+            return $billmateConnection->initCheckout($requestCartData);
+        }
+
+        $updateCheckoutData = $this->getUpdateDataFromComparison($bmCheckoutData, $requestCartData);
+        if ($updateCheckoutData) {
+            return $billmateConnection->updateCheckout($updateCheckoutData);
+        }
+
+        return $bmCheckoutData;
+    }
+
+    protected function isSameCartUsed($requestCartData, $bmCheckoutData)
+    {
+        return ($requestCartData['PaymentData']['orderid'] ==
+        $bmCheckoutData['PaymentData']['orderid']);
     }
 
     /**
@@ -102,6 +114,7 @@ class ModelBillmateCheckoutRequest extends Model {
                 'language' => 'sv',
                 'country' => 'SE',
                 'orderid' => $this->generateBillmateOrderId(),
+                'sessionid' => $this->generateBillmateOrderId(),
                 'logo' => '',
                 'accepturl' => $this->url->link(
                     'billmatecheckout/accept',
@@ -322,7 +335,6 @@ class ModelBillmateCheckoutRequest extends Model {
      */
     protected function generateBillmateOrderId()
     {
-        $products = $this->cart->getProducts();
-         return current($products)['cart_id'] . '-' . time();
+        return $this->session->getId();
     }
 }

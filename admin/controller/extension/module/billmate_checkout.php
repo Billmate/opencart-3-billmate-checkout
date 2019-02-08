@@ -70,12 +70,19 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
             'event/billmatecheckout/replaceTotal'
         );
 
+        $this->model_setting_event->addEvent(
+            'billmate_checkout_hash_validate',
+            'catalog/controller/*/before',
+            'event/billmatehash/validate'
+        );
+
         $this->model_setting_setting->editSetting(self::MODULE_CODE, self::DEFAULT_MODULE_SETTINGS);
     }
 
     public function uninstall() {
         $this->model_setting_setting->deleteSetting(self::MODULE_CODE);
         $this->model_setting_event->deleteEventByCode('billmate_checkout_page');
+        $this->model_setting_event->deleteEventByCode('billmate_checkout_hash_validate');
     }
 
     /**

@@ -28,8 +28,7 @@ class ModelBillmateCheckout extends Model {
         $bmResponse = $this->model_billmate_checkout_request->getResponse();
 
         if (isset($bmResponse['url'])) {
-
-            $hash = $this->getHashFromUrl($bmResponse['url']);
+            $hash = $this->helperBillmate->getHashFromUrl($bmResponse['url']);
             if ($hash) {
                 $this->helperBillmate->setSessionBmHash($hash);
             }
@@ -44,21 +43,7 @@ class ModelBillmateCheckout extends Model {
         if (isset($bmResponse['message'])) {
             $checkoutData['error_message'] = $bmResponse['message'];
         }
-        return $checkoutData;
-    }
 
-    /**
-     * @param string $url
-     *
-     * @return string
-     */
-    public function getHashFromUrl($url = '')
-    {
-        $parts = explode('/',$url);
-        $sum = count($parts);
-        $hash = ($parts[$sum-1] == 'test')
-            ? str_replace('\\','',$parts[$sum-2])
-            : str_replace('\\','',$parts[$sum-1]);
-        return $hash;
+        return $checkoutData;
     }
 }

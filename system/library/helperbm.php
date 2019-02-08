@@ -3,6 +3,8 @@ class Helperbm
 {
     const SESSION_HASH_CODE = 'billmate_checkout_hash';
 
+    const CART_ID_SEPARATOR = '-';
+
     /**
      * @var array
      */
@@ -124,11 +126,35 @@ class Helperbm
     }
 
     /**
+     * @param $cartIdRow
+     *
+     * @return int
+     */
+    public function getCartId($cartIdRow)
+    {
+        return $cartIdRow;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
+    public function getHashFromUrl($url = '')
+    {
+        $parts = explode('/',$url);
+        $sum = count($parts);
+        $hash = ($parts[$sum-1] == 'test')
+            ? str_replace('\\','',$parts[$sum-2])
+            : str_replace('\\','',$parts[$sum-1]);
+        return $hash;
+    }
+
+    /**
      * @return bool
      */
     public function unsetCart()
     {
-
         $this->cart->clear();
 
         unset($this->session->data['shipping_method']);

@@ -91,7 +91,7 @@ class Billmate {
 
         if (isset($response_array["credentials"])) {
             $hash = $this->hash(json_encode($response_array["data"]));
-            if ($response_array["credentials"]["hash"]==$hash) {
+            if ($response_array["credentials"]["hash"] == $hash) {
                 return $response_array["data"];
             } else {
                 return [
