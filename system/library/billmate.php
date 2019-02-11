@@ -17,6 +17,8 @@
  *
  */
 class Billmate {
+
+    const BILLMATE_CLIENT = 'OpenCart:' . VERSION . ' BillMate:2.1.7';
     var $ID = "";
     var $KEY = "";
     var $URL = "api.billmate.se";
@@ -29,7 +31,6 @@ class Billmate {
     public function __construct($id,$key,$ssl=true,$test=false,$debug=false,$referer=array()){
         $this->ID = $id;
         $this->KEY = $key;
-        defined('BILLMATE_CLIENT') || define('BILLMATE_CLIENT',  "BillMate:2.1.7" );
         defined('BILLMATE_SERVER') || define('BILLMATE_SERVER',  "2.0.6" );
         defined('BILLMATE_LANGUAGE') || define('BILLMATE_LANGUAGE',  "" );
         $this->SSL = $ssl;
@@ -58,12 +59,12 @@ class Billmate {
             "credentials" => array(
                 "id"=>$this->ID,
                 "hash"=>$this->hash(json_encode($params)),
-                "version"=>BILLMATE_SERVER,
-                "client"=>BILLMATE_CLIENT,
-                "serverdata"=>array_merge($_SERVER,$this->REFERER),
-                "time"=>microtime(true),
-                "test"=>$this->TEST?"1":"0",
-                "language"=>BILLMATE_LANGUAGE
+                "version" => BILLMATE_SERVER,
+                "client" => self::BILLMATE_CLIENT,
+                "serverdata" => array_merge($_SERVER,$this->REFERER),
+                "time" => microtime(true),
+                "test" => $this->TEST?"1":"0",
+                "language" => BILLMATE_LANGUAGE
             ),
             "data"=> $params,
             "function"=>$function,

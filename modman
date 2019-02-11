@@ -5,4 +5,5 @@ catalog/controller/event/*						upload/catalog/controller/event/
 catalog/controller/billmatecheckout			    upload/catalog/controller/billmatecheckout/
 catalog/model/*									upload/catalog/model/
 catalog/view/theme/default/template/*			upload/catalog/view/theme/default/template/
+catalog/language/en-gb/extension/module/*		upload/catalog/language/en-gb/extension/module/
 system/library/*								upload/system/library/

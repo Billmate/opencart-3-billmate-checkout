@@ -1,12 +1,7 @@
 <?php
+require_once(DIR_APPLICATION . 'controller/billmatecheckout/corebm.php');
 
-class ControllerBillmatecheckoutCallback extends Controller
-{
-    /**
-     * @var HelperBillmate
-     */
-    protected $helperBillmate;
-
+class ControllerBillmatecheckoutCallback extends ControllerBillmatecheckoutCorebm {
     /**
      * ControllerBillmatecheckoutAccept constructor.
      *
@@ -17,7 +12,6 @@ class ControllerBillmatecheckoutCallback extends Controller
         parent::__construct($registry);
         $this->load->model('checkout/order');
         $this->load->model('billmate/order');
-        $this->helperBillmate  = new Helperbm($registry);
     }
 
     public function index()
@@ -39,24 +33,5 @@ class ControllerBillmatecheckoutCallback extends Controller
 
 
         $this->response->setOutput($responseMessage);
-    }
-
-    /**
-     * @return array
-     * @throws Exception
-     */
-    protected function getRequestData()
-    {
-        if (isset($this->request->request['data'])) {
-            $postData['data'] = json_decode($this->request->request['data'], true);
-            $postData['credentials'] = json_decode($this->request->request['credentials'], true);
-            return $postData;
-        }
-
-        $jsonBodyRequest = file_get_contents('php://input');
-        if ($jsonBodyRequest) {
-            return json_decode($jsonBodyRequest, true);
-        }
-        throw new Exception('The request does not contain information');
     }
 }

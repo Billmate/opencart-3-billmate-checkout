@@ -8,7 +8,7 @@ class ModelBillmateCheckoutRequest extends Model {
 
     const SEND_RECIEPT = 'yes';
 
-    const REDIRECT_ON_SUCCESS = true;
+    const REDIRECT_ON_SUCCESS = 'true';
 
     /**
      * @var array

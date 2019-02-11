@@ -165,7 +165,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
                 'code' => 'sub_total',
                 'title' => 'Sub-Total',
                 'value' =>$this->centsToPrice(
-                    $this->paymentInfo['Cart']['Shipping']['sub_total']
+                    $this->paymentInfo['Cart']['Total']['sub_total']
                 ),
             ],
             [
