@@ -1,6 +1,6 @@
 <?php
 
-class ControllerBillmatecheckoutCorebm extends Controller
+class CoreBmController extends Controller
 {
     /**
      * @var HelperBillmate

@@ -1,6 +1,6 @@
 <?php
-class Helperbm
-{
+class Helperbm {
+
     const SESSION_HASH_CODE = 'billmate_checkout_hash';
 
     const CART_ID_SEPARATOR = '-';
@@ -21,8 +21,7 @@ class Helperbm
      *
      * @param $registry
      */
-    public function __construct($registry)
-    {
+    public function __construct($registry) {
         $this->config = $registry->get('config');
         $this->session = $registry->get('session');
         $this->cart = $registry->get('cart');
@@ -31,8 +30,7 @@ class Helperbm
     /**
      * @return Billmate
      */
-    public function getBillmateConnection()
-    {
+    public function getBillmateConnection() {
         $id = $this->getBillmateId();
         $secret = $this->getBillmateSecret();
         $isTestMode = $this->isChekcoutTestMode();
@@ -43,56 +41,49 @@ class Helperbm
     /**
      * @return int
      */
-    public function getBillmateId()
-    {
+    public function getBillmateId() {
         return $this->config->get('module_billmate_checkout_bm_id');
     }
 
     /**
      * @return string
      */
-    public function getBillmateSecret()
-    {
+    public function getBillmateSecret() {
         return $this->config->get('module_billmate_checkout_secret');
     }
 
     /**
      * @return bool
      */
-    public function isChekcoutTestMode()
-    {
+    public function isChekcoutTestMode() {
         return (bool)$this->config->get('module_billmate_checkout_test_mode');
     }
 
     /**
      * @return bool
      */
-    public function isBmCheckoutEnabled()
-    {
+    public function isBmCheckoutEnabled() {
         return  (bool)$this->config->get('module_billmate_checkout_status');
     }
 
     /**
      * @return bool
      */
-    public function getNewOrderStatusId()
-    {
+    public function getNewOrderStatusId() {
         return  $this->config->get('module_billmate_checkout_order_status_id');
     }
 
     /**
      * @param $hash string
      */
-    public function setSessionBmHash($hash)
-    {
+    public function setSessionBmHash($hash) {
         $this->session->data[self::SESSION_HASH_CODE] = $hash;
     }
 
     /**
      * @return string
      */
-    public function getSessionBmHash()
-    {
+    public function getSessionBmHash() {
         if (isset($this->session->data[self::SESSION_HASH_CODE])) {
             return $this->session->data[self::SESSION_HASH_CODE];
         }
@@ -104,23 +95,20 @@ class Helperbm
      *
      * @return string
      */
-    public function getPaymentMethodByCode($code)
-    {
+    public function getPaymentMethodByCode($code) {
         if (isset($this->mapperPaymentMethods[$code])) {
             return $this->mapperPaymentMethods[$code];
         }
         return '';
     }
 
-    public function resetSessionBmHash()
-    {
+    public function resetSessionBmHash() {
         if (isset($this->session->data[self::SESSION_HASH_CODE])) {
             unset($this->session->data[self::SESSION_HASH_CODE]);
         }
     }
 
-    public function log($data)
-    {
+    public function log($data) {
         $log = new Log('billmate_checkout.log');
         $log->write($data);
     }
@@ -130,8 +118,7 @@ class Helperbm
      *
      * @return int
      */
-    public function getCartId($cartIdRow)
-    {
+    public function getCartId($cartIdRow) {
         return $cartIdRow;
     }
 
@@ -140,8 +127,7 @@ class Helperbm
      *
      * @return string
      */
-    public function getHashFromUrl($url = '')
-    {
+    public function getHashFromUrl($url = '') {
         $parts = explode('/',$url);
         $sum = count($parts);
         $hash = ($parts[$sum-1] == 'test')
@@ -153,16 +139,21 @@ class Helperbm
     /**
      * @return string
      */
-    public function getLogoName()
-    {
+    public function getLogoName() {
         return '';
     }
 
     /**
      * @return bool
      */
-    public function unsetCart()
-    {
+    public function isAddLog() {
+        return $this->config->get('module_billmate_checkout_log_enabled');
+    }
+
+    /**
+     * @return bool
+     */
+    public function unsetCart() {
         $this->cart->clear();
 
         unset($this->session->data['shipping_method']);
@@ -177,6 +168,5 @@ class Helperbm
         unset($this->session->data['voucher']);
         unset($this->session->data['vouchers']);
         unset($this->session->data['totals']);
-        return true;
     }
 }

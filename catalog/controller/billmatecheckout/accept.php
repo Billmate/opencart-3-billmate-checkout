@@ -1,66 +1,47 @@
 <?php
-require_once(DIR_APPLICATION . 'controller/billmatecheckout/corebm.php');
+require_once(DIR_APPLICATION . 'controller/billmatecheckout/FrontBmController.php');
 
-class ControllerBillmatecheckoutAccept extends ControllerBillmatecheckoutCorebm {
+class ControllerBillmatecheckoutAccept extends FrontBmController {
 
     public function index() {
-        $this->load->language('extension/module/billmate_accept');
+        if ($this->helperBillmate->isAddLog()) {
+            $requestBm = $this->getRequestData();
+            $this->helperBillmate->log($requestBm);
+        }
 
+        $this->load->language('extension/module/billmate_accept');
         $this->document->setTitle($this->language->get('heading_title'));
-        $data = $this->getTepmlateVariables();
+        $this->loadBreadcrumbs();
+        $this->loadBaseBlocks();
+        $this->loadTextMessage();
+
         $this->clearCartSession();
 
-        $this->response->setOutput($this->load->view('common/success', $data));
+        $this->response->setOutput(
+            $this->load->view('billmate/accept', $this->getTemplateData())
+        );
     }
 
     /**
      * @return mixed
      */
-    protected function getTepmlateVariables() {
+    protected function loadTextMessage() {
 
-        $data['breadcrumbs'] = $this->getBreadcrumbs();
-
+        $textMessage = sprintf(
+            $this->language->get('text_guest'),
+            $this->url->link('information/contact')
+        );
         if ($this->customer->isLogged()) {
-            $data['text_message'] = sprintf($this->language->get('text_customer'), $this->url->link('account/account', '', true), $this->url->link('account/order', '', true), $this->url->link('account/download', '', true), $this->url->link('information/contact'));
-        } else {
-            $data['text_message'] = sprintf($this->language->get('text_guest'), $this->url->link('information/contact'));
+            $textMessage = sprintf(
+                $this->language->get('text_customer'),
+                $this->url->link('account/account', '', true),
+                $this->url->link('account/order', '', true),
+                $this->url->link('account/download', '', true),
+                $this->url->link('information/contact')
+            );
         }
 
-        $data['continue'] = $this->url->link('common/home');
-
-        $data['column_left'] = $this->load->controller('common/column_left');
-        $data['column_right'] = $this->load->controller('common/column_right');
-        $data['content_top'] = $this->load->controller('common/content_top');
-        $data['content_bottom'] = $this->load->controller('common/content_bottom');
-        $data['footer'] = $this->load->controller('common/footer');
-        $data['header'] = $this->load->controller('common/header');
-        return $data;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getBreadcrumbs() {
-        $breadcrumbs[] = [
-            'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/home')
-        ];
-
-        $breadcrumbs[] = [
-            'text' => $this->language->get('text_basket'),
-            'href' => $this->url->link('checkout/cart')
-        ];
-
-        $breadcrumbs[] = [
-            'text' => $this->language->get('text_checkout'),
-            'href' => $this->url->link('checkout/checkout', '', true)
-        ];
-
-        $breadcrumbs[] = [
-            'text' => $this->language->get('text_success'),
-            'href' => $this->url->link('billmatecheckout/accept')
-        ];
-        return $breadcrumbs;
+        $this->templateData['text_message'] = $textMessage;
     }
 
     protected function clearCartSession() {

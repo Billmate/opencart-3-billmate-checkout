@@ -1,7 +1,7 @@
 <?php
-require_once(DIR_APPLICATION . 'controller/billmatecheckout/corebm.php');
+require_once(DIR_APPLICATION . 'controller/billmatecheckout/CoreBmController.php');
 
-class ControllerBillmatecheckoutCallback extends ControllerBillmatecheckoutCorebm {
+class ControllerBillmatecheckoutCallback extends CoreBmController {
     /**
      * ControllerBillmatecheckoutAccept constructor.
      *
@@ -19,6 +19,9 @@ class ControllerBillmatecheckoutCallback extends ControllerBillmatecheckoutCoreb
         $responseMessage = 'OK';
         try {
             $requestData = $this->getRequestData();
+            if ($this->helperBillmate->isAddLog()) {
+                $this->helperBillmate->log($requestData);
+            }
             $paymentInfo = $this->helperBillmate
             ->getBillmateConnection()
             ->getPaymentinfo( [

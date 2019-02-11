@@ -13,6 +13,7 @@ $_['entry_enable_bmc']			= 'Enable Billmate Checkout';
 $_['entry_enable_test_mode'] 	= 'Enable Test Mode';
 $_['entry_default_order_status'] 	= 'Default Order Status';
 $_['entry_link_terms_cond'] = 'Link To GPRD';
+$_['entry_enable_logging_bm_requests'] = 'Enable Logging Requests (For developers)';
 // Placeholder
 $_['placeholder_name'] 		= '';
 // Help

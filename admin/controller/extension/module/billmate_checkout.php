@@ -7,7 +7,8 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         'module_billmate_checkout_secret' => '',
         'module_billmate_checkout_test_mode' => 1,
         'module_billmate_checkout_order_status_id' => 15,
-        'module_billmate_checkout_gdpr_link' => ''
+        'module_billmate_checkout_gdpr_link' => '',
+        'module_billmate_checkout_log_enabled' => 0
     ];
 
     const MODULE_CODE = 'module_billmate_checkout';
@@ -53,13 +54,15 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
     }
 
     public function validate() {
-        $this->config->set('module_billmate_checkout_status', $this->request->post['module_billmate_checkout_status']);
+
         $this->config->set('module_billmate_checkout_bm_id', $this->request->post['module_billmate_checkout_bm_id']);
         $this->config->set('module_billmate_checkout_secret', $this->request->post['module_billmate_checkout_secret']);
-        $this->config->set('module_billmate_checkout_test_mode', $this->request->post['module_billmate_checkout_test_mode']);
-        $this->config->set('module_billmate_checkout_order_status_id', $this->request->post['module_billmate_checkout_order_status_id']);
-        $this->config->set('module_billmate_checkout_gdpr_link', $this->request->post['module_billmate_checkout_gdpr_link']);
-         return true;
+
+        foreach($this->getOptionsNames() as $optionName ) {
+            $this->config->set($optionName, $this->request->post[$optionName]);
+        }
+
+        return true;
     }
 
     public function install() {
@@ -121,15 +124,15 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
      * @return $this
      */
     protected function loadConfiguredValues() {
-        $this->templateData['module_billmate_checkout_status'] = $this->config->get('module_billmate_checkout_status');
-        $this->templateData['module_billmate_checkout_bm_id'] = $this->config->get('module_billmate_checkout_bm_id');
-        $this->templateData['module_billmate_checkout_secret'] = $this->config->get('module_billmate_checkout_secret');
-        $this->templateData['module_billmate_checkout_test_mode'] = $this->config->get('module_billmate_checkout_test_mode');
-        $this->templateData['module_billmate_checkout_order_status_id'] = $this->config->get('module_billmate_checkout_order_status_id');
-        $this->templateData['module_billmate_checkout_gdpr_link'] = $this->config->get('module_billmate_checkout_gdpr_link');
+        foreach($this->getOptionsNames() as $optionName ) {
+            $this->templateData[$optionName] = $this->config->get($optionName);
+        }
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     protected function loadBreadcrumbs() {
 
         $this->templateData['breadcrumbs'][] = array(
@@ -162,6 +165,13 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    protected function getOptionsNames()
+    {
+        return array_keys(self::DEFAULT_MODULE_SETTINGS);
+    }
 
     /**
      * @return array
