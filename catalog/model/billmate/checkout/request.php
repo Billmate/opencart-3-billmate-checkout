@@ -60,6 +60,12 @@ class ModelBillmateCheckoutRequest extends Model {
         return $bmCheckoutData;
     }
 
+    /**
+     * @param $requestCartData
+     * @param $bmCheckoutData
+     *
+     * @return bool
+     */
     protected function isSameCartUsed($requestCartData, $bmCheckoutData)
     {
         return ($requestCartData['PaymentData']['orderid'] ==
@@ -294,10 +300,9 @@ class ModelBillmateCheckoutRequest extends Model {
      *
      * @return float|int
      */
-    protected function getDiscountAmount($couponCode)
+    protected function getDiscountAmount($couponDiscount)
     {
         $subTotal = $this->cart->getSubTotal();
-        $couponDiscount = $this->model_extension_total_coupon->getCoupon($couponCode);
         $discountAmount = 0;
         switch ($couponDiscount['type']) {
             case 'P':

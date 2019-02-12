@@ -5,8 +5,15 @@ class ControllerBillmatecheckoutCancel extends FrontBmController {
 
     public function index() {
         if ($this->helperBillmate->isAddLog()) {
-            $requestBm = $this->getRequestData();
-            $this->helperBillmate->log($requestBm);
+            try{
+                $requestBm = $this->getRequestData();
+                $this->helperBillmate->log($requestBm);
+            } catch (\Exception $e) {
+                $responseMessage = $e->getMessage();
+                $this->response->setOutput($responseMessage);
+                $this->helperBillmate->log($responseMessage);
+                return;
+            }
         }
 
         $this->load->language('extension/module/billmate_cancel');
