@@ -21,6 +21,11 @@ class ModelBillmateCheckoutRequest extends Model {
     protected $helperBillmate;
 
     /**
+     * @var bool
+     */
+    protected $isUpdated = false;
+
+    /**
      * ModelBillmateCheckoutRequest constructor.
      *
      * @param $registry
@@ -29,6 +34,8 @@ class ModelBillmateCheckoutRequest extends Model {
     {
         parent::__construct($registry);
         $this->helperBillmate  = new Helperbm($registry);
+        $this->load->model('extension/total/coupon');
+        $this->load->model('extension/total/shipping');
     }
 
     /**
@@ -83,8 +90,8 @@ class ModelBillmateCheckoutRequest extends Model {
         $updateData = [];
 
         if (
-            $bmCheckoutData['Cart']['Total']['withouttax']
-            != $requestCartData['Cart']['Total']['withouttax']
+        ($bmCheckoutData['Cart']['Total']['withouttax']
+            != $requestCartData['Cart']['Total']['withouttax']) || $this->isUpdated()
         ) {
             unset($requestCartData['PaymentData']);
             $requestCartData['PaymentData']['number']  = $bmCheckoutData['PaymentData']['number'];
@@ -192,6 +199,7 @@ class ModelBillmateCheckoutRequest extends Model {
     {
         if (isset($this->session->data['coupon'])) {
             $couponCode = $this->session->data['coupon'];
+
             $couponDiscount = $this->model_extension_total_coupon->getCoupon($couponCode);
 
             $discountAmount = $this->getDiscountAmount($couponDiscount);
@@ -362,11 +370,41 @@ class ModelBillmateCheckoutRequest extends Model {
     /**
      * @return string
      */
+    protected function getShippingMethodComment()
+    {
+        if (isset($this->session->data['shipping_method']['comment'])) {
+            return $this->session->data['shipping_method']['comment'];
+        }
+        return '';
+    }
+
+    /**
+     * @return string
+     */
     public function getShippingMethodName()
     {
        if (isset($this->session->data['shipping_method']['title'])) {
            return $this->session->data['shipping_method']['title'];
        }
        return '';
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isUpdated()
+    {
+        return $this->isUpdated;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return $this
+     */
+    public function setIsUpdated($value)
+    {
+        $this->isUpdated = $value;
+        return $this;
     }
 }

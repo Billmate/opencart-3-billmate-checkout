@@ -1,0 +1,19 @@
+.bm-common-checkout .bm-shipping {
+    float: left;
+    margin-top: 16px;
+}
+
+.bm-common-checkout .bm-shipping .comment {
+    width: 200px;
+}
+
+.bm-common-checkout .bm-iframe-checkout {
+
+}
+
+#billmate-checkout {
+    width: 60%;
+    height:100vh;
+    min-height: 600px;
+    border:none;
+}

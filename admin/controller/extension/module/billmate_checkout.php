@@ -72,6 +72,11 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
             'catalog/view/checkout/checkout/after',
             'event/billmatecheckout/replaceTotal'
         );
+        $this->model_setting_event->addEvent(
+            'billmate_checkout_page_jscss',
+            'catalog/controller/common/header/before',
+            'event/billmateheader/addJsCss'
+        );
 
         $this->model_setting_event->addEvent(
             'billmate_checkout_hash_validate',
@@ -85,6 +90,7 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
     public function uninstall() {
         $this->model_setting_setting->deleteSetting(self::MODULE_CODE);
         $this->model_setting_event->deleteEventByCode('billmate_checkout_page');
+        $this->model_setting_event->deleteEventByCode('billmate_checkout_page_jscss');
         $this->model_setting_event->deleteEventByCode('billmate_checkout_hash_validate');
     }
 

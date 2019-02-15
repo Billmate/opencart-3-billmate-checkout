@@ -38,6 +38,7 @@ class ControllerEventBillmatecheckout extends Controller {
     }
 
     public function replaceTotal(&$route, &$args, &$output) {
+
         if (!$this->helperBillmate->isBmCheckoutEnabled()) {
             return;
         }
@@ -86,8 +87,13 @@ class ControllerEventBillmatecheckout extends Controller {
     protected function appendBMCheckout() {
         $dom = $this->getDomDocument();
         $contentBlock = $dom->getElementById('content');
+
         $billmateCheckoutBlock = $dom->createDocumentFragment();
         $billmateCheckoutBlock->appendXML(utf8_encode($this->getBMcheckoutContent()));
+
+        $chapter = $contentBlock->getElementsByTagName('div')->item(0);
+        $contentBlock->removeChild($chapter);
+
         $contentBlock->appendChild($billmateCheckoutBlock);
         return $this;
     }
