@@ -26,6 +26,11 @@ class ModelBillmateCheckoutRequest extends Model {
     protected $isUpdated = false;
 
     /**
+     * @var int
+     */
+    protected $discountAmount = 0;
+
+    /**
      * ModelBillmateCheckoutRequest constructor.
      *
      * @param $registry
@@ -36,6 +41,7 @@ class ModelBillmateCheckoutRequest extends Model {
         $this->helperBillmate  = new Helperbm($registry);
         $this->load->model('extension/total/coupon');
         $this->load->model('extension/total/shipping');
+        $this->load->model('setting/extension');
     }
 
     /**
@@ -199,7 +205,6 @@ class ModelBillmateCheckoutRequest extends Model {
     {
         if (isset($this->session->data['coupon'])) {
             $couponCode = $this->session->data['coupon'];
-
             $couponDiscount = $this->model_extension_total_coupon->getCoupon($couponCode);
 
             $discountAmount = $this->getDiscountAmount($couponDiscount);
@@ -227,7 +232,7 @@ class ModelBillmateCheckoutRequest extends Model {
             'Shipping' =>
                 array (
                     'withouttax' => $this->toCents($cartTotals['total_shipping']),
-                    'taxrate' => 0.0,
+                    'taxrate' => $cartTotals['shipping_rate'],
                     'method' => $this->getShippingMethodName(),
                     'method_code' => $this->getShippingMethodCode()
                 ),
@@ -235,7 +240,7 @@ class ModelBillmateCheckoutRequest extends Model {
                 array (
                     'withouttax' => $this->toCents($cartTotals['total_without_tax']),
                     'sub_total' => $this->toCents($cartTotals['sub_total']),
-                    'tax' => 0.0,
+                    'tax' => $this->toCents($cartTotals['total_tax']),
                     'rounding' => 0.0,
                     'withtax' => $this->toCents($cartTotals['total_with_tax']),
                 ),
@@ -250,28 +255,68 @@ class ModelBillmateCheckoutRequest extends Model {
     {
         $shippingPrice = 0;
         $cartTotals = [];
-        $totals = [];
+        $cartTotals['shipping_rate'] = 0;
+        $cartTotals['total_tax'] = 0;
 
-        $taxes = $this->cart->getTaxes();
-        $total = $this->cart->getTotal();
+        $total_data = $this->getTotalData();
+
+        if (isset($this->session->data['shipping_method'])) {
+            $shippingWithTax = $this->tax->calculate(
+                $this->session->data['shipping_method']['cost'],
+                $this->session->data['shipping_method']['tax_class_id']
+            );
+            $shippingPrice = $this->session->data['shipping_method']['cost'];
+            if ($shippingPrice) {
+                $cartTotals['shipping_rate'] =
+                    100*(($shippingWithTax-$shippingPrice) / $shippingWithTax);
+            }
+
+        }
+
+        foreach ($total_data['taxes'] as $_tax) {
+            $cartTotals['total_tax'] += $this->convert($_tax);
+        }
+
         $subtotal = $this->cart->getSubTotal();
+
+        $cartTotals['total_shipping'] = $this->convert($shippingPrice);
+        $cartTotals['total_without_tax'] = $this->convert(
+            $subtotal + $shippingPrice - $this->discountAmount
+        );
+        $cartTotals['total_with_tax'] = $this->convert($total_data['total']);
+        $cartTotals['sub_total'] = $this->convert($subtotal);
+
+        return $cartTotals;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getTotalData()
+    {
+        $totals = [];
+        $taxes = $this->cart->getTaxes();
+        $total = 0;
         $total_data = array(
             'totals' => &$totals,
             'taxes'  => &$taxes,
             'total'  => &$total
         );
-        $this->model_extension_total_coupon->getTotal($total_data);
-        $this->model_extension_total_shipping->getTotal($total_data);
 
-        if (isset($this->session->data['shipping_method'])) {
-            $shippingPrice = $this->session->data['shipping_method']['cost'];
+        $results = $this->model_setting_extension->getExtensions('total');
+        foreach ($results as $key => $value) {
+            $sort_order[$key] = $this->config->get('total_' . $value['code'] . '_sort_order');
+        }
+        array_multisort($sort_order, SORT_ASC, $results);
+
+        foreach ($results as $result) {
+            if ($this->config->get('total_' . $result['code'] . '_status')) {
+                $this->load->model('extension/total/' . $result['code']);
+                $this->{'model_extension_total_' . $result['code']}->getTotal($total_data);
+            }
         }
 
-        $cartTotals['total_shipping'] = $this->convert($shippingPrice);
-        $cartTotals['total_without_tax'] = $cartTotals['total_with_tax'] = $this->convert($total);
-        $cartTotals['sub_total'] = $this->convert($subtotal);
-
-        return $cartTotals;
+        return $total_data;
     }
 
     /**
@@ -294,11 +339,11 @@ class ModelBillmateCheckoutRequest extends Model {
             $this->config->get('config_tax')
         );
 
+
+        $convertedPrice = $this->convert($product['quantity'] * $product['price']);
+        $productPrices['total_without_tax'] = $convertedPrice;
+
         $productPrices['unit_price'] = $this->convert($unit_price);
-
-        $productPrices['total_without_tax'] = $product['quantity'] * $productPrices['unit_price'];
-        $this->convert($product['quantity'] * $product['price']);
-
         $productPrices['total_with_tax'] = $product['quantity'] * $productPrices['unit_price'] ;
         return $productPrices;
     }
@@ -320,6 +365,7 @@ class ModelBillmateCheckoutRequest extends Model {
                 $discountAmount = $couponDiscount['discount'];
                 break;
         }
+        $this->discountAmount = $discountAmount;
         return $this->convert($discountAmount);
     }
 
