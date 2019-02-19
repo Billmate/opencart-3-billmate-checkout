@@ -3,17 +3,37 @@ require_once(DIR_APPLICATION . 'controller/billmatecheckout/FrontBmController.ph
 
 class ControllerBillmatecheckoutAccept extends FrontBmController {
 
+    public function __construct($registry) {
+        parent::__construct($registry);
+        $this->load->model('checkout/order');
+        $this->load->model('billmate/order');
+    }
+
     public function index() {
-        if ($this->helperBillmate->isAddLog()) {
-            try{
-                $requestBm = $this->getRequestData();
-                $this->helperBillmate->log($requestBm);
-            } catch (\Exception $e) {
-                $responseMessage = $e->getMessage();
-                $this->response->setOutput($responseMessage);
-                $this->helperBillmate->log($responseMessage);
-                return;
+
+        if (!$this->helperBillmate->getSessionBmHash()) {
+            $this->response->redirect($this->url->link('checkout/checkout', '', true));
+        }
+
+        try{
+            $requestData = $this->getRequestData();
+            if ($this->helperBillmate->isAddLog()) {
+                $this->helperBillmate->log($requestData);
             }
+            $paymentInfo = $this->helperBillmate
+                ->getBillmateConnection()
+                ->getPaymentinfo( [
+                    'number' => $requestData['data']['number']
+                ]);
+
+            $this->model_billmate_order->createBmOrder($paymentInfo);
+
+        } catch (\Exception $e) {
+
+            $responseMessage = $e->getMessage();
+            $this->response->setOutput($responseMessage);
+            $this->helperBillmate->log($responseMessage);
+            return;
         }
 
         $this->load->language('extension/module/billmate_accept');

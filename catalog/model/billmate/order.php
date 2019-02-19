@@ -47,8 +47,18 @@ class ModelBillmateOrder extends ModelCheckoutOrder
 
         $this->addOrderHistory($orderId, $this->helperBillmate->getNewOrderStatusId());
         $sessionId = $this->helperBillmate->getCartId($this->paymentInfo['PaymentData']['orderid']);
-        $this->bmcart->clearBySession($sessionId);
 
+        $paymentInfo['PaymentData']['orderid'] = $orderId;
+        $this->updateBillmateData($paymentInfo);
+
+        $this->bmcart->clearBySession($sessionId);
+        return $orderId;
+    }
+
+    protected function updateBillmateData($paymentInfo)
+    {
+        $billmateConnection = $this->helperBillmate->getBillmateConnection();
+        $billmateConnection->updateCheckout($paymentInfo);
     }
 
     /**
@@ -233,7 +243,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     protected function centsToPrice($value)
     {
-        return ($value / 100);
+        return ($value / 10);
     }
 
     /**

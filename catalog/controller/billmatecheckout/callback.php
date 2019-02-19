@@ -22,13 +22,7 @@ class ControllerBillmatecheckoutCallback extends CoreBmController {
             if ($this->helperBillmate->isAddLog()) {
                 $this->helperBillmate->log($requestData);
             }
-            $paymentInfo = $this->helperBillmate
-            ->getBillmateConnection()
-            ->getPaymentinfo( [
-                'number' => $requestData['data']['number']
-            ]);
 
-            $this->model_billmate_order->createBmOrder($paymentInfo);
 
         } catch (\Exception $e) {
             $responseMessage = $e->getMessage();
