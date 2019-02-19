@@ -243,7 +243,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     protected function centsToPrice($value)
     {
-        return ($value / 10);
+        return ($value / 100);
     }
 
     /**
