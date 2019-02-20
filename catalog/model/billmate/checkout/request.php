@@ -130,7 +130,7 @@ class ModelBillmateCheckoutRequest extends Model {
         $this->requestData['PaymentData'] = [
                 'method' => self::METHOD_CODE,
                 'currency' => strtoupper($this->session->data['currency']),
-                'currency_value' => strtoupper($this->session->data['currency']),
+                'currency_value' => $this->currency->getValue($this->session->data['currency']),
                 'language' => 'sv',
                 'country' => 'SE',
                 'orderid' => $this->generateBillmateOrderId(),
