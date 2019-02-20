@@ -26,7 +26,7 @@ class ControllerBillmatecheckoutAccept extends FrontBmController {
                     'number' => $requestData['data']['number']
                 ]);
 
-            $this->model_billmate_order->createBmOrder($paymentInfo);
+            $this->model_billmate_order->createBmOrder($requestData['data']['number'], $paymentInfo);
 
         } catch (\Exception $e) {
 

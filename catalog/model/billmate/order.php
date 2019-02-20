@@ -5,6 +5,8 @@ class ModelBillmateOrder extends ModelCheckoutOrder
 
     const BILLMATE_METHOD_CODE = 'bmch';
 
+    const DEFAUL_ORDER_STATUS_ID = 1;
+
     /**
      * @var array
      */
@@ -21,6 +23,15 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     protected $bmcart;
 
     /**
+     * @var array
+     */
+    protected $statusMap = [
+        'Paid' => 5,
+        'Cancelled' => 7,
+        'Created' => 1,
+    ];
+
+    /**
     * ModelBillmateOrder constructor.
     *
     * @param $registry
@@ -35,7 +46,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     /**
      * @param $paymentInfo
      */
-    public function createBmOrder($paymentInfo)
+    public function createBmOrder($paymentNumber, $paymentInfo)
     {
         $this->paymentInfo = $paymentInfo;
         $order_data = $this->collectOrderData();
@@ -48,17 +59,33 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $this->addOrderHistory($orderId, $this->helperBillmate->getNewOrderStatusId());
         $sessionId = $this->helperBillmate->getCartId($this->paymentInfo['PaymentData']['orderid']);
 
+        $paymentInfo['PaymentInfo']['real_order_id'] = $orderId;
+        $paymentInfo['PaymentData']['number'] = $paymentNumber;
         $paymentInfo['PaymentData']['orderid'] = $orderId;
-        $this->updateBillmateData($paymentInfo);
+        $this->updatePaymentData($paymentInfo);
 
         $this->bmcart->clearBySession($sessionId);
         return $orderId;
     }
 
-    protected function updateBillmateData($paymentInfo)
+    /**
+     * @param $paymentInfo
+     * @param $bmPaymentState
+     */
+    public function updateOrderStatus($paymentInfo, $bmPaymentState)
+    {
+        $orderId = $paymentInfo['PaymentInfo']['real_order_id'];
+        $statusId = $this->getSystemSatusId($bmPaymentState);
+        $this->addOrderHistory($orderId, $statusId);
+    }
+
+    /**
+     * @param $paymentInfo
+     */
+    protected function updatePaymentData($paymentInfo)
     {
         $billmateConnection = $this->helperBillmate->getBillmateConnection();
-        $billmateConnection->updateCheckout($paymentInfo);
+        $billmateConnection->updatePayment($paymentInfo);
     }
 
     /**
@@ -85,7 +112,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             'store_name' => $this->config->get('config_name'),
             'store_url' => $this->config->get('config_url'),
             'language_id' => $this->config->get('config_language_id'),
-            'currency_id' => $this->paymentInfo['PaymentData']['currency'],
+            'currency_id' => $this->currency->getId($this->paymentInfo['PaymentData']['currency']),
             'currency_code' => $this->paymentInfo['PaymentData']['currency'],
             'currency_value' => $this->currency->getValue($this->session->data['currency']),
             'customer_id' => 0,
@@ -297,5 +324,19 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     protected function getShippingMethodCode()
     {
         return $this->paymentInfo['Cart']['Shipping']['method_code'];
+    }
+
+    /**
+     * @param $bmPaymentState
+     *
+     * @return int
+     */
+    protected function getSystemSatusId($bmPaymentState)
+    {
+        if(isset($this->statusMap[$bmPaymentState])) {
+            return $this->statusMap[$bmPaymentState];
+        }
+
+        return self::DEFAUL_ORDER_STATUS_ID;
     }
 }
