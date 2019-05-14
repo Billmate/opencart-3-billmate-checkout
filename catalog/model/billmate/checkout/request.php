@@ -169,6 +169,10 @@ class ModelBillmateCheckoutRequest extends Model {
             'sendreciept' => self::SEND_RECIEPT,
             'redirectOnSuccess' => self::REDIRECT_ON_SUCCESS,
         ];
+        $privacyPolicyLink = $this->config->get('module_billmate_checkout_privacy_policy_link');
+        if ($privacyPolicyLink) {
+            $this->requestData['CheckoutData']['privacyPolicy'] = $privacyPolicyLink;
+        }
 
         return $this;
     }

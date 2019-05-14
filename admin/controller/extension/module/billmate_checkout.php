@@ -8,6 +8,7 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         'module_billmate_checkout_test_mode' => 1,
         'module_billmate_checkout_order_status_id' => 15,
         'module_billmate_checkout_gdpr_link' => '',
+        'module_billmate_checkout_privacy_policy_link' => '',
         'module_billmate_checkout_log_enabled' => 0
     ];
 

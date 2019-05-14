@@ -13,11 +13,13 @@ $_['entry_enable_bmc']			= 'Enable Billmate Checkout';
 $_['entry_enable_test_mode'] 	= 'Enable Test Mode';
 $_['entry_default_order_status'] 	= 'Default Order Status';
 $_['entry_link_terms_cond'] = 'Store Terms';
+$_['entry_link_privacy_policy'] = 'Privacy Policy';
 $_['entry_enable_logging_bm_requests'] = 'Enable Logging Requests (For developers)';
 // Placeholder
 $_['placeholder_name'] 		= '';
 // Help
 $_['help_gdpr_message'] 		= 'Link to page that contain store terms and conditions';
+$_['help_privacy_policy_message'] 		= 'Link to page that contain store privacy policy';
 // Error
 $_['error_name'] 		= 'Module ID blank';
 $_['error_message'] 		= 'Message field blank';
