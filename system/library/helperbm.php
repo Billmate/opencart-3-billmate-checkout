@@ -62,6 +62,13 @@ class Helperbm {
     /**
      * @return bool
      */
+    public function isPushBmEvents() {
+        return (bool)$this->config->get('module_billmate_checkout_push_events');
+    }
+
+    /**
+     * @return bool
+     */
     public function isBmCheckoutEnabled() {
         return  (bool)$this->config->get('module_billmate_checkout_status');
     }

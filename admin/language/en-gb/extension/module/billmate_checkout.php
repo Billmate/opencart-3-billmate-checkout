@@ -11,6 +11,7 @@ $_['entry_billmate_id']		= 'Billmate ID';
 $_['entry_billmate_secret']		= 'Billmate Secret';
 $_['entry_enable_bmc']			= 'Enable Billmate Checkout';
 $_['entry_enable_test_mode'] 	= 'Enable Test Mode';
+$_['entry_enable_push_events'] 	= 'Push order events to Billmate';
 $_['entry_default_order_status'] 	= 'Default Order Status';
 $_['entry_link_terms_cond'] = 'Store Terms';
 $_['entry_link_privacy_policy'] = 'Privacy Policy';
