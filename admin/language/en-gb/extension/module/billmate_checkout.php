@@ -12,12 +12,12 @@ $_['entry_billmate_secret']		= 'Billmate Secret';
 $_['entry_enable_bmc']			= 'Enable Billmate Checkout';
 $_['entry_enable_test_mode'] 	= 'Enable Test Mode';
 $_['entry_default_order_status'] 	= 'Default Order Status';
-$_['entry_link_terms_cond'] = 'Link To GPRD';
+$_['entry_link_terms_cond'] = 'Store Terms';
 $_['entry_enable_logging_bm_requests'] = 'Enable Logging Requests (For developers)';
 // Placeholder
 $_['placeholder_name'] 		= '';
 // Help
-$_['help_gdpr_message'] 		= 'Link to page that contain GPRD conditions';
+$_['help_gdpr_message'] 		= 'Link to page that contain store terms and conditions';
 // Error
 $_['error_name'] 		= 'Module ID blank';
 $_['error_message'] 		= 'Message field blank';
