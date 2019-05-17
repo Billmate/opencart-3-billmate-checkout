@@ -17,6 +17,15 @@ class Helperbm {
     ];
 
     /**
+     * @var array
+     */
+    protected $defConnectionData = [
+        'currency' => 'SEK',
+        'language' => 'sv',
+        'country'  => 'se'
+    ];
+
+    /**
      * HelperBillmate constructor.
      *
      * @param $registry
@@ -36,6 +45,15 @@ class Helperbm {
         $isTestMode = $this->isChekcoutTestMode();
         $billmateConnection = new Billmate($id, $secret, true, $isTestMode);
         return $billmateConnection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefConnectionData()
+    {
+        $connectionData['PaymentData'] = $this->defConnectionData;
+        return $connectionData;
     }
 
     /**

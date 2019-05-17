@@ -1,6 +1,7 @@
 admin/controller/extension/module/* 				upload/admin/controller/extension/module/
 admin/language/en-gb/extension/module/* 			upload/admin/language/en-gb/extension/module/
 admin/view/template/extension/module/* 				upload/admin/view/template/extension/module/
+admin/model/*										upload/admin/model/
 catalog/controller/event/*							upload/catalog/controller/event/
 catalog/controller/billmatecheckout			    	upload/catalog/controller/billmatecheckout/
 catalog/model/*										upload/catalog/model/

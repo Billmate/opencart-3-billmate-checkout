@@ -15,6 +15,16 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
 
     const MODULE_CODE = 'module_billmate_checkout';
 
+    /**
+     * @var ModelBillmateConfigValidator
+     */
+    protected $configValidator;
+
+    /**
+     * ControllerExtensionModuleBillmateCheckout constructor.
+     *
+     * @param $registry
+     */
     public function __construct($registry)
     {
         parent::__construct($registry);
@@ -24,6 +34,8 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         $this->load->model('setting/event');
         $this->load->model('localisation/order_status');
         $this->load->model('setting/setting');
+        $this->load->model('billmate/config/validator');
+        $this->helperBillmate  = new Helperbm($registry);
     }
 
     /**
@@ -31,13 +43,15 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
      */
     protected $templateData = [];
 
-    public function index() {
-
-        $this->loadModels();
-        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+    public function index()
+    {
+        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->isValidData()) {
+            $this->saveRequestedOptions();
             $values = $this->request->post;
             $this->model_setting_setting->editSetting(self::MODULE_CODE, $values);
             $this->templateData['success_message'] = $this->language->get('text_change_settings_success');
+        } else {
+            $this->config->set('module_billmate_checkout_status', 0);
         }
 
         $this->runEditModuleSettings();
@@ -55,16 +69,28 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         $this->response->setOutput($htmlOutput);
     }
 
-    public function validate() {
-
+    /**
+     * @return bool
+     */
+    protected function isValidData()
+    {
         $this->config->set('module_billmate_checkout_bm_id', $this->request->post['module_billmate_checkout_bm_id']);
         $this->config->set('module_billmate_checkout_secret', $this->request->post['module_billmate_checkout_secret']);
 
-        foreach($this->getOptionsNames() as $optionName ) {
-            $this->config->set($optionName, $this->request->post[$optionName]);
+        $isValid = $this->getConfigValidator()->isConnectionValid();
+        if (!$isValid) {
+            $this->templateData['error_message'] = $this->language->get('error_billmate_connection');
+            return false;
         }
 
         return true;
+    }
+
+    protected function saveRequestedOptions()
+    {
+        foreach($this->getOptionsNames() as $optionName ) {
+            $this->config->set($optionName, $this->request->post[$optionName]);
+        }
     }
 
     public function install() {
@@ -94,14 +120,6 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         $this->model_setting_event->deleteEventByCode('billmate_checkout_page');
         $this->model_setting_event->deleteEventByCode('billmate_checkout_page_jscss');
         $this->model_setting_event->deleteEventByCode('billmate_checkout_hash_validate');
-    }
-
-    /**
-     * @return $this
-     */
-    protected function loadModels() {
-        $this->load->language('extension/module/billmate_checkout');
-        return $this;
     }
 
     /**
@@ -184,7 +202,19 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
     /**
      * @return array
      */
-    protected function getTemplateData() {
+    protected function getTemplateData()
+    {
         return $this->templateData;
+    }
+
+    /**
+     * @return ModelBillmateConfigValidator
+     */
+    protected function getConfigValidator()
+    {
+        if (is_null($this->configValidator)) {
+            $this->configValidator = $this->model_billmate_config_validator;
+        }
+        return $this->configValidator;
     }
 }
