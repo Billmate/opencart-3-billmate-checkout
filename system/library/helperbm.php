@@ -94,21 +94,24 @@ class Helperbm {
     /**
      * @return bool
      */
-    public function getNewOrderStatusId() {
+    public function getNewOrderStatusId()
+    {
         return  $this->config->get('module_billmate_checkout_order_status_id');
     }
 
     /**
      * @param $hash string
      */
-    public function setSessionBmHash($hash) {
+    public function setSessionBmHash($hash)
+    {
         $this->session->data[self::SESSION_HASH_CODE] = $hash;
     }
 
     /**
      * @return string
      */
-    public function getSessionBmHash() {
+    public function getSessionBmHash()
+    {
         if (isset($this->session->data[self::SESSION_HASH_CODE])) {
             return $this->session->data[self::SESSION_HASH_CODE];
         }
@@ -120,20 +123,23 @@ class Helperbm {
      *
      * @return string
      */
-    public function getPaymentMethodByCode($code) {
+    public function getPaymentMethodByCode($code)
+    {
         if (isset($this->mapperPaymentMethods[$code])) {
             return $this->mapperPaymentMethods[$code];
         }
         return '';
     }
 
-    public function resetSessionBmHash() {
+    public function resetSessionBmHash()
+    {
         if (isset($this->session->data[self::SESSION_HASH_CODE])) {
             unset($this->session->data[self::SESSION_HASH_CODE]);
         }
     }
 
-    public function log($data) {
+    public function log($data)
+    {
         $log = new Log('billmate_checkout.log');
         $log->write($data);
     }
@@ -143,7 +149,8 @@ class Helperbm {
      *
      * @return int
      */
-    public function getCartId($cartIdRow) {
+    public function getCartId($cartIdRow)
+    {
         return $cartIdRow;
     }
 
@@ -178,7 +185,8 @@ class Helperbm {
     /**
      * @return bool
      */
-    public function unsetCart() {
+    public function unsetCart()
+    {
         $this->cart->clear();
 
         unset($this->session->data['shipping_method']);
@@ -193,5 +201,15 @@ class Helperbm {
         unset($this->session->data['voucher']);
         unset($this->session->data['vouchers']);
         unset($this->session->data['totals']);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return string
+     */
+    public function encodeUtf8($value)
+    {
+        return Encoding::fixUTF8($value);
     }
 }

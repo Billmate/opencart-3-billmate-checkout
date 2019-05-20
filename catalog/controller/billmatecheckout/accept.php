@@ -26,7 +26,8 @@ class ControllerBillmatecheckoutAccept extends FrontBmController {
                     'number' => $requestData['data']['number']
                 ]);
 
-            $this->model_billmate_order->createBmOrder($requestData['data']['number'], $paymentInfo);
+            $this->getBillmateOrderModel()
+                ->createBmOrder($requestData['data']['number'], $paymentInfo);
 
         } catch (\Exception $e) {
 
@@ -74,5 +75,13 @@ class ControllerBillmatecheckoutAccept extends FrontBmController {
     protected function clearCartSession() {
         $this->helperBillmate->unsetCart();
         $this->helperBillmate->resetSessionBmHash();
+    }
+
+    /**
+     * @return ModelBillmateOrder
+     */
+    protected function getBillmateOrderModel()
+    {
+        return $this->model_billmate_order;
     }
 }

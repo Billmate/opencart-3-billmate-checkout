@@ -286,7 +286,8 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     protected function getBmBillingData()
     {
-        return $this->paymentInfo['Customer']['Billing'];
+        $billingAddress = $this->paymentInfo['Customer']['Billing'];
+        return $this->encodeData($billingAddress);
     }
 
     /**
@@ -295,7 +296,9 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     protected function getBmShippingData()
     {
         if (isset($this->paymentInfo['Customer']['Shipping'])) {
-            return $this->paymentInfo['Customer']['Shipping'];
+            return $this->encodeData(
+                $this->paymentInfo['Customer']['Shipping']
+            );
         }
         return $this->getBmBillingData();
     }
@@ -338,5 +341,18 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         }
 
         return self::DEFAUL_ORDER_STATUS_ID;
+    }
+
+    /**
+     * @param $addressData
+     *
+     * @return mixed
+     */
+    protected function encodeData($addressData)
+    {
+        foreach ($addressData as $key => $addressField) {
+            $addressData[$key] = $this->helperBillmate->encodeUtf8($addressField);
+        }
+        return $addressData;
     }
 }
