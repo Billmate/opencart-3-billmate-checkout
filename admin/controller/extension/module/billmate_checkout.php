@@ -7,6 +7,9 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         'module_billmate_checkout_secret' => '',
         'module_billmate_checkout_test_mode' => 1,
         'module_billmate_checkout_push_events' => 0,
+        'module_billmate_checkout_activate_status_id' => 2,
+        'module_billmate_checkout_cancel_status_id' => 7,
+        'module_billmate_checkout_credit_status_id' => 11,
         'module_billmate_checkout_order_status_id' => 15,
         'module_billmate_checkout_gdpr_link' => '',
         'module_billmate_checkout_privacy_policy_link' => '',
@@ -31,10 +34,10 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         $this->load->language('extension/module/billmate_checkout');
         $this->load->model('localisation/order_status');
         $this->load->model('setting/setting');
-        $this->load->model('setting/event');
         $this->load->model('localisation/order_status');
         $this->load->model('setting/setting');
         $this->load->model('billmate/config/validator');
+        $this->load->model('billmate/payment/bmsetup');
         $this->helperBillmate  = new Helperbm($registry);
     }
 
@@ -53,6 +56,7 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         } else {
             $this->config->set('module_billmate_checkout_status', 0);
         }
+        $this->document->addStyle('view/stylesheet/billmatecheckout.css');
 
         $this->runEditModuleSettings();
     }
@@ -93,33 +97,16 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         }
     }
 
-    public function install() {
-
-        $this->model_setting_event->addEvent(
-            'billmate_checkout_page',
-            'catalog/view/checkout/checkout/after',
-            'event/billmatecheckout/replaceTotal'
-        );
-        $this->model_setting_event->addEvent(
-            'billmate_checkout_page_jscss',
-            'catalog/controller/common/header/before',
-            'event/billmateheader/addJsCss'
-        );
-
-        $this->model_setting_event->addEvent(
-            'billmate_checkout_hash_validate',
-            'catalog/controller/*/before',
-            'event/billmatehash/validate'
-        );
-
+    public function install()
+    {
+        $this->getBMPaymentSetup()->registerEvents();
         $this->model_setting_setting->editSetting(self::MODULE_CODE, self::DEFAULT_MODULE_SETTINGS);
     }
 
-    public function uninstall() {
+    public function uninstall()
+    {
+        $this->getBMPaymentSetup()->unregisterEvents();
         $this->model_setting_setting->deleteSetting(self::MODULE_CODE);
-        $this->model_setting_event->deleteEventByCode('billmate_checkout_page');
-        $this->model_setting_event->deleteEventByCode('billmate_checkout_page_jscss');
-        $this->model_setting_event->deleteEventByCode('billmate_checkout_hash_validate');
     }
 
     /**
@@ -216,5 +203,13 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
             $this->configValidator = $this->model_billmate_config_validator;
         }
         return $this->configValidator;
+    }
+
+    /**
+     * @return ModelBillmatePaymentBmsetup
+     */
+    protected function getBMPaymentSetup()
+    {
+        return $this->model_billmate_payment_bmsetup;
     }
 }

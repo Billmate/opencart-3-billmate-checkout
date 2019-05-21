@@ -71,6 +71,68 @@
 
                             </select>
                         </div>
+                        <div class="push-events-options">
+                            <div class="push-event-status">
+                                <label class="col-sm-2 control-label" for="input-order-status">{{ entry_billmate_activate_status }}</label>
+                                <div class="col-sm-8">
+                                    <select name="module_billmate_checkout_activate_status_id" id="input-order-status" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == module_billmate_checkout_activate_status_id %}
+                                                <option value="{{ order_status.order_status_id }}" selected="selected">
+                                                    {{ order_status.name }}
+                                                </option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">
+                                                    {{ order_status.name }}
+                                                </option>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="clear: both"></div>
+                            <div class="push-event-status">
+                                <label class="col-sm-2 control-label" for="input-order-status">{{ entry_billmate_cancel_status }}</label>
+                                <div class="col-sm-8">
+                                    <select name="module_billmate_checkout_cancel_status_id" id="input-order-status" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == module_billmate_checkout_cancel_status_id %}
+                                                <option value="{{ order_status.order_status_id }}" selected="selected">
+                                                    {{ order_status.name }}
+                                                </option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">
+                                                    {{ order_status.name }}
+                                                </option>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="clear: both"></div>
+                            <div class="push-event-status">
+                                <label class="col-sm-2 control-label" for="input-order-status">{{ entry_billmate_credit_status }}</label>
+                                <div class="col-sm-8">
+                                    <select name="module_billmate_checkout_credit_status_id" id="input-order-status" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == module_billmate_checkout_credit_status_id %}
+                                                <option value="{{ order_status.order_status_id }}" selected="selected">
+                                                    {{ order_status.name }}
+                                                </option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">
+                                                    {{ order_status.name }}
+                                                </option>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-status">{{ entry_enable_test_mode }}</label>

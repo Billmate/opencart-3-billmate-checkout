@@ -41,6 +41,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         parent::__construct($registry);
         $this->helperBillmate  = new Helperbm($registry);
         $this->bmcart  = new \Billmate\Bmcart($registry);
+        $this->load->model('billmate/service');
     }
 
     /**
@@ -58,6 +59,11 @@ class ModelBillmateOrder extends ModelCheckoutOrder
 
         $this->addOrderHistory($orderId, $this->helperBillmate->getNewOrderStatusId());
         $sessionId = $this->helperBillmate->getCartId($this->paymentInfo['PaymentData']['orderid']);
+
+        $this->getBillmateService()->addInvoiceIdToOrder(
+            $orderId,
+            $paymentNumber
+        );
 
         $paymentInfo['PaymentInfo']['real_order_id'] = $orderId;
         $paymentInfo['PaymentData']['number'] = $paymentNumber;
@@ -354,5 +360,13 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             $addressData[$key] = $this->helperBillmate->encodeUtf8($addressField);
         }
         return $addressData;
+    }
+
+    /**
+     * @return ModelBillmateService
+     */
+    protected function getBillmateService()
+    {
+        return $this->model_billmate_service;
     }
 }

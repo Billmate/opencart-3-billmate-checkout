@@ -5,6 +5,8 @@ class Helperbm {
 
     const CART_ID_SEPARATOR = '-';
 
+    protected $processorMap;
+
     /**
      * @var array
      */
@@ -39,7 +41,8 @@ class Helperbm {
     /**
      * @return Billmate
      */
-    public function getBillmateConnection() {
+    public function getBillmateConnection()
+    {
         $id = $this->getBillmateId();
         $secret = $this->getBillmateSecret();
         $isTestMode = $this->isChekcoutTestMode();
@@ -80,7 +83,7 @@ class Helperbm {
     /**
      * @return bool
      */
-    public function isPushBmEvents() {
+    public function isAllowedPushEvents() {
         return (bool)$this->config->get('module_billmate_checkout_push_events');
     }
 
@@ -171,15 +174,72 @@ class Helperbm {
     /**
      * @return string
      */
-    public function getLogoName() {
+    public function getLogoName()
+    {
         return '';
     }
 
     /**
      * @return bool
      */
-    public function isAddLog() {
+    public function isAddLog()
+    {
         return $this->config->get('module_billmate_checkout_log_enabled');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getActivateStatusId()
+    {
+        return $this->config->get('module_billmate_checkout_activate_status_id');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getCancelStatusId()
+    {
+        return $this->config->get('module_billmate_checkout_cancel_status_id');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getCreditStatusId()
+    {
+        return $this->config->get('module_billmate_checkout_credit_status_id');
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedStatuses()
+    {
+        return array_keys($this->getProcessorsMap());
+    }
+
+    /**
+     * @return array
+     */
+    public function getProcessorsMap()
+    {
+        if (is_null($this->processorMap)) {
+            $this->processorMap = $this->generateProcMap();
+        }
+        return $this->processorMap;
+    }
+
+    /**
+     * @return array
+     */
+    protected function generateProcMap()
+    {
+        return [
+            $this->getActivateStatusId() => 'activate',
+            $this->getCancelStatusId() => 'cancel',
+            $this->getCreditStatusId() => 'refund',
+        ];
     }
 
     /**
