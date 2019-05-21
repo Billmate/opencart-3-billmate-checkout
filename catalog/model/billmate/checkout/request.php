@@ -232,6 +232,7 @@ class ModelBillmateCheckoutRequest extends Model {
     protected function addCartTotalsData()
     {
         $cartTotals = $this->getCartTotals();
+        $rounding = 0.0;
         $this->requestData['Cart'] = [
             'Shipping' =>
                 array (
@@ -245,7 +246,7 @@ class ModelBillmateCheckoutRequest extends Model {
                     'withouttax' => $this->toCents($cartTotals['total_without_tax']),
                     'sub_total' => $this->toCents($cartTotals['sub_total']),
                     'tax' => $this->toCents($cartTotals['total_tax']),
-                    'rounding' => 0.0,
+                    'rounding' => $rounding,
                     'withtax' => $this->toCents($cartTotals['total_with_tax']),
                 ),
         ];
@@ -272,7 +273,7 @@ class ModelBillmateCheckoutRequest extends Model {
             $shippingPrice = $this->session->data['shipping_method']['cost'];
             if ($shippingPrice) {
                 $cartTotals['shipping_rate'] =
-                    100*(($shippingWithTax-$shippingPrice) / $shippingWithTax);
+                    round(100 * (($shippingWithTax-$shippingPrice) / $shippingWithTax),2);
             }
 
         }

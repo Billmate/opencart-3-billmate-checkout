@@ -27,7 +27,8 @@ class ModelBillmateCheckout extends Model {
     {
         $checkoutData = [];
 
-        $bmResponse = $this->model_billmate_checkout_request->getResponse();
+        $this->initDefaultShippingMethod();
+        $bmResponse = $this->getModelBillmateCheckoutRequest()->getResponse();
 
         if (isset($bmResponse['url'])) {
             $hash = $this->helperBillmate->getHashFromUrl($bmResponse['url']);
@@ -43,7 +44,7 @@ class ModelBillmateCheckout extends Model {
         }
 
         if (isset($bmResponse['message'])) {
-            $checkoutData['error_message'] = $bmResponse['message'];
+            $checkoutData['error_message'] = $this->helperBillmate->encodeUtf8($bmResponse['message']);
         }
 
         $checkoutData['shipping_block'] = $this->getBMShippingMethodsBlock();
@@ -52,44 +53,18 @@ class ModelBillmateCheckout extends Model {
         return $checkoutData;
     }
 
-
-    protected function getBMShippingMethodsBlock() {
+    /**
+     * @return string
+     */
+    protected function getBMShippingMethodsBlock()
+    {
         $this->load->language('checkout/checkout');
-        $shippingAddress = $this->model_billmate_checkout_shipping->getDefaultAddress();
-
-        $method_data = array();
-        $results = $this->model_setting_extension->getExtensions('shipping');
-
-        foreach ($results as $result) {
-            if ($this->config->get('shipping_' . $result['code'] . '_status')) {
-                $this->load->model('extension/shipping/' . $result['code']);
-
-                $quote = $this->{'model_extension_shipping_' . $result['code']}->getQuote($shippingAddress);
-
-                if ($quote) {
-                    $method_data[$result['code']] = array(
-                        'title'      => $quote['title'],
-                        'quote'      => $quote['quote'],
-                        'sort_order' => $quote['sort_order'],
-                        'error'      => $quote['error']
-                    );
-                    $data['quote'] = $quote;
-                }
-            }
-        }
-
-        $sort_order = array();
-
-        foreach ($method_data as $key => $value) {
-            $sort_order[$key] = $value['sort_order'];
-        }
-
-        array_multisort($sort_order, SORT_ASC, $method_data);
-        $this->session->data['shipping_methods'] = $method_data;
-
 
         if (empty($this->session->data['shipping_methods'])) {
-            $data['error_warning'] = sprintf($this->language->get('error_no_shipping'), $this->url->link('information/contact'));
+            $data['error_warning'] = sprintf(
+                $this->language->get('error_no_shipping'),
+                $this->url->link('information/contact')
+            );
         } else {
             $data['error_warning'] = '';
         }
@@ -114,13 +89,71 @@ class ModelBillmateCheckout extends Model {
         return $this->load->view('billmate/shipping_method', $data);
     }
 
+    public function getActiveShippingMethods()
+    {
+        $methods = [];
+        $shippingAddress = $this->model_billmate_checkout_shipping->getDefaultAddress();
+        $results = $this->model_setting_extension->getExtensions('shipping');
 
-    protected function getPluginOptions() {
+        foreach ($results as $result) {
+            if ($this->config->get('shipping_' . $result['code'] . '_status')) {
+                $this->load->model('extension/shipping/' . $result['code']);
 
+                $quote = $this->{'model_extension_shipping_' . $result['code']}->getQuote($shippingAddress);
+
+                if ($quote) {
+                    $methods[$result['code']] = array(
+                        'title'      => $quote['title'],
+                        'quote'      => $quote['quote'],
+                        'sort_order' => $quote['sort_order'],
+                        'error'      => $quote['error']
+                    );
+                    $data['quote'] = $quote;
+                }
+            }
+        }
+
+        $sort_order = array();
+
+        foreach ($methods as $key => $value) {
+            $sort_order[$key] = $value['sort_order'];
+        }
+
+        array_multisort($sort_order, SORT_ASC, $methods);
+
+        $this->session->data['shipping_methods'] = $methods;
+        return $methods;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPluginOptions()
+    {
         $pluginOptions = [
             'saveShippingUrl' => $this->url->link('billmatecheckout/ajax/updateShipping', '', true)
         ];
         return json_encode($pluginOptions);
+    }
+
+    /**
+     * @return ModelBillmateCheckoutRequest
+     */
+    public function getModelBillmateCheckoutRequest()
+    {
+        return $this->model_billmate_checkout_request;
+    }
+
+    public function initDefaultShippingMethod()
+    {
+        $shippingMethods = $this->getActiveShippingMethods();
+        if (
+            $shippingMethods &&
+            !isset($this->session->data['shipping_method'])
+        ) {
+            $firstShippingMethod = current($shippingMethods);
+            $this->session->data['shipping_method'] = current($firstShippingMethod['quote']);
+        }
     }
 
 }
