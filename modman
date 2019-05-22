@@ -3,6 +3,7 @@ admin/language/en-gb/extension/payment/* 			upload/admin/language/en-gb/extensio
 admin/language/da-dk/extension/payment/* 			upload/admin/language/da-dk/extension/payment/
 admin/view/template/extension/module/* 				upload/admin/view/template/extension/module/
 admin/view/stylesheet/* 							upload/admin/view/stylesheet/
+admin/view/image/payment/*							upload/admin/view/image/payment/
 admin/model/*										upload/admin/model/
 catalog/controller/event/*							upload/catalog/controller/event/
 catalog/controller/billmatecheckout			    	upload/catalog/controller/billmatecheckout/

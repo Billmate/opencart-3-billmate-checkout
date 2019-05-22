@@ -48,20 +48,23 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
 
     public function index()
     {
-        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->isValidData()) {
-            $this->saveRequestedOptions();
-            $values = $this->request->post;
-            $this->model_setting_setting->editSetting(self::MODULE_CODE, $values);
-            $this->templateData['success_message'] = $this->language->get('text_change_settings_success');
-        } else {
-            $this->config->set('module_billmate_checkout_status', 0);
+        if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+            if ($this->isValidData()) {
+                $this->saveRequestedOptions();
+                $values = $this->request->post;
+                $this->model_setting_setting->editSetting(self::MODULE_CODE, $values);
+                $this->templateData['success_message'] = $this->language->get('text_change_settings_success');
+            } else {
+                $this->config->set('module_billmate_checkout_status', 0);
+            }
         }
-        $this->document->addStyle('view/stylesheet/billmatecheckout.css');
 
+        $this->document->addStyle('view/stylesheet/billmatecheckout.css');
         $this->runEditModuleSettings();
     }
 
-    protected function runEditModuleSettings() {
+    protected function runEditModuleSettings()
+    {
         $this->loadTemplateData()
             ->loadBaseBlocks()
             ->loadBreadcrumbs();

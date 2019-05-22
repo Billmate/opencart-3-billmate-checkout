@@ -1,6 +1,7 @@
 <?php
 $_['heading_title'] = 'Billmate Checkout';
 
+
 // Text
 $_['text_extension']		= 'Extensions';
 $_['text_change_settings_success']		= 'Inställningarna uppdaterades framgångsrikt';
