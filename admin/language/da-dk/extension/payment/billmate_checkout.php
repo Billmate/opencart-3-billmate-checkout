@@ -1,6 +1,6 @@
 <?php
 $_['heading_title'] = 'Billmate Checkout';
-
+$_['text_billmate_checkout'] = '<img src="view/image/payment/billmate_chekcout.png" alt="Billmate Checkout" title="Billmate Checkout">';
 
 // Text
 $_['text_extension']		= 'Extensions';
