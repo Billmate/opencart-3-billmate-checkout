@@ -1,5 +1,5 @@
 <?php
-class ControllerExtensionModuleBillmateCheckout extends Controller {
+class ControllerExtensionPaymentBillmateCheckout extends Controller {
 
     const DEFAULT_MODULE_SETTINGS = [
         'module_billmate_checkout_status' => 0,
@@ -31,7 +31,7 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->load->language('extension/module/billmate_checkout');
+        $this->load->language('extension/payment/billmate_checkout');
         $this->load->model('localisation/order_status');
         $this->load->model('setting/setting');
         $this->load->model('localisation/order_status');
@@ -115,7 +115,7 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
     protected function loadTemplateData() {
         $this->templateData['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
         $this->templateData['action'] = $this->url->link(
-            'extension/module/billmate_checkout',
+            'extension/payment/billmate_checkout',
             'user_token=' . $this->session->data['user_token'],
             true
         );
@@ -161,7 +161,7 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
             'text' => $this->language->get('text_extension'),
             'href' => $this->url->link(
                 'marketplace/extension',
-                'user_token=' . $this->session->data['user_token'] . '&type=module',
+                'user_token=' . $this->session->data['user_token'] . '&type=payment',
                 true
             )
         );
@@ -169,7 +169,7 @@ class ControllerExtensionModuleBillmateCheckout extends Controller {
         $this->templateData['breadcrumbs'][] = array(
             'text' => $this->language->get('heading_title'),
             'href' => $this->url->link(
-                'extension/module/billmate_checkout',
+                'extension/payment/billmate_checkout',
                 'user_token=' . $this->session->data['user_token'],
                 true
             )

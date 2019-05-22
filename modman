@@ -1,6 +1,6 @@
-admin/controller/extension/module/* 				upload/admin/controller/extension/module/
-admin/language/en-gb/extension/module/* 			upload/admin/language/en-gb/extension/module/
-admin/language/da-dk/extension/module/* 			upload/admin/language/da-dk/extension/module/
+admin/controller/extension/payment/* 				upload/admin/controller/extension/payment/
+admin/language/en-gb/extension/payment/* 			upload/admin/language/en-gb/extension/payment/
+admin/language/da-dk/extension/payment/* 			upload/admin/language/da-dk/extension/payment/
 admin/view/template/extension/module/* 				upload/admin/view/template/extension/module/
 admin/view/stylesheet/* 							upload/admin/view/stylesheet/
 admin/model/*										upload/admin/model/

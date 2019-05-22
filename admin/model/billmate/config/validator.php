@@ -14,7 +14,7 @@ class ModelBillmateConfigValidator extends Model
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->load->language('extension/module/billmate_checkout');
+        $this->load->language('extension/payment/billmate_checkout');
         $this->helperBillmate  = new Helperbm($registry);
     }
 
