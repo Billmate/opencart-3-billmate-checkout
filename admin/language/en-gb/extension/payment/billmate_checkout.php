@@ -31,6 +31,7 @@ $_['help_privacy_policy_message'] 		= 'Link to page that contain store privacy p
 $_['error_name'] 		= 'Module ID blank';
 //$_['error_message'] 		= 'Message field blank';
 $_['error_billmate_connection'] = 'Billmate connection error : ';
+$_['error_link_privacy_policy'] = 'Privacy policy cannot be empty';
 $_['error_age'] 		= 'Age must be numeric';
 $_['error_redirect_url'] 	= 'URL can not be empty';
 
