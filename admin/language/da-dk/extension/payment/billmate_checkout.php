@@ -35,3 +35,5 @@ $_['error_permission'] 		= 'Du har inte behörighet att redigera detta.';
 // Button
 $_['button_save'] 		= 'Spara formulär';
 $_['button_cancel'] 		= 'Annullera';
+
+$_['entry_order_invoice_number'] 		= 'Billmate faktura nummer';
