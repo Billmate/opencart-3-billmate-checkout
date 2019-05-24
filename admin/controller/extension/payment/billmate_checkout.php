@@ -2,21 +2,21 @@
 class ControllerExtensionPaymentBillmateCheckout extends Controller {
 
     const DEFAULT_MODULE_SETTINGS = [
-        'module_billmate_checkout_status' => 0,
-        'module_billmate_checkout_bm_id' => '',
-        'module_billmate_checkout_secret' => '',
-        'module_billmate_checkout_test_mode' => 1,
-        'module_billmate_checkout_push_events' => 0,
-        'module_billmate_checkout_activate_status_id' => 2,
-        'module_billmate_checkout_cancel_status_id' => 7,
-        'module_billmate_checkout_credit_status_id' => 11,
-        'module_billmate_checkout_order_status_id' => 15,
-        'module_billmate_checkout_gdpr_link' => '',
-        'module_billmate_checkout_privacy_policy_link' => '',
-        'module_billmate_checkout_log_enabled' => 0
+        'payment_billmate_checkout_status' => 0,
+        'payment_billmate_checkout_bm_id' => '',
+        'payment_billmate_checkout_secret' => '',
+        'payment_billmate_checkout_test_mode' => 1,
+        'payment_billmate_checkout_push_events' => 0,
+        'payment_billmate_checkout_activate_status_id' => 2,
+        'payment_billmate_checkout_cancel_status_id' => 7,
+        'payment_billmate_checkout_credit_status_id' => 11,
+        'payment_billmate_checkout_order_status_id' => 15,
+        'payment_billmate_checkout_gdpr_link' => '',
+        'payment_billmate_checkout_privacy_policy_link' => '',
+        'payment_billmate_checkout_log_enabled' => 0
     ];
 
-    const MODULE_CODE = 'module_billmate_checkout';
+    const MODULE_CODE = 'payment_billmate_checkout';
 
     /**
      * @var ModelBillmateConfigValidator
@@ -55,7 +55,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
                 $this->model_setting_setting->editSetting(self::MODULE_CODE, $values);
                 $this->templateData['success_message'] = $this->language->get('text_change_settings_success');
             } else {
-                $this->config->set('module_billmate_checkout_status', 0);
+                $this->config->set('payment_billmate_checkout_status', 0);
             }
         }
 
@@ -81,8 +81,8 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
      */
     protected function isValidData()
     {
-        $this->config->set('module_billmate_checkout_bm_id', $this->request->post['module_billmate_checkout_bm_id']);
-        $this->config->set('module_billmate_checkout_secret', $this->request->post['module_billmate_checkout_secret']);
+        $this->config->set('payment_billmate_checkout_bm_id', $this->request->post['payment_billmate_checkout_bm_id']);
+        $this->config->set('payment_billmate_checkout_secret', $this->request->post['payment_billmate_checkout_secret']);
 
         $isValid = $this->getConfigValidator()->isConnectionValid();
         if (!$isValid) {

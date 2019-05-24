@@ -63,35 +63,35 @@ class Helperbm {
      * @return int
      */
     public function getBillmateId() {
-        return $this->config->get('module_billmate_checkout_bm_id');
+        return $this->config->get('payment_billmate_checkout_bm_id');
     }
 
     /**
      * @return string
      */
     public function getBillmateSecret() {
-        return $this->config->get('module_billmate_checkout_secret');
+        return $this->config->get('payment_billmate_checkout_secret');
     }
 
     /**
      * @return bool
      */
     public function isChekcoutTestMode() {
-        return (bool)$this->config->get('module_billmate_checkout_test_mode');
+        return (bool)$this->config->get('payment_billmate_checkout_test_mode');
     }
 
     /**
      * @return bool
      */
     public function isAllowedPushEvents() {
-        return (bool)$this->config->get('module_billmate_checkout_push_events');
+        return (bool)$this->config->get('payment_billmate_checkout_push_events');
     }
 
     /**
      * @return bool
      */
     public function isBmCheckoutEnabled() {
-        return  (bool)$this->config->get('module_billmate_checkout_status');
+        return  (bool)$this->config->get('payment_billmate_checkout_status');
     }
 
     /**
@@ -99,7 +99,23 @@ class Helperbm {
      */
     public function getNewOrderStatusId()
     {
-        return  $this->config->get('module_billmate_checkout_order_status_id');
+        return  $this->config->get('payment_billmate_checkout_order_status_id');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getStoreTermsLink()
+    {
+        return  $this->config->get('payment_billmate_checkout_gdpr_link');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getPrivacyPolicyLink()
+    {
+        return  $this->config->get('payment_billmate_checkout_privacy_policy_link');
     }
 
     /**
@@ -184,7 +200,7 @@ class Helperbm {
      */
     public function isAddLog()
     {
-        return $this->config->get('module_billmate_checkout_log_enabled');
+        return $this->config->get('payment_billmate_checkout_log_enabled');
     }
 
     /**
@@ -192,7 +208,7 @@ class Helperbm {
      */
     public function getActivateStatusId()
     {
-        return $this->config->get('module_billmate_checkout_activate_status_id');
+        return $this->config->get('payment_billmate_checkout_activate_status_id');
     }
 
     /**
@@ -200,7 +216,7 @@ class Helperbm {
      */
     public function getCancelStatusId()
     {
-        return $this->config->get('module_billmate_checkout_cancel_status_id');
+        return $this->config->get('payment_billmate_checkout_cancel_status_id');
     }
 
     /**
@@ -208,7 +224,7 @@ class Helperbm {
      */
     public function getCreditStatusId()
     {
-        return $this->config->get('module_billmate_checkout_credit_status_id');
+        return $this->config->get('payment_billmate_checkout_credit_status_id');
     }
 
     /**
