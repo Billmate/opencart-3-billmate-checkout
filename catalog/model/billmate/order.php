@@ -57,7 +57,10 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             throw new Exception('The order wasn\'t created in the web-store');
         }
 
-        $this->addOrderHistory($orderId, $this->helperBillmate->getNewOrderStatusId());
+        $this->addOrderHistory(
+            $orderId,
+            $this->helperBillmate->getNewOrderStatusId()
+        );
         $sessionId = $this->helperBillmate->getCartId($this->paymentInfo['PaymentData']['orderid']);
 
         $this->getBillmateService()->addInvoiceIdToOrder(
@@ -124,7 +127,6 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             'customer_id' => 0,
             'customer_group_id' => 0,
             'vouchers' =>[],
-            'comment' => '',
             'affiliate_id' => 0,
             'commission' => 0,
             'marketing_id' => 0,
@@ -160,7 +162,8 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             'shipping_address_format' => '',
             'shipping_custom_field' =>[],
             'shipping_method' => $this->getShippingMethodName(),
-            'shipping_code' => $this->getShippingMethodCode()
+            'shipping_code' => $this->getShippingMethodCode(),
+            'comment' => $this->getComment()
         ];
 
         return $this->appendToOrderData($shippingData);
@@ -256,6 +259,18 @@ class ModelBillmateOrder extends ModelCheckoutOrder
 
         $products['products'] = $bmProducts;
         return $this->appendToOrderData($products);
+    }
+
+    /**
+     * @return string
+     */
+    public function getComment()
+    {
+        if (isset($this->session->data['comment'])) {
+            return $this->session->data['comment'];
+        }
+
+        return '';
     }
 
     /**

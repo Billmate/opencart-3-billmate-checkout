@@ -3,23 +3,25 @@
         init: function(options) {
             var settings = $.extend({
                 shippingOptionSelector: '.radio input[name="shipping_method"]',
+                commentFieldSelector: '#collapse-shipping-method textarea',
                 loaderSelector: '.bm-loader-container',
                 iframeSelector: 'iframe#billmate-checkout',
                 delayHideLoader: 1000,
             }, options );
             bmcthis = this;
             bmcthis.config = settings;
-            bmcthis.observeSwitchShipping();
+            bmcthis.observeChangeShippingInfo();
             bmcthis.listenBmIframeEvents();
             return bmcthis;
         },
-        observeSwitchShipping: function() {
-            $(bmcthis.config.shippingOptionSelector).on('change', function() {
+        observeChangeShippingInfo: function() {
+            $(bmcthis.config.shippingOptionSelector + ',' +
+                bmcthis.config.commentFieldSelector).on('change', function() {
                 bmcthis.updateShipping();
             });
         },
         updateShipping: function () {
-            data = $( bmcthis.config.shippingOptionSelector + ':checked, #collapse-shipping-method textarea');
+            data = $( bmcthis.config.shippingOptionSelector + ':checked,' + bmcthis.config.commentFieldSelector);
             bmcthis.sendRequest(bmcthis.config.saveShippingUrl, data)
         },
         sendRequest: function (url, data) {
