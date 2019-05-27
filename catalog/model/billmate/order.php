@@ -59,9 +59,9 @@ class ModelBillmateOrder extends ModelCheckoutOrder
 
         $this->addOrderHistory(
             $orderId,
-            $this->helperBillmate->getNewOrderStatusId()
+            $this->getHelperBillmate()->getNewOrderStatusId()
         );
-        $sessionId = $this->helperBillmate->getCartId($this->paymentInfo['PaymentData']['orderid']);
+        $sessionId = $this->getHelperBillmate()->getCartId($this->paymentInfo['PaymentData']['orderid']);
 
         $this->getBillmateService()->addInvoiceIdToOrder(
             $orderId,
@@ -71,6 +71,11 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $paymentInfo['PaymentInfo']['real_order_id'] = $orderId;
         $paymentInfo['PaymentData']['number'] = $paymentNumber;
         $paymentInfo['PaymentData']['orderid'] = $orderId;
+
+        if ($this->getHelperBillmate()->isAllowedInvoiceMessage() && $this->getComment()) {
+            $paymentInfo['Articles'][] = $this->getCommentArticle();
+        }
+
         $this->updatePaymentData($paymentInfo);
 
         $this->bmcart->clearBySession($sessionId);
@@ -93,7 +98,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     protected function updatePaymentData($paymentInfo)
     {
-        $billmateConnection = $this->helperBillmate->getBillmateConnection();
+        $billmateConnection = $this->getHelperBillmate()->getBillmateConnection();
         $billmateConnection->updatePayment($paymentInfo);
     }
 
@@ -273,6 +278,19 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         return '';
     }
 
+    public function getCommentArticle()
+    {
+        return  [
+            'quantity'   => 0,
+            'title'      => $this->getComment(),
+            'artnr'      => '--freetext--',
+            'aprice'     => 0,
+            'taxrate'    => 0,
+            'discount'   => 0,
+            'withouttax' => 0
+        ];
+    }
+
     /**
      * @param $data
      *
@@ -329,7 +347,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     protected function getTypeBmPayment()
     {
-        return $this->helperBillmate->getPaymentMethodByCode(
+        return $this->getHelperBillmate()->getPaymentMethodByCode(
             $this->paymentInfo['PaymentData']['method']
         );
     }
@@ -372,7 +390,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     protected function encodeData($addressData)
     {
         foreach ($addressData as $key => $addressField) {
-            $addressData[$key] = $this->helperBillmate->encodeUtf8($addressField);
+            $addressData[$key] = $this->getHelperBillmate()->encodeUtf8($addressField);
         }
         return $addressData;
     }
@@ -383,5 +401,13 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     protected function getBillmateService()
     {
         return $this->model_billmate_service;
+    }
+
+    /**
+     * @return Helperbm
+     */
+    protected function getHelperBillmate()
+    {
+        return $this->helperBillmate;
     }
 }
