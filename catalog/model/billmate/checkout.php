@@ -31,9 +31,9 @@ class ModelBillmateCheckout extends Model {
         $bmResponse = $this->getModelBillmateCheckoutRequest()->getResponse();
 
         if (isset($bmResponse['url'])) {
-            $hash = $this->helperBillmate->getHashFromUrl($bmResponse['url']);
+            $hash = $this->getHelper()->getHashFromUrl($bmResponse['url']);
             if ($hash) {
-                $this->helperBillmate->setSessionBmHash($hash);
+                $this->getHelper()->setSessionBmHash($hash);
             }
 
             $checkoutData['iframe_url'] = $bmResponse['url'];
@@ -44,7 +44,7 @@ class ModelBillmateCheckout extends Model {
         }
 
         if (isset($bmResponse['message'])) {
-            $checkoutData['error_message'] = $this->helperBillmate->encodeUtf8($bmResponse['message']);
+            $checkoutData['error_message'] = $this->getHelper()->encodeUtf8($bmResponse['message']);
         }
 
         $checkoutData['shipping_block'] = $this->getBMShippingMethodsBlock();
@@ -86,6 +86,9 @@ class ModelBillmateCheckout extends Model {
         } else {
             $data['comment'] = '';
         }
+
+        $data['show_message_block'] = $this->getHelper()->isAllowedInvoiceMessage();
+
         return $this->load->view('billmate/shipping_method', $data);
     }
 
@@ -131,7 +134,7 @@ class ModelBillmateCheckout extends Model {
     protected function getPluginOptions()
     {
         $pluginOptions = [
-            'saveShippingUrl' => $this->url->link('billmatecheckout/ajax/updateShipping', '', true)
+            'saveShippingUrl' => $this->url->link('billmatecheckout/ajax/updateShipping', '', true),
         ];
         return json_encode($pluginOptions);
     }
@@ -156,4 +159,11 @@ class ModelBillmateCheckout extends Model {
         }
     }
 
+    /**
+     * @return HelperBillmate|Helperbm
+     */
+    public function getHelper()
+    {
+        return $this->helperBillmate;
+    }
 }

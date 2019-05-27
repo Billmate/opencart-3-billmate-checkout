@@ -6,6 +6,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
         'payment_billmate_checkout_bm_id' => '',
         'payment_billmate_checkout_secret' => '',
         'payment_billmate_checkout_test_mode' => 1,
+        'payment_billmate_checkout_invoice_message' => 1,
         'payment_billmate_checkout_push_events' => 0,
         'payment_billmate_checkout_activate_status_id' => 2,
         'payment_billmate_checkout_cancel_status_id' => 7,

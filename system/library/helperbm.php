@@ -62,35 +62,48 @@ class Helperbm {
     /**
      * @return int
      */
-    public function getBillmateId() {
+    public function getBillmateId()
+    {
         return $this->config->get('payment_billmate_checkout_bm_id');
     }
 
     /**
      * @return string
      */
-    public function getBillmateSecret() {
+    public function getBillmateSecret()
+    {
         return $this->config->get('payment_billmate_checkout_secret');
     }
 
     /**
      * @return bool
      */
-    public function isChekcoutTestMode() {
+    public function isAllowedInvoiceMessage()
+    {
+        return (bool)$this->config->get('payment_billmate_checkout_invoice_message');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isChekcoutTestMode()
+    {
         return (bool)$this->config->get('payment_billmate_checkout_test_mode');
     }
 
     /**
      * @return bool
      */
-    public function isAllowedPushEvents() {
+    public function isAllowedPushEvents()
+    {
         return (bool)$this->config->get('payment_billmate_checkout_push_events');
     }
 
     /**
      * @return bool
      */
-    public function isBmCheckoutEnabled() {
+    public function isBmCheckoutEnabled()
+    {
         return  (bool)$this->config->get('payment_billmate_checkout_status');
     }
 
