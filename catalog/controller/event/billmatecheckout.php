@@ -89,7 +89,7 @@ class ControllerEventBillmatecheckout extends Controller {
         $contentBlock = $dom->getElementById('content');
 
         $billmateCheckoutBlock = $dom->createDocumentFragment();
-        $billmateCheckoutBlock->appendXML(utf8_encode($this->getBMcheckoutContent()));
+        $billmateCheckoutBlock->appendXML(utf8_encode($this->getBMCheckoutContent()));
 
         $chapter = $contentBlock->getElementsByTagName('div')->item(0);
         $contentBlock->removeChild($chapter);
@@ -101,8 +101,17 @@ class ControllerEventBillmatecheckout extends Controller {
     /**
      * @return string
      */
-    protected function getBMcheckoutContent() {
-        $data = $this->model_billmate_checkout->getCheckoutData();
+    protected function getBMCheckoutContent()
+    {
+        $data = $this->getBillmateCheckoutModel()->getCheckoutData();
         return $this->load->view('billmate/checkout', $data);
+    }
+
+    /**
+     * @return ModelBillmateCheckout
+     */
+    protected function getBillmateCheckoutModel()
+    {
+        return $this->model_billmate_checkout;
     }
 }

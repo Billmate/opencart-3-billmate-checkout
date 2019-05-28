@@ -18,7 +18,7 @@ class ControllerBillmatecheckoutAjax extends FrontBmController {
         $responseData = [];
         if (isset($bmResponse['url'])) {
             $responseData = [
-                'url' => $bmResponse['url']
+                'iframe_url' => $bmResponse['url']
             ];
         }
         $this->response->addHeader('Content-Type: application/json');

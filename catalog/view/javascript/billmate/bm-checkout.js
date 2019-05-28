@@ -2,6 +2,10 @@
     $.fn.bmchekout = {
         init: function(options) {
             var settings = $.extend({
+                cartBlockSelector: '#bm-cart-block',
+                shippingBlockSelector: '#bm-shipping-block',
+                cartFormSelector: '#bm-checkout-cart-form',
+                removeButtonSelector: '.cart-item-remove',
                 shippingOptionSelector: '.radio input[name="shipping_method"]',
                 commentFieldSelector: '#collapse-shipping-method textarea',
                 loaderSelector: '.bm-loader-container',
@@ -11,6 +15,7 @@
             bmcthis = this;
             bmcthis.config = settings;
             bmcthis.observeChangeShippingInfo();
+            bmcthis.listenCartChanges();
             bmcthis.listenBmIframeEvents();
             return bmcthis;
         },
@@ -22,9 +27,14 @@
         },
         updateShipping: function () {
             data = $( bmcthis.config.shippingOptionSelector + ':checked,' + bmcthis.config.commentFieldSelector);
-            bmcthis.sendRequest(bmcthis.config.saveShippingUrl, data)
+            bmcthis.sendRequest(bmcthis.config.saveShippingUrl, data, bmcthis.updateIframe);
         },
-        sendRequest: function (url, data) {
+        updateIframe: function (respData) {
+            if(respData.iframe_url) {
+                $(bmcthis.config.iframeSelector).attr('src',respData.iframe_url)
+            }
+        },
+        sendRequest: function (url, data, callbackEvent) {
             bmcthis.showLoader();
             $.ajax({
                 url: url,
@@ -32,9 +42,10 @@
                 data: data,
                 dataType: 'json',
                 success: function(respData) {
-                    if(respData.url) {
-                        $('#billmate-checkout').attr('src',respData.url)
+                    if (typeof(callbackEvent) == 'function') {
+                        callbackEvent(respData);
                     }
+
                     bmcthis.hideLoader(bmcthis.config.delayHideLoader);
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
@@ -63,6 +74,58 @@
         },
         changeIframeSize: function (eventHeight) {
             $(bmcthis.config.iframeSelector).css('height', eventHeight);
+        },
+        listenCartChanges: function(){
+            bmcthis.itemUpdate();
+            bmcthis.itemRemove();
+        },
+        itemUpdate: function() {
+            $(bmcthis.config.cartBlockSelector).on(
+                'submit',
+                bmcthis.config.cartFormSelector,
+                bmcthis.updateCartInfo
+            );
+        },
+        itemRemove: function () {
+            $(bmcthis.config.cartBlockSelector).on(
+                'click',
+                bmcthis.config.removeButtonSelector,
+                bmcthis.removeCartItem
+            );
+        },
+        updateCartInfo: function (e) {
+            var formData = $(bmcthis.config.cartFormSelector).serialize();
+            bmcthis.sendRequest(
+                bmcthis.config.updateCartUrl,
+                formData,
+                bmcthis.updateCartBlock
+            );
+            return false;
+        },
+        removeCartItem: function (e) {
+            var cartItemId = $(this).data('cart-item-id');
+            var requestData = {
+                cart_item_id: cartItemId
+            };
+            bmcthis.sendRequest(
+                bmcthis.config.removeCartItem,
+                requestData,
+                bmcthis.updateCartBlock
+            );
+            return false;
+        },
+        updateCartBlock: function (responseData) {
+            if (responseData.cart_block) {
+                $(bmcthis.config.cartBlockSelector).html(
+                    responseData.cart_block
+                );
+            }
+            /*if (responseData.shipping_block) {
+                $(bmcthis.config.shippingBlockSelector).html(
+                    responseData.shipping_block
+                );
+            }*/
+            bmcthis.updateIframe(responseData);
         },
         showLoader: function () {
             $(bmcthis.config.loaderSelector).show();
