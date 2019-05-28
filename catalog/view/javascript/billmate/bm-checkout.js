@@ -3,10 +3,14 @@
         init: function(options) {
             var settings = $.extend({
                 cartBlockSelector: '#bm-cart-block',
+                couponBlockSelector: '#bm-coupon-block',
                 shippingBlockSelector: '#bm-shipping-block',
                 cartFormSelector: '#bm-checkout-cart-form',
                 removeButtonSelector: '.cart-item-remove',
                 shippingOptionSelector: '.radio input[name="shipping_method"]',
+                couponButtonSelector: '#button-coupon',
+                couponFieldSelector: '#input-coupon',
+                couponMessageSelector: '#coupon-message',
                 commentFieldSelector: '#collapse-shipping-method textarea',
                 loaderSelector: '.bm-loader-container',
                 iframeSelector: 'iframe#billmate-checkout',
@@ -16,6 +20,7 @@
             bmcthis.config = settings;
             bmcthis.observeChangeShippingInfo();
             bmcthis.listenCartChanges();
+            bmcthis.listenCouponButton();
             bmcthis.listenBmIframeEvents();
             return bmcthis;
         },
@@ -42,6 +47,11 @@
                 data: data,
                 dataType: 'json',
                 success: function(respData) {
+                    if (respData.redirect) {
+                        window.location.href = respData.redirect;
+                        return;
+                    }
+
                     if (typeof(callbackEvent) == 'function') {
                         callbackEvent(respData);
                     }
@@ -79,6 +89,44 @@
             bmcthis.itemUpdate();
             bmcthis.itemRemove();
         },
+        listenCouponButton: function () {
+            $(bmcthis.config.couponBlockSelector).on(
+                'click',
+                bmcthis.config.couponButtonSelector,
+                bmcthis.applyCouponCode
+            );
+            $(bmcthis.config.couponFieldSelector).on('keypress',
+                function(e) {
+                    if (e.which == 13) {
+                        bmcthis.applyCouponCode();
+                    }
+                }
+            );
+        },
+        applyCouponCode: function() {
+            var couponCode = $(bmcthis.config.couponFieldSelector).val();
+            var requestData = {
+                coupon_code: couponCode
+            };
+            $(bmcthis.config.couponButtonSelector).button('loading');
+            bmcthis.sendRequest(
+                bmcthis.config.addCouponUrl,
+                requestData,
+                bmcthis.afterApplyCopuponCode
+            );
+        },
+        afterApplyCopuponCode: function (respData) {
+            $(bmcthis.config.couponButtonSelector).button('reset');
+            if (respData.error) {
+                $(bmcthis.config.couponMessageSelector)
+                    .text(respData.error).show();
+            }
+            if (respData.success) {
+                $(bmcthis.config.couponMessageSelector)
+                    .text(respData.success).show();
+            }
+            bmcthis.updateCartBlock(respData);
+        },
         itemUpdate: function() {
             $(bmcthis.config.cartBlockSelector).on(
                 'submit',
@@ -108,7 +156,7 @@
                 cart_item_id: cartItemId
             };
             bmcthis.sendRequest(
-                bmcthis.config.removeCartItem,
+                bmcthis.config.removeCartItemUrl,
                 requestData,
                 bmcthis.updateCartBlock
             );
@@ -120,11 +168,6 @@
                     responseData.cart_block
                 );
             }
-            /*if (responseData.shipping_block) {
-                $(bmcthis.config.shippingBlockSelector).html(
-                    responseData.shipping_block
-                );
-            }*/
             bmcthis.updateIframe(responseData);
         },
         showLoader: function () {

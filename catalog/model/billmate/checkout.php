@@ -48,6 +48,7 @@ class ModelBillmateCheckout extends Model {
         }
 
         $checkoutData['cart_block'] = $this->getBMCartBlock();
+        $checkoutData['coupon_block'] = $this->getBMCouponBlock();
         $checkoutData['shipping_block'] = $this->getBMShippingMethodsBlock();
         $checkoutData['bm_options'] = $this->getPluginOptions();
 
@@ -59,7 +60,6 @@ class ModelBillmateCheckout extends Model {
      */
     public function getBMCartBlock()
     {
-
         $data['action'] = $this->url->link('billmatecheckout/cart/edit', '', true);
 
         $this->load->model('tool/image');
@@ -157,21 +157,26 @@ class ModelBillmateCheckout extends Model {
             );
         }
 
-        // Gift Voucher
-        $data['vouchers'] = array();
-
-        if (!empty($this->session->data['vouchers'])) {
-            foreach ($this->session->data['vouchers'] as $key => $voucher) {
-                $data['vouchers'][] = array(
-                    'key'         => $key,
-                    'description' => $voucher['description'],
-                    'amount'      => $this->currency->format($voucher['amount'], $this->session->data['currency']),
-                    'remove'      => $this->url->link('checkout/cart', 'remove=' . $key)
-                );
-            }
-        }
-
         return $this->load->view('billmate/cart', $data);
+    }
+
+    /**
+     * @return string
+     */
+    public function getBMCouponBlock()
+    {
+        if ($this->config->get('total_coupon_status')) {
+            $this->load->language('extension/total/coupon');
+
+            if (isset($this->session->data['coupon'])) {
+                $data['coupon'] = $this->session->data['coupon'];
+            } else {
+                $data['coupon'] = '';
+            }
+
+            return $this->load->view('billmate/coupon', $data);
+        }
+        return '';
     }
 
     /**
@@ -260,7 +265,8 @@ class ModelBillmateCheckout extends Model {
         $pluginOptions = [
             'saveShippingUrl' => $this->url->link('billmatecheckout/ajax/updateShipping', '', true),
             'updateCartUrl' => $this->url->link('billmatecheckout/cart/updateProductQty', '', true),
-            'removeCartItem' => $this->url->link('billmatecheckout/cart/removeCartItem', '', true),
+            'removeCartItemUrl' => $this->url->link('billmatecheckout/cart/removeCartItem', '', true),
+            'addCouponUrl' => $this->url->link('billmatecheckout/cart/addCoupon', '', true),
         ];
         return json_encode($pluginOptions);
     }

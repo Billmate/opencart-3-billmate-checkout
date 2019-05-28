@@ -9,6 +9,7 @@ class ControllerBillmatecheckoutCart extends FrontBmController {
         $this->load->model('billmate/checkout/request');
         $this->load->language('checkout/cart');
         $this->load->model('billmate/checkout');
+        $this->load->model('extension/total/coupon');
     }
 
     public function updateProductQty()
@@ -21,7 +22,7 @@ class ControllerBillmatecheckoutCart extends FrontBmController {
             $this->unsetSessionVars();
         }
 
-        $respData = $this->getResponceData();
+        $respData = $this->getResponseData();
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($respData));
@@ -38,7 +39,38 @@ class ControllerBillmatecheckoutCart extends FrontBmController {
             $this->unsetSessionVars();
         }
 
-        $respData = $this->getResponceData();
+        $respData = $this->getResponseData();
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($respData));
+    }
+
+    public function addCoupon()
+    {
+        $this->load->language('extension/total/coupon');
+        $error = '';
+        $coupon = '';
+        $success = '';
+
+        if (isset($this->request->post['coupon_code'])) {
+            $coupon = $this->request->post['coupon_code'];
+        }
+
+        $coupon_info = $this->model_extension_total_coupon->getCoupon($coupon);
+
+        if (empty($this->request->post['coupon_code'])) {
+            $error = $this->language->get('error_empty');
+            unset($this->session->data['coupon']);
+        } elseif ($coupon_info) {
+            $this->session->data['coupon'] = $this->request->post['coupon_code'];
+            $success = $this->language->get('text_success');
+        } else {
+            $error = $this->language->get('error_coupon');
+        }
+
+        $respData = $this->getResponseData();
+        $respData['error'] = $error;
+        $respData['success'] = $success;
+
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($respData));
     }
@@ -72,12 +104,13 @@ class ControllerBillmatecheckoutCart extends FrontBmController {
     /**
      * @return mixed
      */
-    protected function getResponceData()
+    protected function getResponseData()
     {
         $respData['cart_block'] = $this->getBillmateCheckoutModel()->getBMCartBlock();
         $respData['shipping_block'] = $this->getBillmateCheckoutModel()->getBMShippingMethodsBlock();
         $bmResponse = $this->getBillmateCheckoutRequestModel()->setIsUpdated(true)->getResponse();
 
+        $respData['redirect'] = !$this->cart->hasProducts() ? $this->url->link('checkout/cart', '', true) : '';
         if (isset($bmResponse['url'])) {
             $respData['iframe_url'] = $bmResponse['url'];
         }
