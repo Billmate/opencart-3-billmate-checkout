@@ -58,7 +58,9 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         }
 
         $this->addOrderHistory($orderId, $this->helperBillmate->getNewOrderStatusId());
-        $sessionId = $this->helperBillmate->getCartId($this->paymentInfo['PaymentData']['orderid']);
+        $sessionId = $this->bmcart->getSessionByCartId(
+            $this->paymentInfo['PaymentData']['orderid']
+        );
 
         $this->getBillmateService()->addInvoiceIdToOrder(
             $orderId,

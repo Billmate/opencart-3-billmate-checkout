@@ -1,7 +1,6 @@
 <?php
 class ModelBillmateCheckoutRequest extends Model {
 
-
     const METHOD_CODE = 93;
 
     const WINDOW_MODE = 'iframe';
@@ -31,6 +30,11 @@ class ModelBillmateCheckoutRequest extends Model {
     protected $discountAmount = 0;
 
     /**
+     * @var \Billmate\Bmcart
+     */
+    protected $bmcart ;
+
+    /**
      * ModelBillmateCheckoutRequest constructor.
      *
      * @param $registry
@@ -39,9 +43,11 @@ class ModelBillmateCheckoutRequest extends Model {
     {
         parent::__construct($registry);
         $this->helperBillmate  = new Helperbm($registry);
+        $this->bmcart  = new \Billmate\Bmcart($registry);
         $this->load->model('extension/total/coupon');
         $this->load->model('extension/total/shipping');
         $this->load->model('setting/extension');
+
     }
 
     /**
@@ -134,7 +140,7 @@ class ModelBillmateCheckoutRequest extends Model {
                 'language' => 'sv',
                 'country' => 'SE',
                 'orderid' => $this->generateBillmateOrderId(),
-                'sessionid' => $this->generateBillmateOrderId(),
+                'sessionid' => $this->getCurrentSessionId(),
                 'logo' => $this->helperBillmate->getLogoName(),
                 'accepturl' => $this->url->link(
                     'billmatecheckout/accept',
@@ -404,6 +410,17 @@ class ModelBillmateCheckoutRequest extends Model {
      */
     protected function generateBillmateOrderId()
     {
+        return $this->getBmCartModel()->getCartIdentifier(
+            $this->getCurrentSessionId()
+        );
+
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCurrentSessionId()
+    {
         return $this->session->getId();
     }
 
@@ -457,5 +474,13 @@ class ModelBillmateCheckoutRequest extends Model {
     {
         $this->isUpdated = $value;
         return $this;
+    }
+
+    /**
+     * @return \Billmate\Bmcart
+     */
+    public function getBmCartModel()
+    {
+        return $this->bmcart;
     }
 }
