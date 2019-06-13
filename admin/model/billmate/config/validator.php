@@ -27,7 +27,7 @@ class ModelBillmateConfigValidator extends Model
 
         if(isset($accountInfo['message'])) {
             $this->setError(
-                $this->getHelper()->encodeUtf8($accountInfo['message'])
+                utf8_encode($accountInfo['message'])
             );
             return false;
         }
