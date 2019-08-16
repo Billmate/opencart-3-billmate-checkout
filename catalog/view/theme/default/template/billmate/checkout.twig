@@ -1,0 +1,26 @@
+<div class="bm-common-checkout">
+    <div class="bm-shipping" >
+        {%  if shipping_block  %}
+            {{ shipping_block }}
+    {% endif %}
+    </div>
+    <div class="bm-iframe-checkout" >
+        {%  if iframe_url  %}
+            <iframe id="billmate-checkout" src="{{ iframe_url }}"
+                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
+                    scrolling="yes" >
+            </iframe>
+        {% endif %}
+        {%  if error_message  %}
+            <div class="ui-state-error-text"> {{ error_message }}</div>
+        {% endif %}
+    </div>
+</div>
+<div class="bm-loader-container">
+    <div class="bm-loader"></div>
+</div>
+<script><!--
+    $(document).ready(function () {
+        $.fn.bmchekout.init({{ bm_options }});
+    });
+--></script>

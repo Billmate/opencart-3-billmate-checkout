@@ -1,0 +1,16 @@
+admin/controller/extension/payment/* 				upload/admin/controller/extension/payment/
+admin/language/en-gb/extension/payment/* 			upload/admin/language/en-gb/extension/payment/
+admin/language/da-dk/extension/payment/* 			upload/admin/language/da-dk/extension/payment/
+admin/view/template/extension/module/* 				upload/admin/view/template/extension/module/
+admin/view/stylesheet/* 							upload/admin/view/stylesheet/
+admin/view/image/payment/*							upload/admin/view/image/payment/
+admin/model/*										upload/admin/model/
+catalog/controller/event/*							upload/catalog/controller/event/
+catalog/controller/billmatecheckout			    	upload/catalog/controller/billmatecheckout/
+catalog/model/*										upload/catalog/model/
+catalog/view/theme/default/template/*				upload/catalog/view/theme/default/template/
+catalog/language/en-gb/extension/module/*			upload/catalog/language/en-gb/extension/module/
+catalog/language/da-dk/extension/module/*			upload/catalog/language/da-dk/extension/module/
+system/library/*									upload/system/library/
+catalog/view/javascript/billmate/*					upload/catalog/view/javascript/billmate/
+catalog/view/theme/default/stylesheet/billmate/*	upload/catalog/view/theme/default/stylesheet/billmate/
