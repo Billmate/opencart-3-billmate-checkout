@@ -4,7 +4,7 @@ use Cart\Cart;
 
 class Bmcart extends Cart
 {
-    const CART_PREFIX = 0;
+    const CART_PREFIX = 100000;
 
     /**
      * @param $sessionId
