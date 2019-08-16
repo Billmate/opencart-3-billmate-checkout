@@ -72,7 +72,7 @@ class ModelBillmateServiceProcessorStatus extends Model
      */
     public function creditPayment($requestData)
     {
-        $billmateConnection = $this->getBillmateConnection();
+        $billmateConnection = $this->getBMConnection();
         $bmRequestData['PaymentData']['partcredit'] = false;
         $bmResponse = $billmateConnection->creditPayment($requestData);
 

@@ -60,6 +60,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
             }
         }
 
+        $this->document->addScript('view/javascript/bm-options.js');
         $this->document->addStyle('view/stylesheet/billmatecheckout.css');
         $this->runEditModuleSettings();
     }
