@@ -1,6 +1,8 @@
 .bm-common-checkout .bm-shipping {
     float: left;
     margin-top: 16px;
+    width: 46%;
+    margin-left: 15px;
 }
 
 .bm-common-checkout .bm-shipping .comment {
@@ -12,7 +14,7 @@
 }
 
 #billmate-checkout {
-    width: 60%;
+    width: 52%;
     height:100vh;
     min-height: 600px;
     border:none;
@@ -45,4 +47,12 @@
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (max-width : 480px) {
+    .bm-common-checkout .bm-shipping,
+    #billmate-checkout {
+        width: 100%;
+    }
 }
