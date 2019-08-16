@@ -23,8 +23,15 @@ class ModelBillmateConfigValidator extends Model
      */
     public function isConnectionValid()
     {
-        $accountInfo = $this->getBMAccountInfo();
 
+        if (empty($this->request->post['module_billmate_checkout_privacy_policy_link'])) {
+            $this->setError(
+                $this->language->get('error_link_privacy_policy')
+            );
+            return false;
+        }
+
+        $accountInfo = $this->getBMAccountInfo();
         if(isset($accountInfo['message'])) {
             $this->setError(
                 utf8_encode($accountInfo['message'])

@@ -27,6 +27,7 @@ $_['help_privacy_policy_message'] 		= 'Länk till sida som innehåller butikssky
 $_['error_name'] 		= 'Modul ID tomt';
 //$_['error_message'] 		= 'Message field blank';
 $_['error_billmate_connection'] = 'Billmate-anslutningsfel : ';
+$_['error_link_privacy_policy'] = 'Fortrolighedspolitik kan ikke være tom';
 $_['error_age'] 		= 'Ålder måste vara numerisk';
 $_['error_redirect_url'] 	= 'URL kan inte vara tomt';
 
