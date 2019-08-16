@@ -72,10 +72,6 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $paymentInfo['PaymentData']['number'] = $paymentNumber;
         $paymentInfo['PaymentData']['orderid'] = $orderId;
 
-        if ($this->getHelperBillmate()->isAllowedInvoiceMessage() && $this->getComment()) {
-            $paymentInfo['Articles'][] = $this->getCommentArticle();
-        }
-
         $this->updatePaymentData($paymentInfo);
 
         $this->bmcart->clearBySession($sessionId);
@@ -276,19 +272,6 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         }
 
         return '';
-    }
-
-    public function getCommentArticle()
-    {
-        return  [
-            'quantity'   => 0,
-            'title'      => $this->getComment(),
-            'artnr'      => '--freetext--',
-            'aprice'     => 0,
-            'taxrate'    => 0,
-            'discount'   => 0,
-            'withouttax' => 0
-        ];
     }
 
     /**
