@@ -41,3 +41,5 @@ $_['error_permission'] 		= 'You don\'t have permission to edit this.';
 // Button
 $_['button_save'] 		= 'Save form';
 $_['button_cancel'] 		= 'Cancel';
+
+$_['entry_order_invoice_number'] 		= 'Billmate Invoice number';
