@@ -3,21 +3,25 @@
         init: function(options) {
             var settings = $.extend({
                 shippingOptionSelector: '.radio input[name="shipping_method"]',
+                commentFieldSelector: '#collapse-shipping-method textarea',
                 loaderSelector: '.bm-loader-container',
+                iframeSelector: 'iframe#billmate-checkout',
                 delayHideLoader: 1000,
             }, options );
             bmcthis = this;
             bmcthis.config = settings;
-            bmcthis.observeSwitchShipping();
+            bmcthis.observeChangeShippingInfo();
+            bmcthis.listenBmIframeEvents();
             return bmcthis;
         },
-        observeSwitchShipping: function() {
-            $(bmcthis.config.shippingOptionSelector).on('change', function() {
+        observeChangeShippingInfo: function() {
+            $(bmcthis.config.shippingOptionSelector + ',' +
+                bmcthis.config.commentFieldSelector).on('change', function() {
                 bmcthis.updateShipping();
             });
         },
         updateShipping: function () {
-            data = $( bmcthis.config.shippingOptionSelector + ':checked, #collapse-shipping-method textarea');
+            data = $( bmcthis.config.shippingOptionSelector + ':checked,' + bmcthis.config.commentFieldSelector);
             bmcthis.sendRequest(bmcthis.config.saveShippingUrl, data)
         },
         sendRequest: function (url, data) {
@@ -38,6 +42,27 @@
                     bmcthis.hideLoader();
                 }
             });
+        },
+        listenBmIframeEvents: function () {
+            window.addEventListener("message",bmcthis.handleEvent);
+        },
+        handleEvent : function(event){
+            try {
+                var json = JSON.parse(event.data);
+            } catch (e) {
+                return;
+            }
+            self.childWindow = json.source;
+            switch (json.event) {
+                case 'content_height':
+                    bmcthis.changeIframeSize(json.data);
+                    break;
+                default:
+                    break;
+            }
+        },
+        changeIframeSize: function (eventHeight) {
+            $(bmcthis.config.iframeSelector).css('height', eventHeight);
         },
         showLoader: function () {
             $(bmcthis.config.loaderSelector).show();

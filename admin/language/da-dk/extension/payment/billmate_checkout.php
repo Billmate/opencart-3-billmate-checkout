@@ -11,6 +11,7 @@ $_['entry_billmate_status']		= 'Billmate Checkout Status';
 $_['entry_billmate_id']		= 'Billmate ID';
 $_['entry_billmate_secret']		= 'Billmate Secret';
 $_['entry_enable_bmc']			= 'Aktivera Billmate Checkout';
+$_['entry_enable_invoice_message'] 	= 'IActivate Beskeder på fakturaen';
 $_['entry_enable_test_mode'] 	= 'Aktivera testläge';
 $_['entry_enable_push_events'] 	= 'Push orderhändelser till Billmate';
 $_['entry_default_order_status'] 	= 'Standard Order Status';
