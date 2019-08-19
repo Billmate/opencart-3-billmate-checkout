@@ -24,7 +24,7 @@ class ModelBillmateConfigValidator extends Model
     public function isConnectionValid()
     {
 
-        if (empty($this->request->post['module_billmate_checkout_privacy_policy_link'])) {
+        if (empty($this->request->post['payment_billmate_checkout_privacy_policy_link'])) {
             $this->setError(
                 $this->language->get('error_link_privacy_policy')
             );
