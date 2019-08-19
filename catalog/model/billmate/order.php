@@ -70,6 +70,10 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $paymentInfo['PaymentInfo']['real_order_id'] = $orderId;
         $paymentInfo['PaymentData']['number'] = $paymentNumber;
         $paymentInfo['PaymentData']['orderid'] = $orderId;
+        $paymentInfo['Customer']['Billing'] = $this->encodeData(
+            $paymentInfo['Customer']['Billing']
+        );
+
         $this->updatePaymentData($paymentInfo);
 
         $this->bmcart->clearBySession($sessionId);
