@@ -68,12 +68,11 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             $paymentNumber
         );
 
-        $paymentInfo['PaymentInfo']['real_order_id'] = $orderId;
-        $paymentInfo['PaymentData']['number'] = $paymentNumber;
-        $paymentInfo['PaymentData']['orderid'] = $orderId;
+        $actualPaymentInfo['PaymentInfo']['real_order_id'] = $orderId;
+        $actualPaymentInfo['PaymentData']['number'] = $paymentNumber;
+        $actualPaymentInfo['PaymentData']['orderid'] = $orderId;
 
-        $this->updatePaymentData($paymentInfo);
-
+        $this->updatePaymentData($actualPaymentInfo);
         $this->bmcart->clearBySession($sessionId);
         return $orderId;
     }
