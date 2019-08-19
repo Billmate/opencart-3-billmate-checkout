@@ -67,14 +67,11 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             $paymentNumber
         );
 
-        $paymentInfo['PaymentInfo']['real_order_id'] = $orderId;
-        $paymentInfo['PaymentData']['number'] = $paymentNumber;
-        $paymentInfo['PaymentData']['orderid'] = $orderId;
-        $paymentInfo['Customer']['Billing'] = $this->encodeData(
-            $paymentInfo['Customer']['Billing']
-        );
+        $actualPaymentInfo['PaymentInfo']['real_order_id'] = $orderId;
+        $actualPaymentInfo['PaymentData']['number'] = $paymentNumber;
+        $actualPaymentInfo['PaymentData']['orderid'] = $orderId;
 
-        $this->updatePaymentData($paymentInfo);
+        $this->updatePaymentData($actualPaymentInfo);
 
         $this->bmcart->clearBySession($sessionId);
         return $orderId;
@@ -97,7 +94,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     protected function updatePaymentData($paymentInfo)
     {
         $billmateConnection = $this->helperBillmate->getBillmateConnection();
-        $billmateConnection->updatePayment($paymentInfo);
+        $pd = $billmateConnection->updatePayment($paymentInfo);
     }
 
     /**
