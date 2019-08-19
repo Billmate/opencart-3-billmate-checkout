@@ -1,8 +1,18 @@
 <div class="bm-common-checkout">
-    <div class="bm-shipping" >
+    <div id="bm-cart-block" >
+        {%  if cart_block  %}
+            {{ cart_block }}
+        {% endif %}
+    </div>
+    <div id="bm-coupon-block" >
+        {%  if coupon_block  %}
+            {{ coupon_block }}
+        {% endif %}
+    </div>
+    <div id="bm-shipping-block" class="bm-shipping" >
         {%  if shipping_block  %}
             {{ shipping_block }}
-    {% endif %}
+        {% endif %}
     </div>
     <div class="bm-iframe-checkout" >
         {%  if iframe_url  %}

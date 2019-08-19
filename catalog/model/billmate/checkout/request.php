@@ -55,8 +55,8 @@ class ModelBillmateCheckoutRequest extends Model {
      */
     public function getResponse()
     {
-        $billmateConnection = $this->helperBillmate->getBillmateConnection();
-        $billmateHash = $this->helperBillmate->getSessionBmHash();
+        $billmateConnection = $this->getBmHelper()->getBillmateConnection();
+        $billmateHash = $this->getBmHelper()->getSessionBmHash();
         $requestCartData = $this->getCartData();
         if (!$billmateHash) {
             return $billmateConnection->initCheckout($requestCartData);
@@ -140,8 +140,8 @@ class ModelBillmateCheckoutRequest extends Model {
                 'language' => 'sv',
                 'country' => 'SE',
                 'orderid' => $this->generateBillmateOrderId(),
-                'sessionid' => $this->getCurrentSessionId(),
-                'logo' => $this->helperBillmate->getLogoName(),
+                'sessionid' => $this->generateBillmateOrderId(),
+                'logo' => $this->getBmHelper()->getLogoName(),
                 'accepturl' => $this->url->link(
                     'billmatecheckout/accept',
                     '',
@@ -168,14 +168,14 @@ class ModelBillmateCheckoutRequest extends Model {
      */
     protected function initCheckoutData()
     {
-        $termsUrl = $this->config->get('module_billmate_checkout_gdpr_link');
         $this->requestData['CheckoutData'] = [
-            'terms' => $termsUrl,
+            'terms' => $this->getBmHelper()->getStoreTermsLink(),
             'windowmode' => self::WINDOW_MODE,
             'sendreciept' => self::SEND_RECIEPT,
             'redirectOnSuccess' => self::REDIRECT_ON_SUCCESS,
         ];
-        $privacyPolicyLink = $this->config->get('module_billmate_checkout_privacy_policy_link');
+
+        $privacyPolicyLink = $this->getBmHelper()->getPrivacyPolicyLink();
         if ($privacyPolicyLink) {
             $this->requestData['CheckoutData']['privacyPolicy'] = $privacyPolicyLink;
         }
@@ -482,5 +482,13 @@ class ModelBillmateCheckoutRequest extends Model {
     public function getBmCartModel()
     {
         return $this->bmcart;
+    }
+  
+    /**
+     * @return HelperBillmate|Helperbm
+     */
+    public function getBmHelper()
+    {
+        return $this->helperBillmate;
     }
 }

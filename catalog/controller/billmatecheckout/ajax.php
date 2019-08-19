@@ -9,7 +9,8 @@ class ControllerBillmatecheckoutAjax extends FrontBmController {
         $this->load->model('billmate/checkout/request');
     }
 
-    public function updateShipping() {
+    public function updateShipping()
+    {
         $this->updateShippingData();
         $bmResponse = $this->model_billmate_checkout_request
             ->setIsUpdated(true)
@@ -17,7 +18,7 @@ class ControllerBillmatecheckoutAjax extends FrontBmController {
         $responseData = [];
         if (isset($bmResponse['url'])) {
             $responseData = [
-                'url' => $bmResponse['url']
+                'iframe_url' => $bmResponse['url']
             ];
         }
         $this->response->addHeader('Content-Type: application/json');
@@ -29,11 +30,9 @@ class ControllerBillmatecheckoutAjax extends FrontBmController {
         if (isset($this->request->post['shipping_method'])) {
             $shipping = explode('.', $this->request->post['shipping_method']);
             if (isset($this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]])) {
-
                 $this->session->data['shipping_method'] = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]];
                 $this->session->data['comment'] = strip_tags($this->request->post['comment']);
             }
         }
     }
-
 }

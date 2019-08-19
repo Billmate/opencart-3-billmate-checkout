@@ -11,6 +11,7 @@ $_['entry_billmate_status']		= 'Billmate Checkout Status';
 $_['entry_billmate_id']		= 'Billmate ID';
 $_['entry_billmate_secret']		= 'Billmate Secret';
 $_['entry_enable_bmc']			= 'Aktivera Billmate Checkout';
+$_['entry_enable_invoice_message'] 	= 'IActivate Beskeder på fakturaen';
 $_['entry_enable_test_mode'] 	= 'Aktivera testläge';
 $_['entry_enable_push_events'] 	= 'Push orderhändelser till Billmate';
 $_['entry_default_order_status'] 	= 'Standard Order Status';
@@ -26,6 +27,7 @@ $_['help_privacy_policy_message'] 		= 'Länk till sida som innehåller butikssky
 $_['error_name'] 		= 'Modul ID tomt';
 //$_['error_message'] 		= 'Message field blank';
 $_['error_billmate_connection'] = 'Billmate-anslutningsfel : ';
+$_['error_link_privacy_policy'] = 'Fortrolighedspolitik kan ikke være tom';
 $_['error_age'] 		= 'Ålder måste vara numerisk';
 $_['error_redirect_url'] 	= 'URL kan inte vara tomt';
 
@@ -35,3 +37,5 @@ $_['error_permission'] 		= 'Du har inte behörighet att redigera detta.';
 // Button
 $_['button_save'] 		= 'Spara formulär';
 $_['button_cancel'] 		= 'Annullera';
+
+$_['entry_order_invoice_number'] 		= 'Billmate faktura nummer';

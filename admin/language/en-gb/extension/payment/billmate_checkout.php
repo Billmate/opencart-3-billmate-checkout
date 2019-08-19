@@ -11,6 +11,7 @@ $_['entry_billmate_status']		= 'Billmate Checkout Status';
 $_['entry_billmate_id']		= 'Billmate ID';
 $_['entry_billmate_secret']		= 'Billmate Secret';
 $_['entry_enable_bmc']			= 'Enable Billmate Checkout';
+$_['entry_enable_invoice_message'] 	= 'Activate Messages on the invoice';
 $_['entry_enable_test_mode'] 	= 'Enable Test Mode';
 $_['entry_enable_push_events'] 	= 'Push order events to Billmate';
 $_['entry_default_order_status'] 	= 'Default Order Status';
@@ -31,6 +32,7 @@ $_['help_privacy_policy_message'] 		= 'Link to page that contain store privacy p
 $_['error_name'] 		= 'Module ID blank';
 //$_['error_message'] 		= 'Message field blank';
 $_['error_billmate_connection'] = 'Billmate connection error : ';
+$_['error_link_privacy_policy'] = 'Privacy policy cannot be empty';
 $_['error_age'] 		= 'Age must be numeric';
 $_['error_redirect_url'] 	= 'URL can not be empty';
 
@@ -40,3 +42,5 @@ $_['error_permission'] 		= 'You don\'t have permission to edit this.';
 // Button
 $_['button_save'] 		= 'Save form';
 $_['button_cancel'] 		= 'Cancel';
+
+$_['entry_order_invoice_number'] 		= 'Billmate Invoice number';
