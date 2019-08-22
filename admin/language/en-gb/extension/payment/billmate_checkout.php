@@ -11,18 +11,18 @@ $_['entry_billmate_status']		= 'Billmate Checkout Status';
 $_['entry_billmate_id']		= 'Billmate ID';
 $_['entry_billmate_secret']		= 'Billmate Secret';
 $_['entry_enable_bmc']			= 'Enable Billmate Checkout';
-$_['entry_enable_invoice_message'] 	= 'Activate Messages on the invoice';
+$_['entry_enable_invoice_message'] 	= 'Enable order message field on the checkout page';
 $_['entry_enable_test_mode'] 	= 'Enable Test Mode';
-$_['entry_enable_push_events'] 	= 'Push order events to Billmate';
+$_['entry_enable_push_events'] 	= 'Enable invoices automatically in Billmate Online when the order receives the selected status:';
 $_['entry_default_order_status'] 	= 'Default Order Status';
 
-$_['entry_billmate_activate_status'] = 'Status that responds activatePayment';
-$_['entry_billmate_credit_status'] 	= 'Status that responds creditAction';
-$_['entry_billmate_cancel_status'] 	= 'Status that responds cancelPayment';
+$_['entry_billmate_activate_status'] = 'Order status for automatic order activation in Billmate Online';
+$_['entry_billmate_credit_status'] 	= 'Order status for automatic credit in Billmate Online';
+$_['entry_billmate_cancel_status'] 	= 'Order status for automatic cancel in Billmate Online';
 
 $_['entry_link_terms_cond'] = 'Store Terms';
 $_['entry_link_privacy_policy'] = 'Privacy Policy';
-$_['entry_enable_logging_bm_requests'] = 'Enable Logging Requests (For developers)';
+$_['entry_enable_logging_bm_requests'] = 'Enable debug mode (for developers)';
 // Placeholder
 $_['placeholder_name'] 		= '';
 // Help
