@@ -227,18 +227,18 @@ class Helperbm {
     /**
      * @return bool
      */
-    public function getCancelStatusId()
+    /*public function getCancelStatusId()
     {
         return $this->config->get('payment_billmate_checkout_cancel_status_id');
-    }
+    }*/
 
     /**
      * @return bool
      */
-    public function getCreditStatusId()
+    /*public function getCreditStatusId()
     {
         return $this->config->get('payment_billmate_checkout_credit_status_id');
-    }
+    }*/
 
     /**
      * @return array
@@ -265,9 +265,9 @@ class Helperbm {
     protected function generateProcMap()
     {
         return [
-            $this->getActivateStatusId() => 'activate',
-            $this->getCancelStatusId() => 'cancel',
-            $this->getCreditStatusId() => 'refund',
+            $this->getActivateStatusId() => 'activate'
+        /*    $this->getCancelStatusId() => 'cancel',
+            $this->getCreditStatusId() => 'refund',*/
         ];
     }
 
