@@ -148,11 +148,11 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     {
         $shippingBmData = $this->getBmShippingData();
         $shippingData = [
-            'shipping_firstname' => $shippingBmData['firstname'],
-            'shipping_lastname' => $shippingBmData['lastname'],
-            'shipping_address_1' => $shippingBmData['street'],
-            'shipping_city' => $shippingBmData['city'],
-            'shipping_postcode' => $shippingBmData['zip'],
+            'shipping_firstname' => array_key_exists('firstname', $shippingBmData)?$shippingBmData['firstname']:'',
+            'shipping_lastname' => array_key_exists('lastname', $shippingBmData)?$shippingBmData['lastname']:'',
+            'shipping_address_1' => array_key_exists('street', $shippingBmData)?$shippingBmData['street']:'',
+            'shipping_city' => array_key_exists('city', $shippingBmData)?$shippingBmData['city']:'',
+            'shipping_postcode' => array_key_exists('zip', $shippingBmData)?$shippingBmData['zip']:'',
             'shipping_address_2' => '',
             'shipping_company' => '',
             'shipping_zone' => '',

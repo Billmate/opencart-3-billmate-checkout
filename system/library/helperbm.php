@@ -15,7 +15,8 @@ class Helperbm {
         2 => 'Invoiceservice',
         4 => 'Partpay',
         8 => 'Cardpay',
-        16 => 'Bankpay'
+        16 => 'Bankpay',
+        1024 => 'Swish'
     ];
 
     /**
