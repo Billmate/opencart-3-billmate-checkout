@@ -9,8 +9,8 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
         'payment_billmate_checkout_invoice_message' => 1,
         'payment_billmate_checkout_push_events' => 0,
         'payment_billmate_checkout_activate_status_id' => 2,
-    /*    'payment_billmate_checkout_cancel_status_id' => 7,
-        'payment_billmate_checkout_credit_status_id' => 11,*/
+        'payment_billmate_checkout_cancel_status_id' => 7,
+        'payment_billmate_checkout_credit_status_id' => 11,
         'payment_billmate_checkout_order_status_id' => 15,
         'payment_billmate_checkout_gdpr_link' => '',
         'payment_billmate_checkout_privacy_policy_link' => '',
