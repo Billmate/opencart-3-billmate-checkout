@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Billmate Modification</name>
+    <code>billmate_checkout</code>
+    <version>1.0</version>
+    <author>Billmate</author>
+    <file path="admin/controller/sale/order.php">
+        <operation>
+            <search index="0"><![CDATA[$data['accept_language'] = $order_info['accept_language'];]]></search>
+            <add position="after">
+                <![CDATA[
+                    $this->load->language('extension/payment/billmate_checkout');
+                    $this->load->model('billmate/adminservice');
+                    $invoiceId = $this->model_billmate_adminservice->getInvoiceId($order_id);
+                    $data['bm_invoice_number'] = $invoiceId;
+                ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="admin/view/template/sale/order_info.twig">
+        <operation>
+            <search index="0"><![CDATA[</tbody>]]></search>
+            <add position="before">
+                <![CDATA[
+                    {% if bm_invoice_number %}
+                        <tr>
+                          <td>
+                            <button data-toggle="tooltip" title="" class="btn btn-info btn-xs"
+                            data-original-title="Invoice number">
+                                <i class="fa fa-money fa-fw"></i>
+                            </button>
+                          </td>
+                          <td>{{ entry_order_invoice_number }}: {{ bm_invoice_number }}</td>
+                        </tr>
+                    {% endif %}
+                ]]>
+            </add>
+        </operation>
+    </file>
+</modification>
