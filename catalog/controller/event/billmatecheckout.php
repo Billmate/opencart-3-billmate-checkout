@@ -97,9 +97,14 @@ class ControllerEventBillmatecheckout extends Controller {
         $contentBlock->appendChild($billmateCheckoutBlock);
         
         $html = $dom->saveHTML();
-        $startpos = strpos($html, "<script type=\"text/javascript\"><!--");
-        $length = strpos($html, "//--&gt;") - strpos($html, "<script type=\"text/javascript\"><!--") + 8;
-        $html = substr_replace($html, "", $startpos, $length);
+        $startTrigger = "<script type=\"text/javascript\"><!--";
+        $endTrigger = "//--&gt;";
+        $startpos = strpos($html, $startTrigger);
+        $endpos = strpos($html, $endTrigger);
+        if ($startpos !== false && $endpos !== false && $endpos > $startpos) {
+            $length = $endpos - $startpos + strlen($endTrigger);
+            $html = substr_replace($html, "", $startpos, $length);
+        }
         $dom->loadHTML($html);
 
         return $this;
