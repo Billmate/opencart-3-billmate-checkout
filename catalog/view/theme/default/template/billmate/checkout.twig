@@ -22,7 +22,7 @@
             </iframe>
         {% endif %}
         {%  if error_message  %}
-            <div class="ui-state-error-text"> {{ error_message | convert_encoding('iso-8859-1', 'UTF-8') }}</div>
+            <div class="ui-state-error-text"> {{ error_message }}</div>
         {% endif %}
     </div>
 </div>

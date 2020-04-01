@@ -19,13 +19,13 @@
                     <td class="text-left"><a href="{{ product.href }}">{{ product.name }}</a> {% if not product.stock %} <span class="text-danger">***</span> {% endif %}
                         {% if product.option %}
                             {% for option in product.option %} <br />
-                                <small>{{ option.name | convert_encoding('iso-8859-1', 'UTF-8') }}: {{ option.value | convert_encoding('iso-8859-1', 'UTF-8') }}</small> {% endfor %}
+                                <small>{{ option.name }}: {{ option.value }}</small> {% endfor %}
                         {% endif %}
                         {% if product.reward %} <br />
                             <small>{{ product.reward }}</small> {% endif %}
                         {% if product.recurring %} <br />
                             <span class="label label-info">{{ text_recurring_item }}</span> <small>{{ product.recurring }}</small> {% endif %}</td>
-                    <td class="text-left">{{ product.model | convert_encoding('iso-8859-1', 'UTF-8') }}</td>
+                    <td class="text-left">{{ product.model }}</td>
                     <td class="text-left"><div class="input-group btn-block" style="max-width: 200px;">
                             <input type="text" name="quantity[{{ product.cart_id }}]" value="{{ product.quantity }}" size="1" class="form-control" />
                             <span class="input-group-btn">
