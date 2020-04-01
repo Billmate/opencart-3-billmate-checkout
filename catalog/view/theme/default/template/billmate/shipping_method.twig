@@ -1,8 +1,8 @@
 <div id="collapse-shipping-method">
     {% if shipping_methods %}
-        <p>{{ text_shipping_method }}</p>
+        <p>{{ text_shipping_method | convert_encoding('iso-8859-1', 'UTF-8') }}</p>
         {% for shipping_method in shipping_methods %}
-            <p><strong>{{ shipping_method.title }}</strong></p>
+            <p><strong>{{ shipping_method.title | convert_encoding('iso-8859-1', 'UTF-8') }}</strong></p>
             {% if not shipping_method.error %}
                 {% for quote in shipping_method.quote %}
                     <div class="radio">
@@ -16,25 +16,25 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="alert alert-danger alert-dismissible">{{ shipping_method.error }}</div>
+                <div class="alert alert-danger alert-dismissible">{{ shipping_method.error | convert_encoding('iso-8859-1', 'UTF-8') }}</div>
             {% endif %}
         {% endfor %}
     {% endif %}
     {% if show_message_block %}
         <p>
-            <strong>{{ text_comments }}</strong>
+            <strong>{{ text_comments | convert_encoding('iso-8859-1', 'UTF-8') }}</strong>
         </p>
         <p>
-          <textarea name="comment" rows="8" class="form-control">{{ comment }}</textarea>
+          <textarea name="comment" rows="8" class="form-control">{{ comment | convert_encoding('iso-8859-1', 'UTF-8') }}</textarea>
         </p>
     {% endif %}
 </div>
 
 <div class="buttons">
   <div class="pull-right">
-    <input type="button" value="{{ button_continue }}"
+    <input type="button" value="{{ button_continue | convert_encoding('iso-8859-1', 'UTF-8') }}"
            id="button-shipping-method"
-           data-loading-text="{{ text_loading }}"
+           data-loading-text="{{ text_loading | convert_encoding('iso-8859-1', 'UTF-8') }}"
            class="btn btn-primary hidden" />
   </div>
 </div>

@@ -1,17 +1,17 @@
 <div class="bm-common-checkout">
     <div id="bm-cart-block" >
         {%  if cart_block  %}
-            {{ cart_block }}
+            {{ cart_block | convert_encoding('iso-8859-1', 'UTF-8') }}
         {% endif %}
     </div>
     <div id="bm-coupon-block" >
         {%  if coupon_block  %}
-            {{ coupon_block }}
+            {{ coupon_block | convert_encoding('iso-8859-1', 'UTF-8') }}
         {% endif %}
     </div>
     <div id="bm-shipping-block" class="bm-shipping" >
         {%  if shipping_block  %}
-            {{ shipping_block }}
+            {{ shipping_block | convert_encoding('iso-8859-1', 'UTF-8') }}
         {% endif %}
     </div>
     <div class="bm-iframe-checkout" >
@@ -22,7 +22,7 @@
             </iframe>
         {% endif %}
         {%  if error_message  %}
-            <div class="ui-state-error-text"> {{ error_message }}</div>
+            <div class="ui-state-error-text"> {{ error_message | convert_encoding('iso-8859-1', 'UTF-8') }}</div>
         {% endif %}
     </div>
 </div>
