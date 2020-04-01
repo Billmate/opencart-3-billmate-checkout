@@ -1,29 +1,17 @@
 <div class="bm-common-checkout">
     <div id="bm-cart-block" >
         {%  if cart_block  %}
-            {% if 'å' in cart_block or 'ä' in cart_block or 'ö' in cart_block %}
-                {{ cart_block }}
-            {% else %}
-                {{ cart_block | convert_encoding('iso-8859-1', 'UTF-8') }}
-            {% endif %}
+            {{ cart_block }}
         {% endif %}
     </div>
     <div id="bm-coupon-block" >
         {%  if coupon_block  %}
-            {% if 'å' in coupon_block or 'ä' in coupon_block or 'ö' in coupon_block %}
-                {{ coupon_block }}
-            {% else %}
-                {{ coupon_block | convert_encoding('iso-8859-1', 'UTF-8') }}
-            {% endif %}
+            {{ coupon_block }}
         {% endif %}
     </div>
     <div id="bm-shipping-block" class="bm-shipping" >
         {%  if shipping_block  %}
-            {% if 'å' in shipping_block or 'ä' in shipping_block or 'ö' in shipping_block %}
-                {{ shipping_block }}
-            {% else %}
-                {{ shipping_block | convert_encoding('iso-8859-1', 'UTF-8') }}
-            {% endif %}
+            {{ shipping_block }}
         {% endif %}
     </div>
     <div class="bm-iframe-checkout" >
@@ -34,11 +22,7 @@
             </iframe>
         {% endif %}
         {%  if error_message  %}
-            {% if 'å' in error_message or 'ä' in error_message or 'ö' in error_message %}
-                <div class="ui-state-error-text"> {{ error_message }}</div>
-            {% else %}
-                <div class="ui-state-error-text"> {{ error_message | convert_encoding('iso-8859-1', 'UTF-8') }}</div>
-            {% endif %}
+            <div class="ui-state-error-text"> {{ error_message }}</div>
         {% endif %}
     </div>
 </div>
@@ -49,4 +33,4 @@
     $(document).ready(function () {
         $.fn.bmchekout.init({{ bm_options }});
     });
-    --></script>
+--></script>
