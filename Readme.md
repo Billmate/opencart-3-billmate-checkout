@@ -11,6 +11,14 @@ This repo **only supports Billmate Checkout** and ~~**not Custom Pay~~**.
 ## COMPATIBILITY OpenCart versions
 3.0.0.0	- 3.0.3.2
 
+## Journal 3 Compatibility
+
+### INSTALLATION
+* 1: Go to the Journal 3 settings in OC3 backoffice.
+* 2: Go to skins -> default -> checkout.
+* 3: Active Checkout = OpenCart.
+* 4: Click save button.
+
 ## Documentation
 Will be added in an upcoming release.
 ## Installation
@@ -25,7 +33,8 @@ Will be added in an upcoming release.
 
 ## Installation
 1. Download and unzip the latest release zip file.
-2. Make sure you have set permissions to edit our plugin in Admin. Permissions are found in System -> Users -> User Group.
+2. Add the files to your root directory.
+3. Make sure you have set permissions to edit our plugin in Admin. Permissions are found in System -> Users -> User Group.
 
 ## How to place Billmate logo on your site.
 Copy the code below for the size that fits your needs.
