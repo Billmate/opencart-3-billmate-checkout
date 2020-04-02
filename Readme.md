@@ -13,7 +13,7 @@ This repo **only supports Billmate Checkout** and ~~**not Custom Pay~~**.
 
 ## Journal 3 Compatibility
 
-## INSTALLATION
+### INSTALLATION
 1: Go to the Journal 3 settings in OC3 backoffice.
 2: Go to skins -> default -> checkout.
 3: Active Checkout = OpenCart.
