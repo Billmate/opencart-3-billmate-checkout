@@ -89,7 +89,7 @@ class ControllerEventBillmatecheckout extends Controller {
         $contentBlock = $dom->getElementById('content');
 
         $billmateCheckoutBlock = $dom->createDocumentFragment();
-        $billmateCheckoutBlock->appendXML(utf8_encode($this->getBMCheckoutContent()));
+        $billmateCheckoutBlock->appendXML($this->getBMCheckoutContent());
 
         $chapter = $contentBlock->getElementsByTagName('div')->item(0);
         $contentBlock->removeChild($chapter);
