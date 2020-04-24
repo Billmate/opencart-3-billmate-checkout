@@ -270,8 +270,9 @@ class ModelBillmateCheckoutRequest extends Model {
         $cartTotals['total_tax'] = 0;
 
         $total_data = $this->getTotalData();
+        $cartHasShipping = $this->getBmCartModel()->hasShipping();
 
-        if (isset($this->session->data['shipping_method'])) {
+        if (isset($this->session->data['shipping_method']) && $cartHasShipping) {
             $shippingWithTax = $this->tax->calculate(
                 $this->session->data['shipping_method']['cost'],
                 $this->session->data['shipping_method']['tax_class_id']

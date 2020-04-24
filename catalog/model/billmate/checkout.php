@@ -7,6 +7,11 @@ class ModelBillmateCheckout extends Model {
     protected $helperBillmate;
 
     /**
+     * @var \Billmate\Bmcart
+     */
+    protected $bmcart ;
+
+    /**
      * ModelBillmateCheckout constructor.
      *
      * @param $registry
@@ -17,6 +22,7 @@ class ModelBillmateCheckout extends Model {
         $this->load->model('billmate/checkout/request');
         $this->load->model('billmate/checkout/shipping');
         $this->load->model('setting/extension');
+        $this->bmcart  = new \Billmate\Bmcart($registry);
         $this->helperBillmate  = new Helperbm($registry);
     }
 
@@ -195,7 +201,8 @@ class ModelBillmateCheckout extends Model {
             $data['error_warning'] = '';
         }
 
-        if (isset($this->session->data['shipping_methods'])) {
+        $cartHasShipping = $this->getBmcart()->hasShipping();
+        if (isset($this->session->data['shipping_methods']) && $cartHasShipping) {
             $data['shipping_methods'] = $this->session->data['shipping_methods'];
         } else {
             $data['shipping_methods'] = array();
@@ -297,5 +304,13 @@ class ModelBillmateCheckout extends Model {
     public function getHelper()
     {
         return $this->helperBillmate;
+    }
+
+    /**
+     * @return \Billmate\Bmcart
+     */
+    public function getBmcart(): \Billmate\Bmcart
+    {
+        return $this->bmcart;
     }
 }
