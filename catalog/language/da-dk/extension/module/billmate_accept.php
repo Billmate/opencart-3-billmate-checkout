@@ -3,6 +3,9 @@
 $_['heading_title']        = 'Din order har lagts!';
 
 // Text
+$_['text_order_sub_total'] = 'Delsumma';
+$_['text_order_tax']       = 'Beskatta';
+$_['text_order_total']     = 'Total';
 $_['text_basket']          = 'Kundvagn';
 $_['text_checkout']        = 'Checka ut';
 $_['text_success']         = 'Framgång';
