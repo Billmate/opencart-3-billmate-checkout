@@ -42,6 +42,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $this->helperBillmate  = new Helperbm($registry);
         $this->bmcart  = new \Billmate\Bmcart($registry);
         $this->load->model('billmate/service');
+        $this->load->language('extension/module/billmate_accept');
     }
 
     /**
@@ -206,27 +207,38 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     protected function initTotals()
     {
-        $totals = [
+        $totals['totals'] = [
             [
                 'code' => 'sub_total',
-                'title' => 'Sub-Total',
+                'title' => $this->language->get('text_order_sub_total'),
                 'value' =>$this->centsToPrice(
                     $this->paymentInfo['Cart']['Total']['sub_total']
                 ),
+                'sort_order' => 4
             ],
             [
                 'code' => 'shipping',
-                'title' => 'Flat Shipping Rate',
+                'title' => $this->paymentInfo['Cart']['Shipping']['method'],
                 'value' => $this->centsToPrice(
                     $this->paymentInfo['Cart']['Shipping']['withouttax']
                 ),
+                'sort_order' => 6
+            ],
+            [
+                'code' => 'tax',
+                'title' => $this->language->get('text_order_tax'),
+                'value' => $this->centsToPrice(
+                    $this->paymentInfo['Cart']['Total']['tax']
+                ),
+                'sort_order' => 8
             ],
             [
                 'code' => 'total',
-                'title' => 'Total',
+                'title' => $this->language->get('text_order_total'),
                 'value' => $this->centsToPrice(
                     $this->paymentInfo['Cart']['Total']['withtax']
                 ),
+                'sort_order' => 10
             ]
         ];
         $totals['total'] = $this->centsToPrice($this->paymentInfo['Cart']['Total']['withtax']);
