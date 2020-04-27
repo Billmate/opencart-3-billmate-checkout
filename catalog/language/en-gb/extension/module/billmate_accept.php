@@ -3,6 +3,9 @@
 $_['heading_title']        = 'Your order has been placed!';
 
 // Text
+$_['text_order_sub_total'] = 'Sub-Total';
+$_['text_order_tax']       = 'Tax';
+$_['text_order_total']     = 'Total';
 $_['text_basket']          = 'Shopping Cart';
 $_['text_checkout']        = 'Checkout';
 $_['text_success']         = 'Success';
