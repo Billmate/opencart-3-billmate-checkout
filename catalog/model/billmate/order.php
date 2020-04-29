@@ -32,10 +32,10 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     ];
 
     /**
-    * ModelBillmateOrder constructor.
-    *
-    * @param $registry
-    */
+     * ModelBillmateOrder constructor.
+     *
+     * @param $registry
+     */
     public function __construct($registry)
     {
         parent::__construct($registry);
@@ -43,6 +43,8 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $this->bmcart  = new \Billmate\Bmcart($registry);
         $this->load->model('billmate/service');
         $this->load->language('extension/module/billmate_accept');
+        $this->load->model('account/customer');
+        $this->load->model('checkout/marketing');
     }
 
     /**
@@ -125,20 +127,134 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             'currency_id' => $this->currency->getId($this->paymentInfo['PaymentData']['currency']),
             'currency_code' => $this->paymentInfo['PaymentData']['currency'],
             'currency_value' => $this->currency->getValue($this->session->data['currency']),
-            'customer_id' => 0,
-            'customer_group_id' => 0,
-            'vouchers' =>[],
-            'affiliate_id' => 0,
-            'commission' => 0,
-            'marketing_id' => 0,
-            'tracking' => '',
-            'ip' => '',
-            'forwarded_ip' => '',
-            'user_agent' => '',
-            'accept_language' => '',
+            'customer_id' => $this->getCustomerId(),
+            'customer_group_id' => $this->getCustomerGroupId(),
+            'vouchers' => $this->getVouchers(),
+            'ip' => $this->request->server['REMOTE_ADDR'],
+            'forwarded_ip' => $this->getForwardedIp(),
+            'user_agent' => $this->getUserAgent(),
+            'accept_language' => $this->getAcceptLanguage(),
         ];
+        $affiliateInfo = $this->getAffiliateInfo();
+        $generalStoreData = array_merge($generalStoreData, $affiliateInfo);
 
         return $this->appendToOrderData($generalStoreData);
+    }
+
+    /**
+     * @return array
+     */
+    public function getAffiliateInfo()
+    {
+        $orderData['affiliate_id'] = 0;
+        $orderData['commission'] = 0;
+        $orderData['marketing_id'] = 0;
+        $orderData['tracking'] = '';
+
+        if (!isset($this->request->cookie['tracking'])) {
+            return $orderData;
+        }
+
+        $orderData['tracking'] = $this->request->cookie['tracking'];
+
+        $subtotal = $this->cart->getSubTotal();
+        $affiliate_info = $this->model_account_customer->getAffiliateByTracking($this->request->cookie['tracking']);
+
+        if ($affiliate_info) {
+            $orderData['affiliate_id'] = $affiliate_info['customer_id'];
+            $orderData['commission'] = ($subtotal / 100) * $affiliate_info['commission'];
+        }
+
+        $marketing_info = $this->model_checkout_marketing->getMarketingByCode($this->request->cookie['tracking']);
+
+        if ($marketing_info) {
+            $orderData['marketing_id'] = $marketing_info['marketing_id'];
+        }
+
+        return $orderData;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAcceptLanguage()
+    {
+        if (isset($this->request->server['HTTP_ACCEPT_LANGUAGE'])) {
+            return $this->request->server['HTTP_ACCEPT_LANGUAGE'];
+        }
+
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getForwardedIp()
+    {
+        if (!empty($this->request->server['HTTP_X_FORWARDED_FOR'])) {
+            return $this->request->server['HTTP_X_FORWARDED_FOR'];
+        } elseif (!empty($this->request->server['HTTP_CLIENT_IP'])) {
+            return $this->request->server['HTTP_CLIENT_IP'];
+        }
+
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserAgent()
+    {
+        if (isset($this->request->server['HTTP_USER_AGENT'])) {
+            return $this->request->server['HTTP_USER_AGENT'];
+        }
+        return '';
+    }
+
+    /**
+     * @return array
+     */
+    public function getVouchers()
+    {
+        $vouchers = [];
+        if (!empty($this->session->data['vouchers'])) {
+            foreach ($this->session->data['vouchers'] as $voucher) {
+                $vouchers[] = [
+                    'description'      => $voucher['description'],
+                    'code'             => token(10),
+                    'to_name'          => $voucher['to_name'],
+                    'to_email'         => $voucher['to_email'],
+                    'from_name'        => $voucher['from_name'],
+                    'from_email'       => $voucher['from_email'],
+                    'voucher_theme_id' => $voucher['voucher_theme_id'],
+                    'message'          => $voucher['message'],
+                    'amount'           => $voucher['amount']
+                ];
+            }
+        }
+        return $vouchers;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerId()
+    {
+        if (isset($this->session->data['customer_id'])) {
+            return  (int)$this->session->data['customer_id'];
+        }
+        return 0;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerGroupId()
+    {
+        if (isset($this->session->data['guest']['customer_group_id'])) {
+            return  (int)$this->session->data['guest']['customer_group_id'];
+        }
+        return (int)$this->config->get('config_customer_group_id');
     }
 
 
