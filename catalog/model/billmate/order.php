@@ -45,6 +45,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $this->load->language('extension/module/billmate_accept');
         $this->load->model('account/customer');
         $this->load->model('checkout/marketing');
+        $this->load->model('billmate/order/address');
     }
 
     /**
@@ -264,6 +265,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     protected function addShippingData()
     {
         $shippingBmData = $this->getBmShippingData();
+        $countryData = $this->getCountryData($shippingBmData['country']);
         $shippingData = [
             'shipping_firstname' => array_key_exists('firstname', $shippingBmData)?$shippingBmData['firstname']:'',
             'shipping_lastname' => array_key_exists('lastname', $shippingBmData)?$shippingBmData['lastname']:'',
@@ -274,8 +276,8 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             'shipping_company' => '',
             'shipping_zone' => '',
             'shipping_zone_id' => '',
-            'shipping_country' => '',
-            'shipping_country_id' => '',
+            'shipping_country' => $countryData['name'],
+            'shipping_country_id' => $countryData['country_id'],
             'shipping_address_format' => '',
             'shipping_custom_field' =>[],
             'shipping_method' => $this->getShippingMethodName(),
@@ -292,6 +294,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     protected function addBillingData()
     {
         $billingBmData = $this->getBmBillingData();
+        $countryData = $this->getCountryData($billingBmData['country']);
         $billingData = [
             'firstname' => $billingBmData['firstname'],
             'lastname' => $billingBmData['lastname'],
@@ -309,8 +312,8 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             'payment_company' => '',
             'payment_zone' => '',
             'payment_zone_id' => '',
-            'payment_country' => '',
-            'payment_country_id' => '',
+            'payment_country' => $countryData['name'],
+            'payment_country_id' => $countryData['country_id'],
             'payment_address_format' => '',
             'payment_custom_field' =>[]
         ];
@@ -400,6 +403,25 @@ class ModelBillmateOrder extends ModelCheckoutOrder
 
         return '';
     }
+
+    /**
+     * @param $bmCountryCode
+     *
+     * @return array
+     */
+    public function getCountryData($bmCountryCode)
+    {
+        $countryData = $this->getOrderAddressModel()->getCountryByCode($bmCountryCode);
+        if ($countryData) {
+           return  $countryData;
+        }
+
+        return [
+            'name' => $bmCountryCode,
+            'country_id' => '',
+        ];
+    }
+
 
     /**
      * @param $data
@@ -503,6 +525,14 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             $addressData[$key] = $this->getHelperBillmate()->encodeUtf8($addressField);
         }
         return $addressData;
+    }
+
+    /**
+     * @return ModelBillmateOrderAddress
+     */
+    protected function getOrderAddressModel()
+    {
+        return $this->model_billmate_order_address;
     }
 
     /**

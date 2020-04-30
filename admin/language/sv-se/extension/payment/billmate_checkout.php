@@ -6,6 +6,7 @@ $_['text_billmate_checkout'] = '<img src="view/image/payment/billmate_chekcout.p
 $_['text_extension']		= 'Extensions';
 $_['text_change_settings_success']		= 'Inställningarna uppdaterades framgångsrikt';
 $_['text_edit']			= 'Inställningar';
+$_['text_callback_urls_title']			= 'URL för återuppringning';
 // Entry
 $_['entry_billmate_status']		= 'Billmate Checkout';
 $_['entry_billmate_id']		= 'Billmate ID';
@@ -38,6 +39,7 @@ $_['error_redirect_url'] 	= 'URL kan inte vara tomt';
 
 $_['error_warning'] 		= 'Det finns problem med uppgifterna';
 $_['error_permission'] 		= 'Du har inte behörighet att redigera detta.';
+$_['warning_url_message'] 	= '!!Viktig!! - När en butikskonfiguration är klar, se till att samma port används för återuppringningsadresserna.';
 
 // Button
 $_['button_save'] 		= 'Spara formulär';
