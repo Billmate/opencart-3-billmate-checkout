@@ -47,6 +47,7 @@ class ModelBillmateCheckoutRequest extends Model {
         $this->load->model('extension/total/coupon');
         $this->load->model('extension/total/shipping');
         $this->load->model('setting/extension');
+        $this->load->model('billmate/checkout/handling/invoice_fee');
 
     }
 
@@ -239,22 +240,26 @@ class ModelBillmateCheckoutRequest extends Model {
     {
         $cartTotals = $this->getCartTotals();
         $rounding = 0.0;
+        $invoiceFeeData = $this->handleInvoiceFee($cartTotals);
+
         $this->requestData['Cart'] = [
-            'Shipping' =>
-                array (
-                    'withouttax' => $this->toCents($cartTotals['total_shipping']),
-                    'taxrate' => $cartTotals['shipping_rate'],
-                    'method' => $this->getShippingMethodName(),
-                    'method_code' => $this->getShippingMethodCode()
-                ),
-            'Total' =>
-                array (
-                    'withouttax' => $this->toCents($cartTotals['total_without_tax']),
-                    'sub_total' => $this->toCents($cartTotals['sub_total']),
-                    'tax' => $this->toCents($cartTotals['total_tax']),
-                    'rounding' => $rounding,
-                    'withtax' => $this->toCents($cartTotals['total_with_tax']),
-                ),
+            'Shipping' => [
+                'withouttax' => $this->toCents($cartTotals['total_shipping']),
+                'taxrate' => $cartTotals['shipping_rate'],
+                'method' => $this->getShippingMethodName(),
+                'method_code' => $this->getShippingMethodCode()
+            ],
+            'Handling' => [
+                'withouttax' => $this->toCents($invoiceFeeData['fee_without_tax']),
+                'taxrate'    => $invoiceFeeData['fee_tax_rate']
+            ],
+            'Total' => [
+                'withouttax' => $this->toCents($cartTotals['total_without_tax']),
+                'sub_total' => $this->toCents($cartTotals['sub_total']),
+                'tax' => $this->toCents($cartTotals['total_tax']),
+                'rounding' => $rounding,
+                'withtax' => $this->toCents($cartTotals['total_with_tax']),
+            ]
         ];
         return $this;
     }
@@ -329,6 +334,20 @@ class ModelBillmateCheckoutRequest extends Model {
         }
 
         return $total_data;
+    }
+
+    /**
+     * @param $cartTotals
+     *
+     * @return array
+     */
+    protected function handleInvoiceFee(&$cartTotals)
+    {
+        $invoiceFeeData = $this->model_billmate_checkout_handling_invoice_fee->getData();
+        $cartTotals['total_without_tax'] += $invoiceFeeData['fee_without_tax'];
+        $cartTotals['total_tax'] += $invoiceFeeData['fee_tax_value'];
+        $cartTotals['total_with_tax'] += $invoiceFeeData['fee_tax_value'] + $invoiceFeeData['fee_without_tax'];
+        return $invoiceFeeData;
     }
 
     /**
