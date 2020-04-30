@@ -1,6 +1,8 @@
 <?php
 class ControllerExtensionPaymentBillmateCheckout extends Controller {
 
+    const REQUEST_METHOD = 'POST';
+
     const DEFAULT_MODULE_SETTINGS = [
         'payment_billmate_checkout_status' => 0,
         'payment_billmate_checkout_bm_id' => '',
@@ -49,7 +51,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
 
     public function index()
     {
-        if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+        if ($this->request->server['REQUEST_METHOD'] == self::REQUEST_METHOD) {
             if ($this->isValidData()) {
                 $this->saveRequestedOptions();
                 $values = $this->request->post;
@@ -124,6 +126,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
             'user_token=' . $this->session->data['user_token'],
             true
         );
+        $this->templateData['info_block'] = $this->load->controller('extension/payment/billmate_info');
         return $this;
     }
 

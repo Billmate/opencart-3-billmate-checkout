@@ -6,6 +6,7 @@ $_['text_billmate_checkout'] = '<img src="view/image/payment/billmate_chekcout.p
 $_['text_extension']		= 'Extensions';
 $_['text_change_settings_success']		= 'Settings was updated successfully';
 $_['text_edit']			= 'Settings';
+$_['text_callback_urls_title']			= 'Callback URL\'s';
 // Entry
 $_['entry_billmate_status']		= 'Billmate Checkout Status';
 $_['entry_billmate_id']		= 'Billmate ID';
@@ -35,6 +36,7 @@ $_['error_billmate_connection'] = 'Billmate connection error : ';
 $_['error_link_privacy_policy'] = 'Privacy policy cannot be empty';
 $_['error_age'] 		= 'Age must be numeric';
 $_['error_redirect_url'] 	= 'URL can not be empty';
+$_['warning_url_message'] 	= '!!Important!! - When a Store configuration is done, make sure that the same port will be used for the callback URL´s.';
 
 $_['error_warning'] 		= 'There are problems with data provided';
 $_['error_permission'] 		= 'You don\'t have permission to edit this.';
