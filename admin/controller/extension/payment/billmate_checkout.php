@@ -16,7 +16,9 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
         'payment_billmate_checkout_order_status_id' => 15,
         'payment_billmate_checkout_gdpr_link' => '',
         'payment_billmate_checkout_privacy_policy_link' => '',
-        'payment_billmate_checkout_log_enabled' => 0
+        'payment_billmate_checkout_log_enabled' => 0,
+        'payment_billmate_checkout_invoice_fee' => 0,
+        'payment_billmate_checkout_inv_fee_tax' => 0,
     ];
 
     const MODULE_CODE = 'payment_billmate_checkout';
@@ -126,6 +128,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
             'user_token=' . $this->session->data['user_token'],
             true
         );
+        $this->templateData['invoice_fee_block'] = $this->load->controller('extension/payment/billmate_invoice_fee');
         $this->templateData['info_block'] = $this->load->controller('extension/payment/billmate_info');
         return $this;
     }
