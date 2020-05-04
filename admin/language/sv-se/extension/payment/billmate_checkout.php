@@ -21,6 +21,8 @@ $_['entry_billmate_credit_status'] 	= 'Order status för automatisk kreditering 
 $_['entry_billmate_cancel_status'] 	= 'Order status för automatisk markulering i Billmate Online';
 $_['entry_enable_push_events'] 	= 'Aktivera fakturor automatiskt i Billmate Online när ordern får vald status:';
 $_['entry_default_order_status'] 	= 'Sätt standard orderstatus';
+$_['entry_billmate_invoice_fee'] 	= 'Fakturaravgift';
+$_['entry_billmate_invoice_fee_tax'] 	= 'Fakturagebyrsskattklass';
 $_['entry_link_terms_cond'] = 'Butiksvillkor';
 $_['entry_link_privacy_policy'] = 'Integritetspolicy';
 $_['entry_enable_logging_bm_requests'] = 'Aktivera felsökningsläge (för utvecklare)';
@@ -29,6 +31,9 @@ $_['placeholder_name'] 		= '';
 // Help
 $_['help_gdpr_message'] 		= 'Länk till sida som innehåller butiksvillkor';
 $_['help_privacy_policy_message'] 		= 'Länk till sida som innehåller Integritetspolicy';
+$_['help_invoice_fee_message'] 		= 'Anges i basvaluta. Fakturavgiften konverteras automatiskt till den använda valutan för slutkunden.';
+$_['help_invoice_fee_tax_message'] 		= 'Välj den skatteklass som ska användas för fakturavgiften.';
+
 // Error
 $_['error_name'] 		= 'Modul ID tomt';
 //$_['error_message'] 		= 'Message field blank';

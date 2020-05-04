@@ -16,6 +16,8 @@ $_['entry_enable_invoice_message'] 	= 'Enable order message field on the checkou
 $_['entry_enable_test_mode'] 	= 'Enable Test Mode';
 $_['entry_enable_push_events'] 	= 'Enable invoices automatically in Billmate Online when the order receives the selected status:';
 $_['entry_default_order_status'] 	= 'Default Order Status';
+$_['entry_billmate_invoice_fee'] 	= 'Invoice Fee';
+$_['entry_billmate_invoice_fee_tax'] 	= 'Invoice fee tax class';
 
 $_['entry_billmate_activate_status'] = 'Order status for automatic order activation in Billmate Online';
 $_['entry_billmate_credit_status'] 	= 'Order status for automatic credit in Billmate Online';
@@ -29,6 +31,8 @@ $_['placeholder_name'] 		= '';
 // Help
 $_['help_gdpr_message'] 		= 'Link to page that contain store terms and conditions';
 $_['help_privacy_policy_message'] 		= 'Link to page that contain store privacy policy';
+$_['help_invoice_fee_message'] 		= 'Specified in base currency. The invoice fee will be automatically converted into the used currency for the end customer.';
+$_['help_invoice_fee_tax_message'] 		= 'Select the tax class to be used for the invoice fee.';
 // Error
 $_['error_name'] 		= 'Module ID blank';
 //$_['error_message'] 		= 'Message field blank';

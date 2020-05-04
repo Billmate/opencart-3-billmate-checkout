@@ -13,6 +13,6 @@ catalog/view/theme/default/template/*				upload/catalog/view/theme/default/templ
 catalog/language/en-gb/extension/module/*			upload/catalog/language/en-gb/extension/module/
 catalog/language/da-dk/extension/module/*			upload/catalog/language/da-dk/extension/module/
 system/library/*									upload/system/library/
-system/bm_modification.ocmod.xml			upload/system/bm_modification.ocmod.xml
+system/bm_modification.ocmod.xml			   		upload/system/bm_modification.ocmod.xml
 catalog/view/javascript/billmate/*					upload/catalog/view/javascript/billmate/
 catalog/view/theme/default/stylesheet/billmate/*	upload/catalog/view/theme/default/stylesheet/billmate/

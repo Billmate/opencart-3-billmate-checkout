@@ -133,6 +133,22 @@ class Helperbm {
     }
 
     /**
+     * @return bool
+     */
+    public function getInvoiceFee()
+    {
+        return  $this->config->get('payment_billmate_checkout_invoice_fee');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getInvoiceFeeTax()
+    {
+        return  $this->config->get('payment_billmate_checkout_inv_fee_tax');
+    }
+
+    /**
      * @param $hash string
      */
     public function setSessionBmHash($hash)
