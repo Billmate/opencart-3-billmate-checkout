@@ -22,12 +22,21 @@ class ControllerBillmatecheckoutCallback extends CoreBmController {
             if ($this->helperBillmate->isAddLog()) {
                 $this->helperBillmate->log($requestData);
             }
+
+
             $paymentInfo = $this->helperBillmate
                 ->getBillmateConnection()
                 ->getPaymentinfo( [
                     'number' => $requestData['data']['number']
                 ]);
-            $this->model_billmate_order->updateOrderStatus($paymentInfo, $requestData['data']['status']);
+
+            if (!isset($paymentInfo['PaymentInfo']['real_order_id'])) {
+                $this->getBillmateOrderModel()->createBmOrder(
+                    $requestData['data']['number'],
+                    $paymentInfo
+                );
+            }
+            $this->getBillmateOrderModel()->updateOrderStatus($paymentInfo, $requestData['data']['status']);
 
         } catch (\Exception $e) {
             $responseMessage = $e->getMessage();
@@ -35,5 +44,13 @@ class ControllerBillmatecheckoutCallback extends CoreBmController {
 
 
         $this->response->setOutput($responseMessage);
+    }
+
+    /**
+     * @return ModelBillmateOrder
+     */
+    protected function getBillmateOrderModel()
+    {
+        return $this->model_billmate_order;
     }
 }

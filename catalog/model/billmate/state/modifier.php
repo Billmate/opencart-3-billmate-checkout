@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Class ModelBillmateStateModifier
+ */
 class ModelBillmateStateModifier extends Model
 {
     /**
