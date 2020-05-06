@@ -374,17 +374,18 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $bmProducts = [];
         foreach ($bmRequestProducts as $_product) {
             $bmProducts[] = [
-                'product_id' => 0,
+                'product_id' => $_product['product_id'],
+                'reward' => $_product['reward'],
+                'points' => $_product['points'],
+                'subtract' => $_product['subtract'],
+                'option' => json_decode($_product['option'], true),
                 'name' => $_product['title'],
                 'model' => $_product['title'],
-                'option' => [],
-                'download' => [],
                 'quantity' => $_product['quantity'],
-                'subtract' => '1',
                 'price' => $this->centsToPrice($_product['aprice']),
                 'total' => $this->centsToPrice($_product['total_article']),
+                'download' => json_decode($_product['download'], true),
                 'tax' => 0,
-                'reward' => 0,
             ];
         }
 
