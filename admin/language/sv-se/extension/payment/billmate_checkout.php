@@ -7,6 +7,8 @@ $_['text_extension']		= 'Extensions';
 $_['text_change_settings_success']		= 'Inställningarna uppdaterades framgångsrikt';
 $_['text_edit']			= 'Inställningar';
 $_['text_callback_urls_title']			= 'URL för återuppringning';
+$_['text_checkout_consumer_view']			= 'Konsument';
+$_['text_checkout_company_view']			= 'Företag';
 // Entry
 $_['entry_billmate_status']		= 'Billmate Checkout';
 $_['entry_billmate_id']		= 'Billmate ID';
@@ -26,6 +28,7 @@ $_['entry_billmate_invoice_fee_tax'] 	= 'Fakturagebyrsskattklass';
 $_['entry_link_terms_cond'] = 'Butiksvillkor';
 $_['entry_link_privacy_policy'] = 'Integritetspolicy';
 $_['entry_enable_logging_bm_requests'] = 'Aktivera felsökningsläge (för utvecklare)';
+$_['entry_checkout_view_mode'] 	= 'Kassaläge';
 // Placeholder
 $_['placeholder_name'] 		= '';
 // Help
@@ -33,6 +36,7 @@ $_['help_gdpr_message'] 		= 'Länk till sida som innehåller butiksvillkor';
 $_['help_privacy_policy_message'] 		= 'Länk till sida som innehåller Integritetspolicy';
 $_['help_invoice_fee_message'] 		= 'Anges i basvaluta. Fakturavgiften konverteras automatiskt till den använda valutan för slutkunden.';
 $_['help_invoice_fee_tax_message'] 		= 'Välj den skatteklass som ska användas för fakturavgiften.';
+$_['help_checkout_view_message'] 		= 'Välj om du vill betona shopping som företag eller konsument först i Billmate Checkout';
 
 // Error
 $_['error_name'] 		= 'Modul ID tomt';

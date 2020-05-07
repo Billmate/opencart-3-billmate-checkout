@@ -7,6 +7,9 @@ $_['text_extension']		= 'Extensions';
 $_['text_change_settings_success']		= 'Settings was updated successfully';
 $_['text_edit']			= 'Settings';
 $_['text_callback_urls_title']			= 'Callback URL\'s';
+$_['text_checkout_consumer_view']			= 'Consumer';
+$_['text_checkout_company_view']			= 'Company';
+
 // Entry
 $_['entry_billmate_status']		= 'Billmate Checkout Status';
 $_['entry_billmate_id']		= 'Billmate ID';
@@ -18,6 +21,7 @@ $_['entry_enable_push_events'] 	= 'Enable invoices automatically in Billmate Onl
 $_['entry_default_order_status'] 	= 'Default Order Status';
 $_['entry_billmate_invoice_fee'] 	= 'Invoice Fee';
 $_['entry_billmate_invoice_fee_tax'] 	= 'Invoice fee tax class';
+$_['entry_checkout_view_mode'] 	= 'Checkout Mode';
 
 $_['entry_billmate_activate_status'] = 'Order status for automatic order activation in Billmate Online';
 $_['entry_billmate_credit_status'] 	= 'Order status for automatic credit in Billmate Online';
@@ -33,6 +37,7 @@ $_['help_gdpr_message'] 		= 'Link to page that contain store terms and condition
 $_['help_privacy_policy_message'] 		= 'Link to page that contain store privacy policy';
 $_['help_invoice_fee_message'] 		= 'Specified in base currency. The invoice fee will be automatically converted into the used currency for the end customer.';
 $_['help_invoice_fee_tax_message'] 		= 'Select the tax class to be used for the invoice fee.';
+$_['help_checkout_view_message'] 		= 'Choose whether you want to emphasize shopping as a company or consumer first in Billmate Checkout';
 // Error
 $_['error_name'] 		= 'Module ID blank';
 //$_['error_message'] 		= 'Message field blank';

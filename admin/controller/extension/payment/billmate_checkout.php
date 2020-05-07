@@ -18,6 +18,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
         'payment_billmate_checkout_log_enabled' => 0,
         'payment_billmate_checkout_invoice_fee' => 0,
         'payment_billmate_checkout_inv_fee_tax' => 0,
+        'payment_billmate_checkout_is_company_view' => 0,
     ];
 
     const MODULE_CODE = 'payment_billmate_checkout';

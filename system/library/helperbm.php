@@ -28,6 +28,10 @@ class Helperbm {
         'country'  => 'se'
     ];
 
+    protected $companyViewMap = [
+
+    ];
+
     /**
      * HelperBillmate constructor.
      *
@@ -146,6 +150,14 @@ class Helperbm {
     public function getInvoiceFeeTax()
     {
         return  $this->config->get('payment_billmate_checkout_inv_fee_tax');
+    }
+
+    /**
+     * @return string
+     */
+    public function isCompanyView()
+    {
+        return  (bool)$this->config->get('payment_billmate_checkout_is_company_view');
     }
 
     /**
