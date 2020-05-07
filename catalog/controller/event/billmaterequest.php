@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class ControllerEventBillmaterequest
+ */
 class ControllerEventBillmaterequest extends Controller
 {
     const ORDER_ID_KEY = 0;
@@ -25,7 +28,6 @@ class ControllerEventBillmaterequest extends Controller
      */
     public function process($route, $orderData , $action)
     {
-        ;
         if (!$this->getHelper()->isAllowedPushEvents() ||
             !isset($this->session->data['api_id'])
         ) {
@@ -35,10 +37,11 @@ class ControllerEventBillmaterequest extends Controller
         $orderId = $orderData[self::ORDER_ID_KEY];
         $newStatusId = $orderData[self::STATUS_ID_KEY];
         $this->getStateModifier()->updateBmService($orderId, $newStatusId);
+
     }
 
     /**
-     * @return ModelPaymentStateModifier
+     * @return ModelBillmateStateModifier
      */
     protected function getStateModifier()
     {

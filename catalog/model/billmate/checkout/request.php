@@ -203,6 +203,12 @@ class ModelBillmateCheckoutRequest extends Model {
                 'discount' => 0,
                 'withouttax' => $this->toCents($prices['total_without_tax']),
                 'total_article' => $this->toCents($prices['total_with_tax']),
+                'product_id' => $product['product_id'],
+                'reward' => $product['reward'],
+                'points' => $product['points'],
+                'subtract' => $product['subtract'],
+                'option' => json_encode($product['option']),
+                'download' => json_encode($product['download']),
             ];
         }
 

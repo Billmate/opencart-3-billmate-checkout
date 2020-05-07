@@ -54,9 +54,13 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     public function createBmOrder($paymentNumber, $paymentInfo)
     {
         $this->paymentInfo = $paymentInfo;
-        $order_data = $this->collectOrderData();
-
-        $orderId = $this->addOrder($order_data);
+        $orderData = $this->collectOrderData();
+        if (!isset($paymentInfo['PaymentInfo']['real_order_id'])) {
+            $orderId = $this->addOrder($orderData);
+        } else {
+            $orderId = $paymentInfo['PaymentInfo']['real_order_id'];
+            $this->editOrder($orderId, $orderData);
+        }
         if (!$orderId) {
             throw new Exception('The order wasn\'t created in the web-store');
         }
@@ -87,9 +91,12 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     public function updateOrderStatus($paymentInfo, $bmPaymentState)
     {
-        $orderId = $paymentInfo['PaymentInfo']['real_order_id'];
-        $statusId = $this->getSystemSatusId($bmPaymentState);
-        $this->addOrderHistory($orderId, $statusId);
+        if (isset($paymentInfo['PaymentInfo']['real_order_id'])) {
+            $orderId = $paymentInfo['PaymentInfo']['real_order_id'];
+            $statusId = $this->getSystemSatusId($bmPaymentState);
+            $this->addOrderHistory($orderId, $statusId);
+        }
+
     }
 
     /**
@@ -374,17 +381,18 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $bmProducts = [];
         foreach ($bmRequestProducts as $_product) {
             $bmProducts[] = [
-                'product_id' => 0,
+                'product_id' => $_product['product_id'],
+                'reward' => $_product['reward'],
+                'points' => $_product['points'],
+                'subtract' => $_product['subtract'],
+                'option' => json_decode($_product['option'], true),
                 'name' => $_product['title'],
                 'model' => $_product['title'],
-                'option' => [],
-                'download' => [],
                 'quantity' => $_product['quantity'],
-                'subtract' => '1',
                 'price' => $this->centsToPrice($_product['aprice']),
                 'total' => $this->centsToPrice($_product['total_article']),
+                'download' => json_decode($_product['download'], true),
                 'tax' => 0,
-                'reward' => 0,
             ];
         }
 

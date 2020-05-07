@@ -1,8 +1,14 @@
 <?php
 require_once(DIR_APPLICATION . 'model/billmate/service/processor/status.php');
 
+/**
+ * Class ModelBillmateServiceProcessorCancel
+ */
 class ModelBillmateServiceProcessorCancel extends ModelBillmateServiceProcessorStatus
 {
+    /**
+     * @param $orderId
+     */
     public function process($orderId)
     {
         $requestData = $this->getRequestData($orderId);
@@ -12,17 +18,13 @@ class ModelBillmateServiceProcessorCancel extends ModelBillmateServiceProcessorS
 
         $billmateConnection = $this->getBMConnection();
         $paymentData = $billmateConnection->getPaymentInfo($requestData);
+        $bmRequestData = $this->adaptRequestData($requestData);
 
-        $bmRequestData = [
-            'PaymentData' => $requestData
-        ];
-
-        if ($paymentData['PaymentData']['status'] == self::BILLMATE_CREATED_STATUS) {
-           $this->cancelPayment($bmRequestData);
-        }
-
-        if ($paymentData['PaymentData']['status'] == self::BILLMATE_PAID_STATUS) {
-            $this->creditPayment($bmRequestData);
+        switch ($paymentData['PaymentData']['status']) {
+            case self::BILLMATE_CREATED_STATUS:
+                $this->cancelPayment($bmRequestData);
+            case self::BILLMATE_PAID_STATUS:
+                $this->creditPayment($bmRequestData);
         }
     }
 }
