@@ -1,5 +1,10 @@
 <?php
-class ModelBillmateServiceProcessorStatus extends Model
+require_once(DIR_APPLICATION . 'model/billmate/service/processor/statusInterface.php');
+
+/**
+ * Class ModelBillmateServiceProcessorStatus
+ */
+abstract class ModelBillmateServiceProcessorStatus extends Model implements ModelBillmateServiceProcessorStatusInterface
 {
     const BILLMATE_PAID_STATUS = 'Paid';
 
@@ -89,6 +94,18 @@ class ModelBillmateServiceProcessorStatus extends Model
     protected function getInvoiceId($orderId)
     {
         return $this->getBmService()->getInvoiceId($orderId);
+    }
+
+    /**
+     * @param $requestData
+     *
+     * @return array
+     */
+    protected function adaptRequestData($requestData)
+    {
+        return  [
+            'PaymentData' => $requestData
+        ];
     }
 
     /**

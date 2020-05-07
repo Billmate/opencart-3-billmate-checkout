@@ -54,9 +54,13 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     public function createBmOrder($paymentNumber, $paymentInfo)
     {
         $this->paymentInfo = $paymentInfo;
-        $order_data = $this->collectOrderData();
-
-        $orderId = $this->addOrder($order_data);
+        $orderData = $this->collectOrderData();
+        if (!isset($paymentInfo['PaymentInfo']['real_order_id'])) {
+            $orderId = $this->addOrder($orderData);
+        } else {
+            $orderId = $paymentInfo['PaymentInfo']['real_order_id'];
+            $this->editOrder($orderId, $orderData);
+        }
         if (!$orderId) {
             throw new Exception('The order wasn\'t created in the web-store');
         }
@@ -87,9 +91,12 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      */
     public function updateOrderStatus($paymentInfo, $bmPaymentState)
     {
-        $orderId = $paymentInfo['PaymentInfo']['real_order_id'];
-        $statusId = $this->getSystemSatusId($bmPaymentState);
-        $this->addOrderHistory($orderId, $statusId);
+        if (isset($paymentInfo['PaymentInfo']['real_order_id'])) {
+            $orderId = $paymentInfo['PaymentInfo']['real_order_id'];
+            $statusId = $this->getSystemSatusId($bmPaymentState);
+            $this->addOrderHistory($orderId, $statusId);
+        }
+
     }
 
     /**

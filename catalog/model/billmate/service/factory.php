@@ -19,6 +19,7 @@ class ModelBillmateServiceFactory extends Model
 
     /**
      * @param $statusId
+     * @return ModelBillmateServiceProcessorStatusInterface
      */
     public function getProcessor($statusId)
     {
