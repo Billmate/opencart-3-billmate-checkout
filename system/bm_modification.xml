@@ -4,6 +4,7 @@
     <code>billmate_checkout</code>
     <version>1.0</version>
     <author>Billmate</author>
+    <link>https://www.billmate.se/</link>
     <file path="admin/controller/sale/order.php">
         <operation>
             <search index="0"><![CDATA[$data['accept_language'] = $order_info['accept_language'];]]></search>

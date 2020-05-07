@@ -108,12 +108,14 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
     public function install()
     {
         $this->getBMPaymentSetup()->registerEvents();
+        $this->getBMPaymentSetup()->addModifications();
         $this->model_setting_setting->editSetting(self::MODULE_CODE, self::DEFAULT_MODULE_SETTINGS);
     }
 
     public function uninstall()
     {
         $this->getBMPaymentSetup()->unregisterEvents();
+        $this->getBMPaymentSetup()->deleteModifications();
         $this->model_setting_setting->deleteSetting(self::MODULE_CODE);
     }
 
