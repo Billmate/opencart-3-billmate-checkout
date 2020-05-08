@@ -11,6 +11,27 @@ class ModelBillmatePaymentModificator extends Model
 
     const STATUS_ENABLED = 1;
 
+    const LOG_FILE = 'ocmod.log';
+
+    const ABORT_ERROR = 'abort';
+
+    const SKIP_ERROR = 'skip';
+
+    /**
+     * @var Log
+     */
+    protected $logger;
+
+    /**
+     * @var array
+     */
+    protected $origModification = [];
+
+    /**
+     * @var array
+     */
+    protected $updateModification = [];
+
     /**
      * ModelBillmatePaymentBmsetup constructor.
      *
@@ -19,12 +40,12 @@ class ModelBillmatePaymentModificator extends Model
     public function __construct($registry)
     {
         parent::__construct($registry);
+        $this->load->model('setting/setting');
+        $this->load->model('setting/modification');
         $this->load->model('billmate/payment/modificator');
+        $this->logger = new Log(self::LOG_FILE);
     }
 
-    /**
-     *
-     */
     public function addModifications()
     {
         $modData = $this->getModificationData();
@@ -48,7 +69,7 @@ class ModelBillmatePaymentModificator extends Model
     protected function getModificationData()
     {
         $modData = [];
-        $file = DIR_SYSTEM .  self::MODIFICATION_FILE;
+        $file = DIR_SYSTEM . self::MODIFICATION_FILE;
         if (is_file($file)) {
             $xml = file_get_contents($file);
             if ($xml) {
@@ -74,291 +95,114 @@ class ModelBillmatePaymentModificator extends Model
         return $modData;
     }
 
-    /**
-     * @Note This function copies functionality from the native OC ControllerMarketplaceModification
-     * We must be care with future updates (will be waiting when OC separate logic on separated functions)
-     */
     public function refresh()
     {
-        $this->load->model('setting/modification');
-            // Just before files are deleted, if config settings say maintenance mode is off then turn it on
-            $maintenance = $this->config->get('config_maintenance');
+        $initialMaintenance = $this->config->get('config_maintenance');
+        $this->updateMaintenance(true);
+        try {
+            $this->run();
+        } catch (\Exception $exception) {
+            $this->addLog(
+                $exception->getMessage()
+            );
+        }
+        $this->updateMaintenance($initialMaintenance);
+    }
 
-            $this->load->model('setting/setting');
-
-            $this->model_setting_setting->editSettingValue('config', 'config_maintenance', true);
-
-            //Log
-            $log = array();
-
-            // Clear all modification files
-            $files = array();
-
-            // Make path into an array
-            $path = array(DIR_MODIFICATION . '*');
-
-            // While the path array is still populated keep looping through
-            while (count($path) != 0) {
-                $next = array_shift($path);
-
-                foreach (glob($next) as $file) {
-                    // If directory add to path array
-                    if (is_dir($file)) {
-                        $path[] = $file . '/*';
-                    }
-
-                    // Add the file to the files to be deleted array
-                    $files[] = $file;
-                }
+    protected function run()
+    {
+        $xmlModifiers = $this->getXmlModifiers();
+        foreach ($xmlModifiers as $xml) {
+            if (empty($xml)) {
+                continue;
             }
 
-            // Reverse sort the file array
-            rsort($files);
+            $dom = new DOMDocument('1.0', 'UTF-8');
+            $dom->preserveWhiteSpace = false;
+            $dom->loadXml($xml);
+            $this->addLog('MOD: ' . $dom->getElementsByTagName('name')->item(0)->textContent);
 
-            // Clear all modification files
-            foreach ($files as $file) {
-                if ($file != DIR_MODIFICATION . 'index.html') {
-                    // If file just delete
-                    if (is_file($file)) {
-                        unlink($file);
+            $recovery = $this->getUpdateModification();
+            $modFiles = $dom->getElementsByTagName('modification')->item(0)->getElementsByTagName('file');
 
-                        // If directory use the remove directory function
-                    } elseif (is_dir($file)) {
-                        rmdir($file);
-                    }
-                }
+            try {
+                $this->loadModifications($modFiles);
+            } catch (\Exception $e) {
+                $this->updateModification = $recovery;
             }
 
-            // Begin
-            $xml = array();
+            $this->addLog('----------------------------------------------------------------');
+        }
 
-            // Load the default modification XML
-            $xml[] = file_get_contents(DIR_SYSTEM . 'modification.xml');
+        $this->writeModification();
+    }
 
-            // This is purly for developers so they can run mods directly and have them run without upload after each change.
-            $files = glob(DIR_SYSTEM . '*.ocmod.xml');
+    private function loadModifications($modFiles)
+    {
+        foreach ($modFiles as $modFile) {
+            $operations = $modFile->getElementsByTagName('operation');
+            $pathFiles = explode('|', $modFile->getAttribute('path'));
 
-            if ($files) {
-                foreach ($files as $file) {
-                    $xml[] = file_get_contents($file);
-                }
-            }
+            foreach ($pathFiles as $pathFile) {
+                $path = $this->getFilePath($pathFile);
+                if ($path) {
+                    $files = glob($path, GLOB_BRACE);
+                    if ($files) {
+                        foreach ($files as $file) {
+                            $modification = $this->getUpdateModification();
+                            if (substr($file, 0, strlen(DIR_CATALOG)) == DIR_CATALOG) {
+                                $key = 'catalog/' . substr($file, strlen(DIR_CATALOG));
+                            }
 
-            // Get the default modification file
-            $results = $this->model_setting_modification->getModifications();
+                            if (substr($file, 0, strlen(DIR_APPLICATION)) == DIR_APPLICATION) {
+                                $key = 'admin/' . substr($file, strlen(DIR_APPLICATION));
+                            }
 
-            foreach ($results as $result) {
-                if ($result['status']) {
-                    $xml[] = $result['xml'];
-                }
-            }
+                            if (substr($file, 0, strlen(DIR_SYSTEM)) == DIR_SYSTEM) {
+                                $key = 'system/' . substr($file, strlen(DIR_SYSTEM));
+                            }
 
-            $modification = array();
+                            if (!isset($modification[$key])) {
+                                $content = file_get_contents($file);
+                                $this->addUpdateModification(
+                                    $key,
+                                    preg_replace('~\r?\n~', "\n", $content)
+                                );
+                                $this->addOrigModification(
+                                    $key,
+                                    preg_replace('~\r?\n~', "\n", $content)
+                                );
+                                $this->addLog(PHP_EOL . 'FILE: ' . $key);
+                                $modification = $this->getUpdateModification();
+                            }
 
-            foreach ($xml as $xml) {
-                if (empty($xml)){
-                    continue;
-                }
+                            foreach ($operations as $operation) {
+                                $error = $operation->getAttribute('error');
+                                $ignoreif = $operation->getElementsByTagName('ignoreif')->item(0);
 
-                $dom = new DOMDocument('1.0', 'UTF-8');
-                $dom->preserveWhiteSpace = false;
-                $dom->loadXml($xml);
-
-                // Log
-                $log[] = 'MOD: ' . $dom->getElementsByTagName('name')->item(0)->textContent;
-
-                // Wipe the past modification store in the backup array
-                $recovery = array();
-
-                // Set the a recovery of the modification code in case we need to use it if an abort attribute is used.
-                if (isset($modification)) {
-                    $recovery = $modification;
-                }
-
-                $files = $dom->getElementsByTagName('modification')->item(0)->getElementsByTagName('file');
-
-                foreach ($files as $file) {
-                    $operations = $file->getElementsByTagName('operation');
-
-                    $files = explode('|', $file->getAttribute('path'));
-
-                    foreach ($files as $file) {
-                        $path = '';
-
-                        // Get the full path of the files that are going to be used for modification
-                        if ((substr($file, 0, 7) == 'catalog')) {
-                            $path = DIR_CATALOG . substr($file, 8);
-                        }
-
-                        if ((substr($file, 0, 5) == 'admin')) {
-                            $path = DIR_APPLICATION . substr($file, 6);
-                        }
-
-                        if ((substr($file, 0, 6) == 'system')) {
-                            $path = DIR_SYSTEM . substr($file, 7);
-                        }
-
-                        if ($path) {
-                            $files = glob($path, GLOB_BRACE);
-
-                            if ($files) {
-                                foreach ($files as $file) {
-                                    // Get the key to be used for the modification cache filename.
-                                    if (substr($file, 0, strlen(DIR_CATALOG)) == DIR_CATALOG) {
-                                        $key = 'catalog/' . substr($file, strlen(DIR_CATALOG));
-                                    }
-
-                                    if (substr($file, 0, strlen(DIR_APPLICATION)) == DIR_APPLICATION) {
-                                        $key = 'admin/' . substr($file, strlen(DIR_APPLICATION));
-                                    }
-
-                                    if (substr($file, 0, strlen(DIR_SYSTEM)) == DIR_SYSTEM) {
-                                        $key = 'system/' . substr($file, strlen(DIR_SYSTEM));
-                                    }
-
-                                    // If file contents is not already in the modification array we need to load it.
-                                    if (!isset($modification[$key])) {
-                                        $content = file_get_contents($file);
-
-                                        $modification[$key] = preg_replace('~\r?\n~', "\n", $content);
-                                        $original[$key] = preg_replace('~\r?\n~', "\n", $content);
-                                    }
-
-                                    foreach ($operations as $operation) {
-                                        $error = $operation->getAttribute('error');
-
-                                        // Ignoreif
-                                        $ignoreif = $operation->getElementsByTagName('ignoreif')->item(0);
-
-                                        if ($ignoreif) {
-                                            if ($ignoreif->getAttribute('regex') != 'true') {
-                                                if (strpos($modification[$key], $ignoreif->textContent) !== false) {
-                                                    continue;
-                                                }
-                                            } else {
-                                                if (preg_match($ignoreif->textContent, $modification[$key])) {
-                                                    continue;
-                                                }
-                                            }
+                                if ($ignoreif) {
+                                    if ($ignoreif->getAttribute('regex') != 'true') {
+                                        if (strpos($modification[$key], $ignoreif->textContent) !== false) {
+                                            continue;
                                         }
-
-                                        // Search and replace
-                                        if ($operation->getElementsByTagName('search')->item(0)->getAttribute('regex') != 'true') {
-                                            // Search
-                                            $search = $operation->getElementsByTagName('search')->item(0)->textContent;
-                                            $trim = $operation->getElementsByTagName('search')->item(0)->getAttribute('trim');
-                                            $index = $operation->getElementsByTagName('search')->item(0)->getAttribute('index');
-
-                                            // Trim line if no trim attribute is set or is set to true.
-                                            if (!$trim || $trim == 'true') {
-                                                $search = trim($search);
-                                            }
-
-                                            // Add
-                                            $add = $operation->getElementsByTagName('add')->item(0)->textContent;
-                                            $trim = $operation->getElementsByTagName('add')->item(0)->getAttribute('trim');
-                                            $position = $operation->getElementsByTagName('add')->item(0)->getAttribute('position');
-                                            $offset = $operation->getElementsByTagName('add')->item(0)->getAttribute('offset');
-
-                                            if ($offset == '') {
-                                                $offset = 0;
-                                            }
-
-                                            // Trim line if is set to true.
-                                            if ($trim == 'true') {
-                                                $add = trim($add);
-                                            }
-
-                                            // Log
-                                            $log[] = 'CODE: ' . $search;
-
-                                            // Check if using indexes
-                                            if ($index !== '') {
-                                                $indexes = explode(',', $index);
-                                            } else {
-                                                $indexes = array();
-                                            }
-
-                                            // Get all the matches
-                                            $i = 0;
-
-                                            $lines = explode("\n", $modification[$key]);
-
-                                            for ($line_id = 0; $line_id < count($lines); $line_id++) {
-                                                $line = $lines[$line_id];
-
-                                                // Status
-                                                $match = false;
-
-                                                // Check to see if the line matches the search code.
-                                                if (stripos($line, $search) !== false) {
-                                                    // If indexes are not used then just set the found status to true.
-                                                    if (!$indexes) {
-                                                        $match = true;
-                                                    } elseif (in_array($i, $indexes)) {
-                                                        $match = true;
-                                                    }
-
-                                                    $i++;
-                                                }
-
-                                                // Now for replacing or adding to the matched elements
-                                                if ($match) {
-                                                    switch ($position) {
-                                                        default:
-                                                        case 'replace':
-                                                            $new_lines = explode("\n", $add);
-
-                                                            if ($offset < 0) {
-                                                                array_splice($lines, $line_id + $offset, abs($offset) + 1, array(str_replace($search, $add, $line)));
-
-                                                                $line_id -= $offset;
-                                                            } else {
-                                                                array_splice($lines, $line_id, $offset + 1, array(str_replace($search, $add, $line)));
-                                                            }
-                                                            break;
-                                                        case 'before':
-                                                            $new_lines = explode("\n", $add);
-
-                                                            array_splice($lines, $line_id - $offset, 0, $new_lines);
-
-                                                            $line_id += count($new_lines);
-                                                            break;
-                                                        case 'after':
-                                                            $new_lines = explode("\n", $add);
-
-                                                            array_splice($lines, ($line_id + 1) + $offset, 0, $new_lines);
-
-                                                            $line_id += count($new_lines);
-                                                            break;
-                                                    }
-                                                }
-                                            }
-
-                                            $modification[$key] = implode("\n", $lines);
-                                        } else {
-                                            $search = trim($operation->getElementsByTagName('search')->item(0)->textContent);
-                                            $limit = $operation->getElementsByTagName('search')->item(0)->getAttribute('limit');
-                                            $replace = trim($operation->getElementsByTagName('add')->item(0)->textContent);
-
-                                            // Limit
-                                            if (!$limit) {
-                                                $limit = -1;
-                                            }
-
-                                            // Log
-                                            $match = array();
-
-                                            preg_match_all($search, $modification[$key], $match, PREG_OFFSET_CAPTURE);
-
-                                            // Remove part of the the result if a limit is set.
-                                            if ($limit > 0) {
-                                                $match[0] = array_slice($match[0], 0, $limit);
-                                            }
-
-                                            // Make the modification
-                                            $modification[$key] = preg_replace($search, $replace, $modification[$key], $limit);
+                                    } else {
+                                        if (preg_match($ignoreif->textContent, $modification[$key])) {
+                                            continue;
                                         }
+                                    }
+                                }
+
+                                $status = $this->updateInModificaton($operation, $key, $modification[$key]);
+
+                                if (!$status) {
+                                    if ($error == self::ABORT_ERROR) {
+                                        throw new \Exception('NOT FOUND - ABORTING!');
+                                    } elseif ($error == self::SKIP_ERROR) {
+                                        $this->addLog('NOT FOUND - OPERATION SKIPPED!');
+                                        continue;
+                                    } else {
+                                        $this->addLog('NOT FOUND - OPERATIONS ABORTED!');
+                                        break;
                                     }
                                 }
                             }
@@ -366,31 +210,301 @@ class ModelBillmatePaymentModificator extends Model
                     }
                 }
             }
+        }
+    }
 
-            foreach ($modification as $key => $value) {
-                // Only create a file if there are changes
-                if ($original[$key] != $value) {
-                    $path = '';
+    /**
+     * @param $operation
+     * @param $mod
+     *
+     * @return bool
+     */
+    private function updateInModificaton($operation, $key, $mod)
+    {
+        $status = false;
+        if ($operation->getElementsByTagName('search')->item(0)->getAttribute('regex') != 'true') {
+            $search = $operation->getElementsByTagName('search')->item(0)->textContent;
+            $trim = $operation->getElementsByTagName('search')->item(0)->getAttribute('trim');
+            $index = $operation->getElementsByTagName('search')->item(0)->getAttribute('index');
 
-                    $directories = explode('/', dirname($key));
+            if (!$trim || $trim == 'true') {
+                $search = trim($search);
+            }
 
-                    foreach ($directories as $directory) {
-                        $path = $path . '/' . $directory;
+            $add = $operation->getElementsByTagName('add')->item(0)->textContent;
+            $trim = $operation->getElementsByTagName('add')->item(0)->getAttribute('trim');
+            $position = $operation->getElementsByTagName('add')->item(0)->getAttribute('position');
+            $offset = $operation->getElementsByTagName('add')->item(0)->getAttribute('offset');
 
-                        if (!is_dir(DIR_MODIFICATION . $path)) {
-                            @mkdir(DIR_MODIFICATION . $path, 0777);
-                        }
+            if ($offset == '') {
+                $offset = 0;
+            }
+
+            if ($trim == 'true') {
+                $add = trim($add);
+            }
+
+            $this->addLog('CODE: ' . $search);
+
+            if ($index !== '') {
+                $indexes = explode(',', $index);
+            } else {
+                $indexes = array();
+            }
+
+            $i = 0;
+
+            $lines = explode("\n", $mod);
+
+            for ($line_id = 0; $line_id < count($lines); $line_id++) {
+                $line = $lines[$line_id];
+
+                $match = false;
+                if (stripos($line, $search) !== false) {
+                    if (!$indexes) {
+                        $match = true;
+                    } elseif (in_array($i, $indexes)) {
+                        $match = true;
                     }
 
-                    $handle = fopen(DIR_MODIFICATION . $key, 'w');
+                    $i++;
+                }
 
-                    fwrite($handle, $value);
+                if ($match) {
+                    switch ($position) {
+                        default:
+                        case 'replace':
+                            $new_lines = explode("\n", $add);
+                            if ($offset < 0) {
+                                array_splice($lines, $line_id + $offset, abs($offset) + 1, array(str_replace($search, $add, $line)));
+                                $line_id -= $offset;
+                            } else {
+                                array_splice($lines, $line_id, $offset + 1, array(str_replace($search, $add, $line)));
+                            }
+                            break;
+                        case 'before':
+                            $new_lines = explode("\n", $add);
+                            array_splice($lines, $line_id - $offset, 0, $new_lines);
+                            $line_id += count($new_lines);
+                            break;
+                        case 'after':
+                            $new_lines = explode("\n", $add);
+                            array_splice($lines, ($line_id + 1) + $offset, 0, $new_lines);
+                            $line_id += count($new_lines);
+                            break;
+                    }
 
-                    fclose($handle);
+                    $this->addLog('LINE: ' . $line_id);
+                    $status = true;
                 }
             }
 
-            // Maintance mode back to original settings
-            $this->model_setting_setting->editSettingValue('config', 'config_maintenance', $maintenance);
+            $this->addUpdateModification(
+                $key,
+                implode("\n", $lines)
+            );
+            return $status;
+        }
+
+        $search = trim($operation->getElementsByTagName('search')->item(0)->textContent);
+        $limit = $operation->getElementsByTagName('search')->item(0)->getAttribute('limit');
+        $replace = trim($operation->getElementsByTagName('add')->item(0)->textContent);
+
+        if (!$limit) {
+            $limit = -1;
+        }
+
+        $match = array();
+
+        preg_match_all($search, $mod, $match, PREG_OFFSET_CAPTURE);
+        if ($limit > 0) {
+            $match[0] = array_slice($match[0], 0, $limit);
+        }
+
+        if ($match[0]) {
+            $this->addLog('REGEX: ' . $search);
+
+            $matches = count($match[0]);
+            for ($i = 0; $i < $matches; $i++) {
+                $this->addLog('LINE: ' . (substr_count(substr($mod, 0, $match[0][$i][1]), "\n") + 1));
+            }
+
+            $status = true;
+        }
+
+        $this->addUpdateModification(
+            $key,
+            preg_replace($search, $replace, $mod, $limit)
+        );
+
+        return $status;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getXmlModifiers()
+    {
+        $files = array();
+        $path = $this->getModificationPath();
+        while (count($path) != 0) {
+            $next = array_shift($path);
+            foreach (glob($next) as $file) {
+                if (is_dir($file)) {
+                    $path[] = $file . '/*';
+                }
+                $files[] = $file;
+            }
+        }
+
+        rsort($files);
+
+        foreach ($files as $file) {
+            if ($file != DIR_MODIFICATION . 'index.html') {
+                if (is_file($file)) {
+                    unlink($file);
+                } elseif (is_dir($file)) {
+                    rmdir($file);
+                }
+            }
+        }
+
+        $xml = [];
+        $xml[] = file_get_contents(DIR_SYSTEM . 'modification.xml');
+        $files = glob(DIR_SYSTEM . '*.ocmod.xml');
+
+        if ($files) {
+            foreach ($files as $file) {
+                $xml[] = file_get_contents($file);
+            }
+        }
+        $results = $this->model_setting_modification->getModifications();
+
+        foreach ($results as $result) {
+            if ($result['status']) {
+                $xml[] = $result['xml'];
+            }
+        }
+
+        return $xml;
+    }
+
+    /**
+     * @param $modification
+     */
+    private function writeModification()
+    {
+        $modification = $this->getUpdateModification();
+        $original = $this->getOrigModification();
+
+        foreach ($modification as $key => $value) {
+            if ($original[$key] != $value) {
+                $path = '';
+
+                $directories = explode('/', dirname($key));
+
+                foreach ($directories as $directory) {
+                    $path = $path . '/' . $directory;
+
+                    if (!is_dir(DIR_MODIFICATION . $path)) {
+                        @mkdir(DIR_MODIFICATION . $path, 0777);
+                    }
+                }
+
+                $handle = fopen(DIR_MODIFICATION . $key, 'w');
+
+                fwrite($handle, $value);
+
+                fclose($handle);
+            }
+        }
+    }
+
+    /**
+     * @param $pathFile
+     *
+     * @return string
+     */
+    private function getFilePath($pathFile)
+    {
+        if ((substr($pathFile, 0, 7) == 'catalog')) {
+            return DIR_CATALOG . substr($pathFile, 8);
+        }
+
+        if ((substr($pathFile, 0, 5) == 'admin')) {
+            return DIR_APPLICATION . substr($pathFile, 6);
+        }
+
+        if ((substr($pathFile, 0, 6) == 'system')) {
+            return DIR_SYSTEM . substr($pathFile, 7);
+        }
+        return '';
+    }
+
+    /**
+     * @return array
+     */
+    protected function getUpdateModification()
+    {
+        return $this->updateModification;
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return $this
+     */
+    protected function addUpdateModification($key, $value)
+    {
+        $this->updateModification[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getModificationPath()
+    {
+        return [
+            DIR_MODIFICATION . '*'
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrigModification()
+    {
+        return $this->origModification;
+    }
+
+    /**
+     * @param $key
+     * @param $content
+     *
+     * @return $this
+     */
+    public function addOrigModification($key, $content)
+    {
+        $this->origModification[$key] = $content;
+        return $this;
+    }
+
+    /**
+     * @param $message
+     */
+    public function addLog($message)
+    {
+        $this->logger->write($message);
+    }
+
+    public function updateMaintenance($maintenance)
+    {
+        $this->model_setting_setting->editSettingValue(
+            'config',
+            'config_maintenance',
+            $maintenance
+        );
     }
 }
