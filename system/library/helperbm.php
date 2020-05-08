@@ -28,10 +28,6 @@ class Helperbm {
         'country'  => 'se'
     ];
 
-    protected $companyViewMap = [
-
-    ];
-
     /**
      * HelperBillmate constructor.
      *
@@ -153,11 +149,11 @@ class Helperbm {
     }
 
     /**
-     * @return string
+     * @return bool
      */
     public function isCompanyView()
     {
-        return  (bool)$this->config->get('payment_billmate_checkout_is_company_view');
+        return (bool)$this->config->get('payment_billmate_checkout_is_company_view');
     }
 
     /**
