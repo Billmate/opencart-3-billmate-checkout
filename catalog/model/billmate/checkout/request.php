@@ -1,6 +1,10 @@
 <?php
-class ModelBillmateCheckoutRequest extends Model {
 
+/**
+ * Class ModelBillmateCheckoutRequest
+ */
+class ModelBillmateCheckoutRequest extends Model
+{
     const METHOD_CODE = 93;
 
     const WINDOW_MODE = 'iframe';
@@ -8,6 +12,8 @@ class ModelBillmateCheckoutRequest extends Model {
     const SEND_RECIEPT = 'yes';
 
     const REDIRECT_ON_SUCCESS = 'true';
+
+    const COMPANY_VIEW_FLAG = 'true';
 
     /**
      * @var array
@@ -179,6 +185,9 @@ class ModelBillmateCheckoutRequest extends Model {
         $privacyPolicyLink = $this->getBmHelper()->getPrivacyPolicyLink();
         if ($privacyPolicyLink) {
             $this->requestData['CheckoutData']['privacyPolicy'] = $privacyPolicyLink;
+        }
+        if ($this->getBmHelper()->isCompanyView()) {
+            $this->requestData['CheckoutData']['companyView'] = self::COMPANY_VIEW_FLAG;
         }
 
         return $this;

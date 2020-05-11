@@ -149,6 +149,14 @@ class Helperbm {
     }
 
     /**
+     * @return bool
+     */
+    public function isCompanyView()
+    {
+        return (bool)$this->config->get('payment_billmate_checkout_is_company_view');
+    }
+
+    /**
      * @param $hash string
      */
     public function setSessionBmHash($hash)
