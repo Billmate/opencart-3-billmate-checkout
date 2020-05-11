@@ -18,6 +18,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
         'payment_billmate_checkout_log_enabled' => 0,
         'payment_billmate_checkout_invoice_fee' => 0,
         'payment_billmate_checkout_inv_fee_tax' => 0,
+        'payment_billmate_checkout_is_company_view' => 0,
     ];
 
     const MODULE_CODE = 'payment_billmate_checkout';
@@ -108,12 +109,14 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
     public function install()
     {
         $this->getBMPaymentSetup()->registerEvents();
+        $this->getBMPaymentSetup()->addModifications();
         $this->model_setting_setting->editSetting(self::MODULE_CODE, self::DEFAULT_MODULE_SETTINGS);
     }
 
     public function uninstall()
     {
         $this->getBMPaymentSetup()->unregisterEvents();
+        $this->getBMPaymentSetup()->deleteModifications();
         $this->model_setting_setting->deleteSetting(self::MODULE_CODE);
     }
 

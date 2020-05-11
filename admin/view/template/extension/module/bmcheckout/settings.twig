@@ -148,6 +148,24 @@
                             <div style="clear: both"></div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-status">
+                            <span data-toggle="tooltip" title="{{ help_checkout_view_message }}">
+                                {{ entry_checkout_view_mode }}
+                            </span>
+                        </label>
+                        <div class="col-sm-10">
+                            <select name="payment_billmate_checkout_is_company_view" id="input-is-company-view" class="form-control">
+                                {% if payment_billmate_checkout_is_company_view %}
+                                    <option value="0">{{ text_checkout_consumer_view }}</option>
+                                    <option value="1" selected="selected">{{ text_checkout_company_view }}</option>
+                                {% else %}
+                                    <option value="0" selected="selected">{{ text_checkout_consumer_view }}</option>
+                                    <option value="1">{{ text_checkout_company_view }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
                     {{ invoice_fee_block }}
                     <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-status">{{ entry_enable_invoice_message }}</label>
