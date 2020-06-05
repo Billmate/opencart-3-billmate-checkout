@@ -5,36 +5,48 @@
  */
 class ModelBillmateOrderMail extends Model
 {
+    const EMPTY_COMMENT = '';
+
+    const NOTIFY_FLAG = true;
+
     /**
      * @param $orderInfo
      */
     public function sendConfirmation($orderInfo)
     {
-        $arguments = [
-            $orderInfo,
-            $orderInfo['order_status_id'],
-            '',
-            true
-        ];
-
+        $arguments = $this->getArguments($orderInfo);
         $mailAction = new Action('mail/order/add');
-        $mailAction->execute($this->registry, $arguments);
+        $mailAction->execute(
+            $this->registry,
+            $arguments
+        );
     }
 
     /**
      * @param $orderInfo
      */
-    public function sendUpdateStatus($orderInfo)
+    public function sendUpdate($orderInfo)
     {
-        $args = [
+        $arguments = $this->getArguments($orderInfo);
+        $mailAction = new Action('mail/order/edit');
+        $mailAction->execute(
+            $this->registry,
+            $arguments
+        );
+    }
+
+    /**
+     * @param $orderInfo
+     *
+     * @return array
+     */
+    protected function getArguments($orderInfo)
+    {
+        return [
             $orderInfo,
             $orderInfo['order_status_id'],
-            '',
-            true
+            self::EMPTY_COMMENT,
+            self::NOTIFY_FLAG
         ];
-
-        //$someResp = $this->load->controller('mail/order');
-        $mailAction = new Action('mail/order/edit');
-        $mailAction->execute($this->registry, $args);
     }
 }
