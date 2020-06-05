@@ -2,6 +2,9 @@
 require_once(DIR_APPLICATION . 'controller/billmatecheckout/CoreBmController.php');
 
 class ControllerBillmatecheckoutCallback extends CoreBmController {
+
+    const ERROR_RESPONSE_CODE = 401;
+
     /**
      * ControllerBillmatecheckoutAccept constructor.
      *
@@ -31,17 +34,14 @@ class ControllerBillmatecheckoutCallback extends CoreBmController {
                 ]);
 
             if (!isset($paymentInfo['PaymentInfo']['real_order_id'])) {
-                $this->getBillmateOrderModel()->createBmOrder(
-                    $requestData['data']['number'],
-                    $paymentInfo
-                );
+                throw new Exception('Wait to finish accept order!');
             }
             $this->getBillmateOrderModel()->updateOrderStatus($paymentInfo, $requestData['data']['status']);
 
         } catch (\Exception $e) {
+            http_response_code(self::ERROR_RESPONSE_CODE);
             $responseMessage = $e->getMessage();
         }
-
 
         $this->response->setOutput($responseMessage);
     }
