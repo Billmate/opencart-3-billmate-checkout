@@ -26,7 +26,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
      * @var array
      */
     protected $statusMap = [
-        'Paid' => 5,
+        'Paid' => 2,
         'Cancelled' => 7,
         'Created' => 1,
     ];
@@ -46,6 +46,7 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $this->load->model('account/customer');
         $this->load->model('checkout/marketing');
         $this->load->model('billmate/order/address');
+        $this->load->model('billmate/order/mail');
     }
 
     /**
@@ -55,12 +56,9 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     {
         $this->paymentInfo = $paymentInfo;
         $orderData = $this->collectOrderData();
-        if (!isset($paymentInfo['PaymentInfo']['real_order_id'])) {
-            $orderId = $this->addOrder($orderData);
-        } else {
-            $orderId = $paymentInfo['PaymentInfo']['real_order_id'];
-            $this->editOrder($orderId, $orderData);
-        }
+
+        $orderId = $this->addOrder($orderData);
+
         if (!$orderId) {
             throw new Exception('The order wasn\'t created in the web-store');
         }
@@ -81,8 +79,20 @@ class ModelBillmateOrder extends ModelCheckoutOrder
         $actualPaymentInfo['PaymentData']['orderid'] = $orderId;
 
         $this->updatePaymentData($actualPaymentInfo);
+
+        $this->sendConfirmationEmail($orderId);
+
         $this->bmcart->clearBySession($sessionId);
         return $orderId;
+    }
+
+    /**
+     * @param $order_id
+     */
+    protected function sendConfirmationEmail($orderId)
+    {
+        $orderInfo = $this->getOrder($orderId);
+        $this->getOrderMailModel()->sendConfirmation($orderInfo);
     }
 
     /**
@@ -95,6 +105,9 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             $orderId = $paymentInfo['PaymentInfo']['real_order_id'];
             $statusId = $this->getSystemSatusId($bmPaymentState);
             $this->addOrderHistory($orderId, $statusId);
+
+            $orderData = $this->getOrder($orderId);
+            $this->getOrderMailModel()->sendUpdate($orderData);
         }
 
     }
@@ -541,6 +554,14 @@ class ModelBillmateOrder extends ModelCheckoutOrder
     protected function getOrderAddressModel()
     {
         return $this->model_billmate_order_address;
+    }
+
+    /**
+     * @return ModelBillmateOrderMail
+     */
+    protected function getOrderMailModel()
+    {
+        return $this->model_billmate_order_mail;
     }
 
     /**
