@@ -5,10 +5,11 @@ admin/view/template/extension/module/* 				upload/admin/view/template/extension/
 admin/view/stylesheet/* 							upload/admin/view/stylesheet/
 admin/view/javascript/* 							upload/admin/view/javascript/
 admin/view/image/payment/*							upload/admin/view/image/payment/
-admin/model/*										upload/admin/model/
+admin/model/billmate/								upload/admin/model/billmate/
+catalog/model/extension/payment/billmate_checkout.php	upload/catalog/model/extension/payment/billmate_checkout.php
 catalog/controller/event/*							upload/catalog/controller/event/
 catalog/controller/billmatecheckout			    	upload/catalog/controller/billmatecheckout/
-catalog/model/*										upload/catalog/model/
+catalog/model/billmate/								upload/catalog/model/billmate/
 catalog/view/theme/default/template/*				upload/catalog/view/theme/default/template/
 catalog/language/en-gb/extension/module/*			upload/catalog/language/en-gb/extension/module/
 catalog/language/da-dk/extension/module/*			upload/catalog/language/da-dk/extension/module/
