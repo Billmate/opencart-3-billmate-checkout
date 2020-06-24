@@ -54,6 +54,14 @@ class ModelBillmateCheckoutRequest extends Model
         $this->load->model('extension/total/shipping');
         $this->load->model('setting/extension');
         $this->load->model('billmate/checkout/handling/invoice_fee');
+        if ($this->config->get('config_tax_default') == 'shipping') {
+            $this->tax->setShippingAddress($this->config->get('config_country_id'), $this->config->get('config_zone_id'));
+        }
+
+        if ($this->config->get('config_tax_default') == 'payment') {
+            $this->tax->setPaymentAddress($this->config->get('config_country_id'), $this->config->get('config_zone_id'));
+        }
+        $this->tax->setStoreAddress($this->config->get('config_country_id'), $this->config->get('config_zone_id'));
 
     }
 
@@ -208,11 +216,12 @@ class ModelBillmateCheckoutRequest extends Model
                 'title' => $product['name'],
                 'artnr' => $product['model'],
                 'aprice' => $this->toCents($prices['unit_price']),
-                'taxrate' => 0,
+                'taxrate' => $this->calculateGroupRate($prices),
                 'discount' => 0,
                 'withouttax' => $this->toCents($prices['total_without_tax']),
                 'total_article' => $this->toCents($prices['total_with_tax']),
                 'product_id' => $product['product_id'],
+                'tax_class_id' => $product['tax_class_id'],
                 'reward' => $product['reward'],
                 'points' => $product['points'],
                 'subtract' => $product['subtract'],
@@ -385,13 +394,25 @@ class ModelBillmateCheckoutRequest extends Model
             $this->config->get('config_tax')
         );
 
-
         $convertedPrice = $this->convert($product['quantity'] * $product['price']);
         $productPrices['total_without_tax'] = $convertedPrice;
 
-        $productPrices['unit_price'] = $this->convert($unit_price);
-        $productPrices['total_with_tax'] = $product['quantity'] * $productPrices['unit_price'] ;
+        $productPrices['unit_price'] = $this->convert($product['price']);
+        $productPrices['total_with_tax'] = $product['quantity'] * $unit_price;
         return $productPrices;
+    }
+
+    /**
+     * @param $prices
+     *
+     * @return false|float
+     */
+    protected function calculateGroupRate($prices)
+    {
+        return round(
+            (($prices['total_with_tax'] - $prices['total_without_tax'])/$prices['total_without_tax'])*100,
+            2
+        );
     }
 
     /**
