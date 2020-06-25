@@ -422,7 +422,7 @@ class ModelBillmateCheckoutRequest extends Model
      */
     protected function toCents($value)
     {
-        return ceil($value * 100);
+        return floor($value * 100);
     }
 
     /**
