@@ -18,7 +18,8 @@
  */
 class Billmate {
 
-    const BILLMATE_CLIENT = 'OpenCart:' . VERSION . ' BillMate:2.1.7';
+    const PLUGIN_VERSION = '3.6.2';
+
     var $ID = "";
     var $KEY = "";
     var $URL = "api.billmate.se";
@@ -60,7 +61,7 @@ class Billmate {
                 "id"=>$this->ID,
                 "hash"=>$this->hash(json_encode($params)),
                 "version" => BILLMATE_SERVER,
-                "client" => self::BILLMATE_CLIENT,
+                "client" => $this->getClientSign(),
                 "serverdata" => array_merge($_SERVER,$this->REFERER),
                 "time" => microtime(true),
                 "test" => $this->TEST?"1":"0",
@@ -77,6 +78,14 @@ class Billmate {
                 break;
         }
         return $this->verify_hash($response);
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientSign()
+    {
+        return 'OpenCart:' . VERSION . ' PLUGIN:' . self::PLUGIN_VERSION;
     }
 
     protected function verify_hash($response)
