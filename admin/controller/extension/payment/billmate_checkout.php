@@ -125,6 +125,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
      */
     protected function loadTemplateData() {
         $this->templateData['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+        $this->templateData['plugin_version'] = Billmate::PLUGIN_VERSION;
         $this->templateData['action'] = $this->url->link(
             'extension/payment/billmate_checkout',
             'user_token=' . $this->session->data['user_token'],
