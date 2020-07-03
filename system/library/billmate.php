@@ -9,12 +9,10 @@
  *
  * @category Billmate
  * @package Billmate
- * @author Yuksel Findik <yuksel@billmate.se>
- * @copyright 2013-2018 Billmate AB
+ * @author Billmate Support <support@billmate.se>
+ * @copyright 2013-2020 Billmate AB
  * @license Proprietary and fully owned by Billmate AB
- * @version 2.1.6
  * @link http://www.billmate.se
- *
  */
 class Billmate {
 
