@@ -439,11 +439,11 @@ class ModelBillmateCheckoutRequest extends Model
     /**
      * @param $value
      *
-     * @return float
+     * @return int
      */
     protected function toCents($value)
     {
-        return floor($value * 100);
+        return (int)((string)((float)($value * 100)));
     }
 
     /**
