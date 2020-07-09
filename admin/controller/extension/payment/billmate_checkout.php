@@ -16,6 +16,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller {
         'payment_billmate_checkout_gdpr_link' => '',
         'payment_billmate_checkout_privacy_policy_link' => '',
         'payment_billmate_checkout_log_enabled' => 0,
+        'payment_billmate_checkout_sent_email_status' => 1,
         'payment_billmate_checkout_invoice_fee' => 0,
         'payment_billmate_checkout_inv_fee_tax' => 0,
         'payment_billmate_checkout_is_company_view' => 0,
