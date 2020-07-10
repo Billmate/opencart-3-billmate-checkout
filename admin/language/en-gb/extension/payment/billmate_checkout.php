@@ -30,6 +30,7 @@ $_['entry_billmate_cancel_status'] 	= 'Order status for automatic cancel in Bill
 $_['entry_link_terms_cond'] = 'Store Terms';
 $_['entry_link_privacy_policy'] = 'Privacy Policy';
 $_['entry_enable_logging_bm_requests'] = 'Enable debug mode (for developers)';
+$_['entry_sent_callback_email_status'] = 'Send email after Billmate status update';
 // Placeholder
 $_['placeholder_name'] 		= '';
 // Help

@@ -106,8 +106,10 @@ class ModelBillmateOrder extends ModelCheckoutOrder
             $statusId = $this->getSystemSatusId($bmPaymentState);
             $this->addOrderHistory($orderId, $statusId);
 
-            $orderData = $this->getOrder($orderId);
-            $this->getOrderMailModel()->sendUpdate($orderData);
+            if ($this->getHelperBillmate()->isSendEmailStatus()) {
+                $orderData = $this->getOrder($orderId);
+                $this->getOrderMailModel()->sendUpdate($orderData);
+            }
         }
 
     }

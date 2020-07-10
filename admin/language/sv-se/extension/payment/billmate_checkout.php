@@ -28,6 +28,7 @@ $_['entry_billmate_invoice_fee_tax'] 	= 'Fakturagebyrsskattklass';
 $_['entry_link_terms_cond'] = 'Butiksvillkor';
 $_['entry_link_privacy_policy'] = 'Integritetspolicy';
 $_['entry_enable_logging_bm_requests'] = 'Aktivera felsökningsläge (för utvecklare)';
+$_['entry_sent_callback_email_status'] = 'Skicka e-post efter Billmate-statusuppdatering';
 $_['entry_checkout_view_mode'] 	= 'Kassaläge';
 // Placeholder
 $_['placeholder_name'] 		= '';

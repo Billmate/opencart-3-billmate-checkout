@@ -258,6 +258,14 @@ class Helperbm {
     }
 
     /**
+     * @return bool
+     */
+    public function isSendEmailStatus()
+    {
+        return (bool)$this->config->get('payment_billmate_checkout_sent_email_status');
+    }
+
+    /**
      * @return array
      */
     public function getAllowedStatuses()
