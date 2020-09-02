@@ -206,11 +206,20 @@ class ModelBillmateCheckoutRequest extends Model
      */
     protected function addArticlesData()
     {
-        $data['products'] = array();
-
+        $data['products'] = array(); 
         $products = $this->cart->getProducts();
         foreach ($products as $product) {
-            $prices = $this->getProductPrices($product);
+         $prices = $this->getProductPrices($product);
+                $extraOption = null;
+                foreach ($product['option'] as $option) {
+                    $extraOption .=$option['value'];
+
+                    if (isset($extraOption) && $extraOption !== '') {
+                        $product['name'].= ' ';
+                        $product['name'].= $extraOption;
+                    }
+                }
+            
             $this->requestData['Articles'][] = [
                 'quantity' => $product['quantity'],
                 'title' => $product['name'],
@@ -228,8 +237,8 @@ class ModelBillmateCheckoutRequest extends Model
                 'option' => json_encode($product['option']),
                 'download' => json_encode($product['download']),
             ];
-        }
-
+         
+}
         return $this;
     }
 
