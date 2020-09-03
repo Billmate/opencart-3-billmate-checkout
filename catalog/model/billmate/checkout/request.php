@@ -317,10 +317,9 @@ class ModelBillmateCheckoutRequest extends Model
             );
             $shippingPrice = $this->session->data['shipping_method']['cost'];
             if ($shippingPrice) {
-                $cartTotals['shipping_rate'] =
-                    round(100 * (($shippingWithTax-$shippingPrice) / $shippingWithTax),2);
+                $cartTotals['shipping_rate'] = ($shippingWithTax / $shippingPrice) * 100;
+                $cartTotals['shipping_rate']  = substr($cartTotals['shipping_rate'], 1); 
             }
-
         }
 
         foreach ($total_data['taxes'] as $_tax) {
