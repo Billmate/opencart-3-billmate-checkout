@@ -33,7 +33,18 @@ class ControllerBillmatecheckoutCallback extends CoreBmController {
                     'number' => $requestData['data']['number']
                 ]);
 
-            if (!isset($paymentInfo['PaymentInfo']['real_order_id'])) {
+                for( $i = 0; $i<10; $i++ ) {
+                    if (!isset($paymentInfo['PaymentInfo']['real_order_id'])) {
+                        $paymentInfo = $this->helperBillmate
+                        ->getBillmateConnection()
+                        ->getPaymentinfo( [
+                            'number' => $requestData['data']['number']
+                        ]);
+                        break;
+                    }
+                }
+                
+            if (!isset($requestData['data']['number'])) {
                 throw new Exception('Wait to finish accept order!');
             }
             $this->getBillmateOrderModel()->updateOrderStatus($paymentInfo, $requestData['data']['status']);
