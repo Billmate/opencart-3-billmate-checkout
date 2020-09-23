@@ -132,6 +132,11 @@ class Helperbm {
         return  $this->config->get('payment_billmate_checkout_privacy_policy_link');
     }
 
+    public function getInvoiceLogo()
+    {
+        return  $this->config->get('payment_billmate_checkout_logo');
+    }
+
     /**
      * @return bool
      */

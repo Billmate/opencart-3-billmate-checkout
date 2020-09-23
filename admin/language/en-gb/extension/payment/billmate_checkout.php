@@ -29,12 +29,14 @@ $_['entry_billmate_cancel_status'] 	= 'Order status for automatic cancel in Bill
 
 $_['entry_link_terms_cond'] = 'Store Terms';
 $_['entry_link_privacy_policy'] = 'Privacy Policy';
+$_['entry_billmate_logo'] = 'Logotype displayed on the invoice';
 $_['entry_enable_logging_bm_requests'] = 'Enable debug mode (for developers)';
 $_['entry_sent_callback_email_status'] = 'Send email after Billmate status update';
 // Placeholder
 $_['placeholder_name'] 		= '';
 // Help
 $_['help_gdpr_message'] 		= 'Link to page that contain store terms and conditions';
+$_['help_logo_message'] 	    = 'Change logo for the payment. You will find the reference to your logo in your billmate online account';
 $_['help_privacy_policy_message'] 		= 'Link to page that contain store privacy policy';
 $_['help_invoice_fee_message'] 		= 'Specified in base currency. The invoice fee will be automatically converted into the used currency for the end customer.';
 $_['help_invoice_fee_tax_message'] 		= 'Select the tax class to be used for the invoice fee.';

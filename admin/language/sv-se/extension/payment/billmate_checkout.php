@@ -27,6 +27,7 @@ $_['entry_billmate_invoice_fee'] 	= 'Fakturaravgift';
 $_['entry_billmate_invoice_fee_tax'] 	= 'Fakturagebyrsskattklass';
 $_['entry_link_terms_cond'] = 'Butiksvillkor';
 $_['entry_link_privacy_policy'] = 'Integritetspolicy';
+$_['entry_billmate_logo'] = 'Logotype som visas på fakturan';
 $_['entry_enable_logging_bm_requests'] = 'Aktivera felsökningsläge (för utvecklare)';
 $_['entry_sent_callback_email_status'] = 'Skicka e-post efter Billmate-statusuppdatering';
 $_['entry_checkout_view_mode'] 	= 'Kassaläge';
@@ -34,6 +35,7 @@ $_['entry_checkout_view_mode'] 	= 'Kassaläge';
 $_['placeholder_name'] 		= '';
 // Help
 $_['help_gdpr_message'] 		= 'Länk till sida som innehåller butiksvillkor';
+$_['help_logo_message'] 	    = 'Ändra logotyp för betalningen. Du hittar referensen till din logotyp i ditt billmate online-konto';
 $_['help_privacy_policy_message'] 		= 'Länk till sida som innehåller Integritetspolicy';
 $_['help_invoice_fee_message'] 		= 'Anges i basvaluta. Fakturavgiften konverteras automatiskt till den använda valutan för slutkunden.';
 $_['help_invoice_fee_tax_message'] 		= 'Välj den skatteklass som ska användas för fakturavgiften.';
