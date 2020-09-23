@@ -191,9 +191,16 @@ class ModelBillmateCheckoutRequest extends Model
         ];
 
         $privacyPolicyLink = $this->getBmHelper()->getPrivacyPolicyLink();
+        $getBillmateLogo = $this->getBmHelper()->getInvoiceLogo();
+
         if ($privacyPolicyLink) {
             $this->requestData['CheckoutData']['privacyPolicy'] = $privacyPolicyLink;
         }
+
+        if ($getBillmateLogo) {
+            $this->requestData['PaymentData']['logo'] = $getBillmateLogo;
+        }
+
         if ($this->getBmHelper()->isCompanyView()) {
             $this->requestData['CheckoutData']['companyView'] = self::COMPANY_VIEW_FLAG;
         }
