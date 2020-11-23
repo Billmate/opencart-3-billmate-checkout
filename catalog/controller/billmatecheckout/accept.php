@@ -10,8 +10,9 @@ class ControllerBillmatecheckoutAccept extends FrontBmController {
     }
 
     public function index() {
-
-        if (!$this->helperBillmate->getSessionBmHash()) {
+		if (!isset($this->request->cookie['billmate_hash_Copy'])) {
+			
+        //if (!$this->helperBillmate->getSessionBmHash()) {
             $this->response->redirect($this->url->link('checkout/checkout', '', true));
         }
 
@@ -42,7 +43,7 @@ class ControllerBillmatecheckoutAccept extends FrontBmController {
         $this->loadBreadcrumbs();
         $this->loadBaseBlocks();
         $this->loadTextMessage();
-
+		
         $this->clearCartSession();
 
         $this->response->setOutput(
@@ -75,6 +76,7 @@ class ControllerBillmatecheckoutAccept extends FrontBmController {
     protected function clearCartSession() {
         $this->helperBillmate->unsetCart();
         $this->helperBillmate->resetSessionBmHash();
+		setcookie('billmate_hash_Copy', "", time()- 864000);
     }
 
     /**

@@ -35,11 +35,13 @@ class ModelBillmateCheckout extends Model {
 
         $this->initDefaultShippingMethod();
         $bmResponse = $this->getModelBillmateCheckoutRequest()->getResponse();
-
+		 
         if (isset($bmResponse['url'])) {
             $hash = $this->getHelper()->getHashFromUrl($bmResponse['url']);
             if ($hash) {
                 $this->getHelper()->setSessionBmHash($hash);
+				
+				setcookie('billmate_hash_Copy', $hash, time()+ 86400);
             }
 
             $checkoutData['iframe_url'] = $bmResponse['url'];
@@ -57,7 +59,7 @@ class ModelBillmateCheckout extends Model {
         $checkoutData['coupon_block'] = $this->getBMCouponBlock();
         $checkoutData['shipping_block'] = $this->getBMShippingMethodsBlock();
         $checkoutData['bm_options'] = $this->getPluginOptions();
-
+		
         return $checkoutData;
     }
 
