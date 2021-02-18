@@ -54,3 +54,4 @@ Copy the code below for the size that fits your needs.
 `<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/S.png" alt="Billmate Payment Gateway" /></a>`
 
 ## Changelog
+Will be added at a later time.
