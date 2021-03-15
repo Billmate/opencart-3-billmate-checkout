@@ -158,7 +158,7 @@ class ModelBillmateCheckoutRequest extends Model
                 'sessionid' => $this->generateBillmateOrderId(),
                 'logo' => $this->getBmHelper()->getLogoName(),
                 'accepturl' => $this->url->link(
-                    'billmatecheckout/accept',
+                    'checkout/billmate/accept',
                     '',
                     $this->request->server['HTTPS']
                 ),
@@ -168,7 +168,7 @@ class ModelBillmateCheckoutRequest extends Model
                     $this->request->server['HTTPS']
                 ),
                 'callbackurl' => $this->url->link(
-                    'billmatecheckout/callback',
+                    'checkout/billmate/callback',
                     '',
                     $this->request->server['HTTPS']
                 ),
@@ -213,7 +213,7 @@ class ModelBillmateCheckoutRequest extends Model
      */
     protected function addArticlesData()
     {
-        $data['products'] = array(); 
+        $data['products'] = array();
         $products = $this->cart->getProducts();
         foreach ($products as $product) {
          $prices = $this->getProductPrices($product);
@@ -226,7 +226,7 @@ class ModelBillmateCheckoutRequest extends Model
                         $product['name'].= $extraOption;
                     }
                 }
-            
+
             $this->requestData['Articles'][] = [
                 'quantity' => $product['quantity'],
                 'title' => $product['name'],
@@ -244,7 +244,7 @@ class ModelBillmateCheckoutRequest extends Model
                 'option' => json_encode($product['option']),
                 'download' => json_encode($product['download']),
             ];
-         
+
 }
         return $this;
     }
@@ -325,7 +325,7 @@ class ModelBillmateCheckoutRequest extends Model
             $shippingPrice = $this->session->data['shipping_method']['cost'];
             if ($shippingPrice) {
                 $cartTotals['shipping_rate'] = ($shippingWithTax / $shippingPrice) * 100;
-                $cartTotals['shipping_rate']  = substr($cartTotals['shipping_rate'], 1); 
+                $cartTotals['shipping_rate']  = substr($cartTotals['shipping_rate'], 1);
             }
         }
 
@@ -554,7 +554,7 @@ class ModelBillmateCheckoutRequest extends Model
     {
         return $this->bmcart;
     }
-  
+
     /**
      * @return HelperBillmate|Helperbm
      */
