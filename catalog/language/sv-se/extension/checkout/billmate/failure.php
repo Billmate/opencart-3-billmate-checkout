@@ -1,10 +1,10 @@
 <?php
 
 // Heading
-$_['heading_title'] = 'Failed Payment!';
+$_['heading_title'] = 'Betalningen misslyckades!';
 
 // Text
-$_['text_basket']   = 'Shopping Cart';
-$_['text_checkout'] = 'Checkout';
-$_['text_failure']  = 'Failed Payment';
-$_['text_message']  = '<p>There was a problem processing your payment and the order did not complete.</p><p>If the problem persists please <a href="%s">contact us</a> with the details of the order you are trying to place.</p>';
+$_['text_basket']   = 'Kundvagn';
+$_['text_checkout'] = 'Kassa';
+$_['text_failure']  = 'Avbruten betalning';
+$_['text_message']  = '<p>Det gick inte att genomföra din betalning och beställningen slutfördes inte.</p><p>Vänligen försök igen, om problemet kvarstår ber vi dig <a href="%s">kontakta oss</a>.</p>';
