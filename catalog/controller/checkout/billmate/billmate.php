@@ -1,6 +1,6 @@
 <?php
 
-class Billmate extends Classa
+class ControllerCheckoutBillmateBillmate extends Classa
 {
     public function __construct($registry)
     {

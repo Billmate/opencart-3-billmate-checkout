@@ -1,5 +1,6 @@
 <?php
-class ControllerCheckoutSuccess extends Controller
+
+class ControllerCheckoutBillmateSuccess extends Controller
 {
     public function index()
     {

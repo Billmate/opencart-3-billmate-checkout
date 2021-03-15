@@ -1,5 +1,6 @@
 <?php
-class ModelExtensionCheckoutBillmate extends Model
+
+class ModelCheckoutBillmateCart extends Model
 {
     public function clearCustomCart($session_id)
     {

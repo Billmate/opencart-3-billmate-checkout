@@ -1,5 +1,6 @@
 <?php
-class ModelExtensionCheckoutBillmate extends Model
+
+class ModelCheckoutBillmateOrder extends Model
 {
     public function createOrder($payment_data)
     {
