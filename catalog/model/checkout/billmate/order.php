@@ -4,8 +4,9 @@ class ModelCheckoutBillmateOrder extends Model
 {
     public function createOrder($payment_data)
     {
-        $order_data = $this->buildEmptyOrder();
-        $order_data = $this->collectOrderData($order_data);
+        $this->load->model('checkout/billmate/country');
+
+        $order_data = $this->buildOrder();
 
         if (!empty($payment_data['Customer'])) {
             $order_data['shipping_firstname']  = $payment_data['Customer']['Shipping']['firstname'];
@@ -16,7 +17,9 @@ class ModelCheckoutBillmateOrder extends Model
             $order_data['shipping_city']       = $payment_data['Customer']['Shipping']['city'];
             $order_data['shipping_postcode']   = $payment_data['Customer']['Shipping']['zip'];
             $order_data['shipping_country']    = $payment_data['Customer']['Shipping']['country'];
-            $order_data['shipping_country_id'] = 0; // @todo Get country id
+            $order_data['shipping_country_id'] = $this->model_checkout_billmate_country->getCountryIdByCode(
+                $payment_data['Customer']['Shipping']['country']
+            );
 
             $order_data['payment_firstname']  = $payment_data['Customer']['Billing']['firstname'];
             $order_data['payment_lastname']   = $payment_data['Customer']['Billing']['lastname'];
@@ -26,7 +29,9 @@ class ModelCheckoutBillmateOrder extends Model
             $order_data['payment_city']       = $payment_data['Customer']['Billing']['city'];
             $order_data['payment_postcode']   = $payment_data['Customer']['Billing']['zip'];
             $order_data['payment_country']    = $payment_data['Customer']['Billing']['country'];
-            $order_data['payment_country_id'] = 0; // @todo Get country id
+            $order_data['payment_country_id'] = $this->model_checkout_billmate_country->getCountryIdByCode(
+                $payment_data['Customer']['Billing']['country']
+            );
 
             if (!empty($payment_data['Customer']['Billing']['email'])) {
                 $order_data['email'] = $payment_data['Customer']['Billing']['email'];
@@ -39,65 +44,51 @@ class ModelCheckoutBillmateOrder extends Model
 
         if (!empty($payment_data['PaymentData'])) {
             $billmate_method = (int)$payment_data['PaymentData']['method'];
-            // @todo Make message for order history
 
-            $billmate_status = $payment_data['PaymentData']['status'];
-            // @todo Get corresponding order status
+            switch ($billmate_method) {
+                case 1:
+                    $payment_method = 'Billmate Checkout - Invoice';
+                    break;
 
+                case 2:
+                    $payment_method = 'Billmate Checkout - Invoiceservice';
+                    break;
+
+                case 4:
+                    $payment_method = 'Billmate Checkout - Partpay';
+                    break;
+
+                case 8:
+                    $payment_method = 'Billmate Checkout - Cardpay';
+                    break;
+
+                case 16:
+                    $payment_method = 'Billmate Checkout - Bankpay';
+                    break;
+
+                case 1024:
+                    $payment_method = 'Billmate Checkout - Swish';
+                    break;
+
+                default:
+                    $payment_method = 'Billmate Checkout';
+                    break;
+
+            }
+
+            $order_data['payment_method'] = $payment_method;
         }
+
+        $order_id = $this->model_checkout_order->addOrder($order_data);
 
         if (!empty($payment_data['Cart'])) {
             $total = intval($payment_data['Cart']['Total']['withtax']) / 100;
             // @todo Check if total is equal to order
         }
-    }
 
-    public function collectOrderData($order_data)
-    {
-        $order_data = $this->buildEmptyOrder();
+        $this->session->data['order_id'] = $order_id;
 
-        if ($this->cart->hasShipping()) {
-            $order_data['shipping_method'] = $this->getShippingTitle();
-            $order_data['shipping_code']   = $this->getShippingCode();
-        }
-
-        if ($this->customer->isLogged()) {
-            $this->load->model('account/customer');
-
-            $customer = $this->model_account_customer->getCustomer($this->customer->getId());
-
-            $order_data['customer_id']       = $this->customer->getId();
-            $order_data['customer_group_id'] = $customer['customer_group_id'];
-            $order_data['firstname']         = $customer['firstname'];
-            $order_data['lastname']          = $customer['lastname'];
-            $order_data['email']             = $customer['email'];
-            $order_data['telephone']         = $customer['telephone'];
-            $order_data['custom_field']      = json_decode($customer['custom_field'], true);
-        }
-
-        if (!empty($this->request->cookie['tracking'])) {
-            $order_data['affiliate_id'] = $this->getAffiliateId();
-            $order_data['commission']   = $this->getCommission();
-            $order_data['marketing_id'] = $this->getMarketingId();
-            $order_data['tracking']     = $this->request->cookie['tracking'];
-        }
-
-        list($totals, $taxes, $total) = $this->getTotals();
-
-        $order_data['total'] = $total;
-        $order_data['totals'] = $totals;
-
-        $order_data['products'] = $this->getProducts();
-        $order_data['vouchers'] = $this->getVouchers();
-
-        $this->session->data['order_id'] = $this->model_checkout_order->addOrder($order_data);
-
-        return $this->session->data['order_id'];
-    }
-
-    public function updateOrder($order_id)
-    {
-
+        return $order_id;
     }
 
     public function addInvoice($order_id, $invoice_id)
@@ -306,9 +297,9 @@ class ModelCheckoutBillmateOrder extends Model
         $this->model_checkout_order->addOrderHistory($klarna_checkout_order['order_id'], $order_status_id);
     }
 
-    private function buildEmptyOrder()
+    private function buildOrder()
     {
-        return [
+        $order_data = [
             'invoice_no'              => null,
             'invoice_prefix'          => $this->config->get('config_invoice_prefix'),
             'store_id'                => $this->config->get('config_store_id'),
@@ -371,5 +362,41 @@ class ModelCheckoutBillmateOrder extends Model
             'totals'                  => [],
             'vouchers'                => [],
         ];
+
+        if ($this->cart->hasShipping()) {
+            $order_data['shipping_method'] = $this->getShippingTitle();
+            $order_data['shipping_code']   = $this->getShippingCode();
+        }
+
+        if ($this->customer->isLogged()) {
+            $this->load->model('account/customer');
+
+            $customer = $this->model_account_customer->getCustomer($this->customer->getId());
+
+            $order_data['customer_id']       = $this->customer->getId();
+            $order_data['customer_group_id'] = $customer['customer_group_id'];
+            $order_data['firstname']         = $customer['firstname'];
+            $order_data['lastname']          = $customer['lastname'];
+            $order_data['email']             = $customer['email'];
+            $order_data['telephone']         = $customer['telephone'];
+            $order_data['custom_field']      = json_decode($customer['custom_field'], true);
+        }
+
+        if (!empty($this->request->cookie['tracking'])) {
+            $order_data['affiliate_id'] = $this->getAffiliateId();
+            $order_data['commission']   = $this->getCommission();
+            $order_data['marketing_id'] = $this->getMarketingId();
+            $order_data['tracking']     = $this->request->cookie['tracking'];
+        }
+
+        list($totals, $taxes, $total) = $this->getTotals();
+
+        $order_data['total'] = $total;
+        $order_data['totals'] = $totals;
+
+        $order_data['products'] = $this->getProducts();
+        $order_data['vouchers'] = $this->getVouchers();
+
+        return $order_data;
     }
 }

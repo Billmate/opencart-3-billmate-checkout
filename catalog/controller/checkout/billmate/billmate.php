@@ -98,10 +98,25 @@ class ControllerCheckoutBillmateBillmate extends Controller
         }
 
         try {
-            $this->model_checkout_order->addOrderHistory(
-                $order['id'],
-                $this->config->get('payment_billmate_checkout_order_status_id')
-            );
+            switch ($payment_data['PaymentData']['status']) {
+                case 'Paid':
+                    $order_status = 2;
+                    break;
+
+                case 'Cancelled':
+                    $order_status = 7;
+                    break;
+
+                case 'Created':
+                    $order_status = 1;
+                    break;
+
+                default:
+                    $order_status = $this->config->get('payment_billmate_checkout_order_status_id');
+                    break;
+            }
+
+            $this->model_checkout_order->addOrderHistory($order['id'], $order_status);
         } catch (Exception $e) {
             return $this->halt($this->language->get('error_order_history'));
         }
