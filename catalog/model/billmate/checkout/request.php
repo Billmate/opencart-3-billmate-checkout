@@ -158,7 +158,7 @@ class ModelBillmateCheckoutRequest extends Model
                 'sessionid' => $this->generateBillmateOrderId(),
                 'logo' => $this->getBmHelper()->getLogoName(),
                 'accepturl' => $this->url->link(
-                    'checkout/billmate/accept',
+                    'checkout/billmate/billmate/accept',
                     '',
                     $this->request->server['HTTPS']
                 ),
@@ -168,7 +168,7 @@ class ModelBillmateCheckoutRequest extends Model
                     $this->request->server['HTTPS']
                 ),
                 'callbackurl' => $this->url->link(
-                    'checkout/billmate/callback',
+                    'checkout/billmate/billmate/callback',
                     '',
                     $this->request->server['HTTPS']
                 ),

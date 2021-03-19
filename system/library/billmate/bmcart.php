@@ -1,5 +1,7 @@
 <?php
+
 namespace Billmate;
+
 use Cart\Cart;
 
 class Bmcart extends Cart
@@ -14,6 +16,7 @@ class Bmcart extends Cart
     public function clearBySession($sessionId)
     {
         $this->clearCartBySession($sessionId);
+
         return $this->db->query("DELETE FROM " . DB_PREFIX . "cart WHERE session_id = '" . $this->db->escape($sessionId) . "'");
     }
 
@@ -36,6 +39,7 @@ class Bmcart extends Cart
     {
         $this->addCartSession($sessionId);
         $sessionCartId = $this->getSessionCartId($sessionId);
+
         return $this->addPrefix($sessionCartId);
     }
 

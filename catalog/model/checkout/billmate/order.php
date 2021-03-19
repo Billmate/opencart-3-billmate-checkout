@@ -352,7 +352,7 @@ class ModelCheckoutBillmateOrder extends Model
             'shipping_custom_field'   => null,
             'shipping_method'         => null,
             'shipping_code'           => null,
-            'comment'                 => $this->session->data['comment'],
+            'comment'                 => !empty($this->session->data['comment']) ? $this->session->data['comment'] : null,
             'total'                   => null,
             'order_status_id'         => 0,
             'affiliate_id'            => 0,

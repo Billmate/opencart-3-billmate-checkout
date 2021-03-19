@@ -1,6 +1,6 @@
 <?php
 
-class ControllerCheckoutBillmateBillmate extends Classa
+class ControllerCheckoutBillmateBillmate extends Controller
 {
     public function __construct($registry)
     {
@@ -11,6 +11,10 @@ class ControllerCheckoutBillmateBillmate extends Classa
 
     public function accept()
     {
+        if ($this->request->server['REQUEST_METHOD'] != 'POST') {
+            return $this->response->redirect($this->url->link('checkout/checkout', '', true));
+        }
+
         $this->load->language('checkout/billmate/accept');
 
         $this->load->model('checkout/billmate/order');
@@ -35,7 +39,7 @@ class ControllerCheckoutBillmateBillmate extends Classa
             return $this->failure();
         }
 
-        if (empty($this->session->data['billmate_checkout_hash'])) {
+        if (!$this->cart->hasProducts()) {
             $this->log->write($this->language->get('error_no_session'));
 
             return $this->failure();
@@ -52,15 +56,19 @@ class ControllerCheckoutBillmateBillmate extends Classa
 
     public function success()
     {
-        return $this->redirect($this->url->link('checkout/billmate/success', '', 'SSL'));
+        return $this->response->redirect($this->url->link('checkout/billmate/success', '', true));
     }
 
     public function failure() {
-        return $this->redirect($this->url->link('checkout/billmate/failure', '', 'SSL'));
+        return $this->response->redirect($this->url->link('checkout/billmate/failure', '', true));
     }
 
     public function callback()
     {
+        if ($this->request->server['REQUEST_METHOD'] != 'POST') {
+            return $this->response->redirect($this->url->link('checkout/checkout', '', true));
+        }
+
         $this->load->language('checkout/billmate/callback');
 
         $this->load->model('checkout/order');
@@ -164,7 +172,7 @@ class ControllerCheckoutBillmateBillmate extends Classa
 
     private function getRequestBody()
     {
-        if ($this->request->request['data'] && $this->request->request['credentials']) {
+        if (!empty($this->request->request['data']) && !empty($this->request->request['credentials'])) {
             return [
                 'data'        => json_decode($this->request->request['data'], true),
                 'credentials' => json_decode($this->request->request['credentials'], true),

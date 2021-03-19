@@ -46,7 +46,7 @@ class ControllerCheckoutBillmateSuccess extends Controller
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_success'),
-            'href' => $this->url->link('checkout/success')
+            'href' => $this->url->link('checkout/billmate/success')
         );
 
         if ($this->customer->isLogged()) {
