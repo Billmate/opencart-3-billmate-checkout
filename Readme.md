@@ -5,8 +5,7 @@ By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 This is a payment module for OpenCart 3 that allows you to pay using Billmate Checkout. Billmate Checkout is a payment solution from Billmate that creates a iframe payment solution on the OpenCart 3 Checkout page.
 
 ## Important Note
-This repo **only supports Billmate Checkout** and ~~**not Custom Pay~~**.
-
+This repo **only supports Billmate Checkout** and **not Custom Pay**.
 
 ## COMPATIBILITY OpenCart versions
 3.0.0.0	- 3.0.3.7

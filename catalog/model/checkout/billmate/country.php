@@ -1,6 +1,6 @@
 <?php
 
-class ModelCheckoutBillmateCounty extends Model
+class ModelCheckoutBillmateCountry extends Model
 {
     public function getCountryIdByCode($country_code)
     {

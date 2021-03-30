@@ -4,34 +4,57 @@ class ModelCheckoutBillmateOrder extends Model
 {
     public function createOrder($payment_data)
     {
+        $this->load->model('checkout/order');
         $this->load->model('checkout/billmate/country');
 
         $order_data = $this->buildOrder();
 
         if (!empty($payment_data['Customer'])) {
-            $order_data['shipping_firstname']  = $payment_data['Customer']['Shipping']['firstname'];
-            $order_data['shipping_lastname']   = $payment_data['Customer']['Shipping']['lastname'];
-            $order_data['shipping_company']    = $payment_data['Customer']['Shipping']['company'];
-            $order_data['shipping_address_1']  = $payment_data['Customer']['Shipping']['street'];
-            $order_data['shipping_address_2']  = $payment_data['Customer']['Shipping']['street2'];
-            $order_data['shipping_city']       = $payment_data['Customer']['Shipping']['city'];
-            $order_data['shipping_postcode']   = $payment_data['Customer']['Shipping']['zip'];
-            $order_data['shipping_country']    = $payment_data['Customer']['Shipping']['country'];
+            $shipping_address = !empty($payment_data['Customer']['Shipping'])
+                ? $payment_data['Customer']['Shipping']
+                : $payment_data['Customer']['Billing'];
+
+            array_walk($shipping_address, function (&$value) {
+                $value = Encoding::fixUTF8($value);
+            });
+
+            $order_data['shipping_firstname']  = $shipping_address['firstname'];
+            $order_data['shipping_lastname']   = $shipping_address['lastname'];
+            $order_data['shipping_company']    = !empty($shipping_address['company']) ? $shipping_address['company'] : null;
+            $order_data['shipping_address_1']  = $shipping_address['street'];
+            $order_data['shipping_address_2']  = !empty($shipping_address['street2']) ? $shipping_address['street2'] : null;
+            $order_data['shipping_city']       = $shipping_address['city'];
+            $order_data['shipping_postcode']   = $shipping_address['zip'];
+            $order_data['shipping_country']    = $shipping_address['country'];
             $order_data['shipping_country_id'] = $this->model_checkout_billmate_country->getCountryIdByCode(
-                $payment_data['Customer']['Shipping']['country']
+                $shipping_address['country']
             );
 
-            $order_data['payment_firstname']  = $payment_data['Customer']['Billing']['firstname'];
-            $order_data['payment_lastname']   = $payment_data['Customer']['Billing']['lastname'];
-            $order_data['payment_company']    = $payment_data['Customer']['Billing']['company'];
-            $order_data['payment_address_1']  = $payment_data['Customer']['Billing']['street'];
-            $order_data['payment_address_2']  = $payment_data['Customer']['Billing']['street2'];
-            $order_data['payment_city']       = $payment_data['Customer']['Billing']['city'];
-            $order_data['payment_postcode']   = $payment_data['Customer']['Billing']['zip'];
-            $order_data['payment_country']    = $payment_data['Customer']['Billing']['country'];
+            $payment_address = $payment_data['Customer']['Billing'];
+
+            array_walk($payment_address, function (&$value) {
+                $value = Encoding::fixUTF8($value);
+            });
+
+            $order_data['payment_firstname']  = $payment_address['firstname'];
+            $order_data['payment_lastname']   = $payment_address['lastname'];
+            $order_data['payment_company']    = !empty($payment_address['company']) ? $payment_address['company'] : null;
+            $order_data['payment_address_1']  = $payment_address['street'];
+            $order_data['payment_address_2']  = !empty($payment_address['street2']) ? $payment_address['street2'] : null;
+            $order_data['payment_city']       = $payment_address['city'];
+            $order_data['payment_postcode']   = $payment_address['zip'];
+            $order_data['payment_country']    = $payment_address['country'];
             $order_data['payment_country_id'] = $this->model_checkout_billmate_country->getCountryIdByCode(
-                $payment_data['Customer']['Billing']['country']
+                $payment_address['country']
             );
+
+            if (!empty($payment_address['firstname'])) {
+                $order_data['firstname'] = $payment_address['firstname'];
+            }
+
+            if (!empty($payment_address['lastname'])) {
+                $order_data['lastname'] = $payment_address['lastname'];
+            }
 
             if (!empty($payment_data['Customer']['Billing']['email'])) {
                 $order_data['email'] = $payment_data['Customer']['Billing']['email'];
@@ -94,7 +117,8 @@ class ModelCheckoutBillmateOrder extends Model
     public function addInvoice($order_id, $invoice_id)
     {
         $this->db->query('
-            INSERT INTO ' . DB_PREFIX . 'billmate_order_invoice (`order_id`, `invoice_id`) VALUES (' . (int)$order_id . ',"' . $this->db->escape($invoice_id) . '")
+            INSERT INTO ' . DB_PREFIX . 'billmate_order_invoice (`order_id`, `invoice_id`)
+            VALUES (' . (int)$order_id . ',"' . $this->db->escape($invoice_id) . '")
             ON DUPLICATE KEY UPDATE `invoice_id` = "' . $this->db->escape($invoice_id) . '"'
         );
     }
@@ -236,7 +260,6 @@ class ModelCheckoutBillmateOrder extends Model
         $taxes = $this->cart->getTaxes();
         $total = 0;
 
-        // Because __call can not keep var references so we put them into an array.
         $total_data = array(
             'totals' => &$totals,
             'taxes'  => &$taxes,
@@ -259,7 +282,6 @@ class ModelCheckoutBillmateOrder extends Model
             if ($this->config->get('total_' . $result['code'] . '_status')) {
                 $this->load->model('extension/total/' . $result['code']);
 
-                // We have to put the totals in an array so that they pass by reference.
                 $this->{'model_extension_total_' . $result['code']}->getTotal($total_data);
             }
         }
