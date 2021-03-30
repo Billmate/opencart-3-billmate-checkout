@@ -5,14 +5,16 @@ class ControllerEventBillmateheader extends Controller {
      * @var array
      */
     protected $allowedJsRoutes = [
-        'checkout/checkout'
+        'checkout/checkout',
+        'checkout/checkout/index'
     ];
 
      /**
      * @var array
      */
     protected $allowedCssRoutes = [
-        'checkout/checkout'
+        'checkout/checkout',
+        'checkout/checkout/index'
     ];
 
     /**
