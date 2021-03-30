@@ -25,7 +25,7 @@ class ControllerCheckoutBillmateBillmate extends Controller
             return $this->failure();
         }
 
-        $this->writeToCustomLog($request);
+        $this->writeToCustomLog($request, false);
 
         if (!$connection = $this->getConnection()) {
             $this->log->write($this->language->get('error_no_connection'));
@@ -45,22 +45,21 @@ class ControllerCheckoutBillmateBillmate extends Controller
             return $this->failure();
         }
 
-        if (!$order = $this->model_checkout_billmate_order->createOrder($payment_data)) {
+        $this->writeToCustomLog($payment_data, false);
+
+        if (!$order_id = $this->model_checkout_billmate_order->createOrder($payment_data)) {
             $this->log->write($this->language->get('error_create_order'));
 
             return $this->failure();
         }
 
+        if (!$this->updatePaymentData($connection, $order_id, $request['data']['number'])) {
+            $this->log->write($this->language->get('error_update_payment'));
+
+            return $this->failure();
+        }
+
         return $this->success();
-    }
-
-    public function success()
-    {
-        return $this->response->redirect($this->url->link('checkout/billmate/success', '', true));
-    }
-
-    public function failure() {
-        return $this->response->redirect($this->url->link('checkout/billmate/failure', '', true));
     }
 
     public function callback()
@@ -89,11 +88,13 @@ class ControllerCheckoutBillmateBillmate extends Controller
             return $this->halt($this->language->get('error_no_payment'));
         }
 
-        if (empty($payment_data['PaymentInfo']['real_order_id'])) {
+        $this->writeToCustomLog($payment_data);
+
+        if (empty($payment_data['PaymentData']['orderid'])) {
             return $this->halt($this->language->get('error_no_order_id'));
         }
 
-        if (!$order = $this->model_checkout_order->getOrder($payment_data['PaymentInfo']['real_order_id'])) {
+        if (!$order = $this->model_checkout_order->getOrder($payment_data['PaymentData']['orderid'])) {
             return $this->halt($this->language->get('error_no_order'));
         }
 
@@ -116,28 +117,33 @@ class ControllerCheckoutBillmateBillmate extends Controller
                     break;
             }
 
-            $this->model_checkout_order->addOrderHistory($order['id'], $order_status);
+            $this->model_checkout_order->addOrderHistory($order['order_id'], $order_status, true);
         } catch (Exception $e) {
             return $this->halt($this->language->get('error_order_history'));
         }
 
         try {
             $this->model_checkout_billmate_order->addInvoice(
-                $order['id'],
+                $order['order_id'],
                 $request['data']['number']
             );
         } catch (Exception $e) {
             return $this->halt($this->language->get('error_add_invoice'));
         }
 
-        if (!$this->updatePaymentData($connection, $order['id'], $request['data']['number'])) {
-            return $this->halt($this->language->get('error_update_payment'));
-        }
-
         $this->model_checkout_billmate_cart->clearCustomCart($payment_data['PaymentData']['orderid']);
 
         http_response_code(200);
         exit;
+    }
+
+    public function success()
+    {
+        return $this->response->redirect($this->url->link('checkout/billmate/success', '', true));
+    }
+
+    public function failure() {
+        return $this->response->redirect($this->url->link('checkout/billmate/failure', '', true));
     }
 
     private function halt($message)
@@ -153,6 +159,8 @@ class ControllerCheckoutBillmateBillmate extends Controller
         try {
             return $this->billmate->getBillmateConnection();
         } catch (Exception $e) {
+            $this->log->write($e->getMessage());
+
             return null;
         }
     }
@@ -164,6 +172,8 @@ class ControllerCheckoutBillmateBillmate extends Controller
                 'number' => $number,
             ]);
         } catch (Exception $e) {
+            $this->log->write($e->getMessage());
+
             return null;
         }
     }
@@ -172,15 +182,13 @@ class ControllerCheckoutBillmateBillmate extends Controller
     {
         try {
             return $connection->updatePayment([
-                'PaymentInfo' => [
-                    'real_order_id' => $order_id,
-                ],
                 'PaymentData' => [
                     'number'  => $payment_number,
                     'orderid' => $order_id,
                 ],
             ]);
         } catch (Exception $e) {
+
             return null;
         }
     }
@@ -189,26 +197,26 @@ class ControllerCheckoutBillmateBillmate extends Controller
     {
         if (!empty($this->request->request['data']) && !empty($this->request->request['credentials'])) {
             return [
-                'data'        => json_decode($this->request->request['data'], true),
-                'credentials' => json_decode($this->request->request['credentials'], true),
+                'data'        => json_decode($_REQUEST['data'], true),
+                'credentials' => json_decode($_REQUEST['credentials'], true),
             ];
         }
 
         try {
-            return json_decode(file_get_contents('php://input'));
+            return json_decode(file_get_contents('php://input'), true);
         } catch (Exception $e) {
             return null;
         }
     }
 
-    private function writeToCustomLog($data)
+    private function writeToCustomLog($data, $is_callback = true)
     {
         if (!$this->config->get('payment_billmate_checkout_log_enabled')) {
             return;
         }
 
-        $customLog = new Log('billmate.log');
-        $customLog->write($data);
+        $log = new Log(($is_callback) ? 'billmate_callback.log' : 'billmate_accept.log');
+        $log->write($data);
 
         return true;
     }
