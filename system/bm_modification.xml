@@ -2,7 +2,7 @@
 <modification>
     <name>Billmate Modification</name>
     <code>billmate_checkout</code>
-    <version>1.1.8</version>
+    <version>1.2.0</version>
     <author>Billmate</author>
     <link>https://www.billmate.se/</link>
     <file path="admin/controller/sale/order.php">
