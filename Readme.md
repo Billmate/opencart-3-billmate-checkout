@@ -1,56 +1,27 @@
-# Billmate Payment Gateway for OpenCart 3
-By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
+# Billmate Checkout for OpenCart 3.x
 
-## Description
-This is a payment module for OpenCart 3 that allows you to pay using Billmate Checkout. Billmate Checkout is a payment solution from Billmate that creates a iframe payment solution on the OpenCart 3 Checkout page.
+Billmate Checkout for OpenCart is a checkout solution that allows you to receive payments using Billmate Checkout.
 
-## Important Note
-This repo **only supports Billmate Checkout** and **not Custom Pay**.
+# Requirements
 
-## COMPATIBILITY OpenCart versions
-3.0.0.0	- 3.0.3.7
+* You need an [agreement with Billmate](https://www.billmate.se/kontakt/).
+* OpenCart 3.0.0.0 or newer is required.
+* PHP 7.3 or higher is required.
+* SSL Certificate is required.
 
-## Journal 3 Compatibility
+# Documentation
 
-### INSTALLATION
-* 1: Go to the Journal 3 settings in OC3 backoffice.
-* 2: Go to skins -> default -> checkout.
-* 3: Active Checkout = OpenCart.
-* 4: Click save button.
-
-## Documentation
-Will be added in an upcoming release.
+Here is the section regarding the different parts from a documentation perspective.
 
 ## Installation
-## Supported Languages
-### Admin
-* English (en_GB)
-* Swedish (sv_SE)
-### Frontend
-* English (en_GB)
-* Swedish (sv_SE)
 
-## Installation
 1. Download and unzip the latest release zip file.
-2. Add the files to your root directory.
+2. Upload the files to your root directory.
 3. Make sure you have set permissions to edit our plugin in Admin. Permissions are found in System -> Users -> User Group.
+4. Navigate to Extensions -> Extensions -> Payment -> Billmate Checkout.
+5. Enter your credentials and enable the extension.
 
-## How to place Billmate logo on your site.
-Copy the code below for the size that fits your needs.
+### Configuration
 
-### Large
-<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/L.png" alt="Billmate Payment Gateway" /></a>
+Coming soon...
 
-`<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/L.png" alt="Billmate Payment Gateway" /></a>`
-
-### Medium
-<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/M.png" alt="Billmate Payment Gateway" /></a>
-
-`<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/M.png" alt="Billmate Payment Gateway" /</a>`
-
-### Small
-<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/S.png" alt="Billmate Payment Gateway" /></a>
-
-`<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/S.png" alt="Billmate Payment Gateway" /></a>`
-
-## Changelog
