@@ -1,13 +1,34 @@
 <?php
 
+use Billmate\Encoding;
+
 class ModelCheckoutBillmateOrder extends Model
 {
-    public function createOrder($payment_data)
+    public function getOrder($order_id, $strict = false)
+    {
+        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order` o WHERE o.order_id = '" . (int)$order_id . "' LIMIT 1");
+
+        if ($strict && !empty($query->row['order_status_id'])) {
+            return null;
+        }
+
+        return $query->row;
+    }
+
+    public function createOrder()
     {
         $this->load->model('checkout/order');
+
+        $order_id = $this->model_checkout_order->addOrder($this->buildOrder());
+
+        return $this->model_checkout_order->getOrder($order_id);
+    }
+
+    public function updateOrder($order_id, $payment_data)
+    {
         $this->load->model('checkout/billmate/country');
 
-        $order_data = $this->buildOrder();
+        $order_data = $this->getOrder($order_id);
 
         if (!empty($payment_data['Customer'])) {
             $shipping_address = !empty($payment_data['Customer']['Shipping'])
@@ -74,19 +95,19 @@ class ModelCheckoutBillmateOrder extends Model
                     break;
 
                 case 2:
-                    $payment_method = 'Billmate Checkout - Invoiceservice';
+                    $payment_method = 'Billmate Checkout - Invoice Service';
                     break;
 
                 case 4:
-                    $payment_method = 'Billmate Checkout - Partpay';
+                    $payment_method = 'Billmate Checkout - Part Payment';
                     break;
 
                 case 8:
-                    $payment_method = 'Billmate Checkout - Cardpay';
+                    $payment_method = 'Billmate Checkout - Card';
                     break;
 
                 case 16:
-                    $payment_method = 'Billmate Checkout - Bankpay';
+                    $payment_method = 'Billmate Checkout - Bank';
                     break;
 
                 case 1024:
@@ -102,25 +123,88 @@ class ModelCheckoutBillmateOrder extends Model
             $order_data['payment_method'] = $payment_method;
         }
 
-        $order_id = $this->model_checkout_order->addOrder($order_data);
+        $this->db->query("UPDATE `" . DB_PREFIX . "order` SET
+            firstname = '" . $this->db->escape($order_data['firstname']) . "',
+            lastname = '" . $this->db->escape($order_data['lastname']) . "',
+            email = '" . $this->db->escape($order_data['email']) . "',
+            telephone = '" . $this->db->escape($order_data['telephone']) . "',
+            payment_firstname = '" . $this->db->escape($order_data['payment_firstname']) . "',
+            payment_lastname = '" . $this->db->escape($order_data['payment_lastname']) . "',
+            payment_company = '" . $this->db->escape($order_data['payment_company']) . "',
+            payment_address_1 = '" . $this->db->escape($order_data['payment_address_1']) . "',
+            payment_address_2 = '" . $this->db->escape($order_data['payment_address_2']) . "',
+            payment_city = '" . $this->db->escape($order_data['payment_city']) . "',
+            payment_postcode = '" . $this->db->escape($order_data['payment_postcode']) . "',
+            payment_country = '" . $this->db->escape($order_data['payment_country']) . "',
+            payment_country_id = '" . (int)$order_data['payment_country_id'] . "',
+            payment_method = '" . $this->db->escape($order_data['payment_method']) . "',
+            shipping_firstname = '" . $this->db->escape($order_data['shipping_firstname']) . "',
+            shipping_lastname = '" . $this->db->escape($order_data['shipping_lastname']) . "',
+            shipping_company = '" . $this->db->escape($order_data['shipping_company']) . "',
+            shipping_address_1 = '" . $this->db->escape($order_data['shipping_address_1']) . "',
+            shipping_address_2 = '" . $this->db->escape($order_data['shipping_address_2']) . "',
+            shipping_city = '" . $this->db->escape($order_data['shipping_city']) . "',
+            shipping_postcode = '" . $this->db->escape($order_data['shipping_postcode']) . "',
+            shipping_country = '" . $this->db->escape($order_data['shipping_country']) . "',
+            shipping_country_id = '" . (int)$order_data['shipping_country_id'] . "',
+            date_modified = NOW()
+            WHERE order_id = '" . (int)$order_id . "'
+        ");
 
         if (!empty($payment_data['Cart'])) {
-            $total = intval($payment_data['Cart']['Total']['withtax']) / 100;
+            $invoice_fee = ($payment_data['Cart']['Handling']['withouttax'] ?? 0) / 100;
+            $invoice_tax_rate = $payment_data['Cart']['Handling']['taxrate'] ?? 0;
+
+            if (!empty($invoice_fee)) {
+                $this->addInvoiceFee($order_id, $invoice_fee, $invoice_tax_rate);
+            }
+
             // @todo Check if total is equal to order
+            $total = intval($payment_data['Cart']['Total']['withtax']) / 100;
         }
 
-        $this->session->data['order_id'] = $order_id;
-
-        return $order_id;
+        return true;
     }
 
-    public function addInvoice($order_id, $invoice_id)
+    public function addInvoiceFee($order_id, $fee, $tax_rate)
     {
-        $this->db->query('
-            INSERT INTO ' . DB_PREFIX . 'billmate_order_invoice (`order_id`, `invoice_id`)
-            VALUES (' . (int)$order_id . ',"' . $this->db->escape($invoice_id) . '")
-            ON DUPLICATE KEY UPDATE `invoice_id` = "' . $this->db->escape($invoice_id) . '"'
-        );
+        $this->load->language('checkout/billmate/checkout');
+
+        $totals = $this->model_checkout_order->getOrderTotals($order_id);
+
+        // @todo Convert to order total extension
+        $sort_order = 3;
+
+        if (array_search('billmate_fee', array_column($totals, 'code')) !== false) {
+            return;
+        }
+
+        $this->db->query("DELETE FROM " . DB_PREFIX . "order_total WHERE order_id = '" . (int)$order_id . "'");
+
+        foreach ($totals as $total) {
+            switch ($total['code']) {
+                case 'tax':
+                    $sort_order = $total['sort_order'] - 1;
+                    $total['value'] += ($tax_rate / 100) * $fee;
+
+                    $this->insertOrderTotal($order_id, $total['code'], $total['title'], $total['value'], $total['sort_order']);
+                    break;
+
+                case 'total':
+                    $total['value'] += (($tax_rate / 100) + 1) * $fee;
+
+                    $this->insertOrderTotal($order_id, $total['code'], $total['title'], $total['value'], $total['sort_order']);
+                    $this->updateOrderTotal($order_id, $total['value']);
+                    break;
+
+                default:
+                    $this->insertOrderTotal($order_id, $total['code'], $total['title'], $total['value'], $total['sort_order']);
+                    break;
+            }
+        }
+
+        // @todo Convert to order total extension
+        $this->insertOrderTotal($order_id, 'billmate_fee', $this->language->get('text_invoice_fee'), $fee, $sort_order);
     }
 
     public function getProducts()
@@ -215,7 +299,8 @@ class ModelCheckoutBillmateOrder extends Model
         return ($marketing_info) ? $marketing_info['marketing_id'] : 0;
     }
 
-    public function getForwardedIp() {
+    public function getForwardedIp()
+    {
         if (!empty($this->request->server['HTTP_X_FORWARDED_FOR'])) {
             return $this->request->server['HTTP_X_FORWARDED_FOR'];
         } elseif (!empty($this->request->server['HTTP_CLIENT_IP'])) {
@@ -314,9 +399,41 @@ class ModelCheckoutBillmateOrder extends Model
         ];
     }
 
-    public function updateOrderStatus()
+    public function insertOrderTotal($order_id, $code, $title, $value, $sort_order)
     {
-        $this->model_checkout_order->addOrderHistory($klarna_checkout_order['order_id'], $order_status_id);
+        $this->db->query("INSERT INTO " . DB_PREFIX . "order_total SET order_id = '" . (int)$order_id . "', code = '" . $this->db->escape($code) . "', title = '" . $this->db->escape($title) . "', `value` = '" . (float)$value . "', sort_order = '" . (int)$sort_order . "'");
+    }
+
+    public function updateCheckoutUrl($order_id, $billmate_checkout_url)
+    {
+        $this->db->query("UPDATE `" . DB_PREFIX . "order` SET billmate_checkout = '" . $this->db->escape($billmate_checkout_url) . "', date_modified = NOW() WHERE order_id = '" . (int)$order_id . "'");
+    }
+
+    public function updateBillmateNumber($order_id, $billmate_number)
+    {
+        $this->db->query("UPDATE `" . DB_PREFIX . "order` SET billmate_number = '" . $this->db->escape($billmate_number) . "', date_modified = NOW() WHERE order_id = '" . (int)$order_id . "'");
+    }
+
+    public function updateBillmateStatus($order_id, $billmate_status)
+    {
+        $this->db->query("UPDATE `" . DB_PREFIX . "order` SET billmate_status = '" . $this->db->escape($billmate_status) . "', date_modified = NOW() WHERE order_id = '" . (int)$order_id . "'");
+    }
+
+    public function updateOrderComment($order_id, $comment)
+    {
+        $comment = strip_tags($comment);
+
+        $this->db->query("UPDATE `" . DB_PREFIX . "order` SET comment = '" . $this->db->escape($comment) . "', date_modified = NOW() WHERE order_id = '" . (int)$order_id . "'");
+    }
+
+    public function updateOrderTotal($order_id, $total)
+    {
+        $this->db->query("UPDATE `" . DB_PREFIX . "order` SET total = '" . $this->db->escape($total) . "', date_modified = NOW() WHERE order_id = '" . (int)$order_id . "'");
+    }
+
+    public function updateOrderStatus($order_id, $order_status_id)
+    {
+        $this->model_checkout_order->addOrderHistory($order_id, $order_status_id);
     }
 
     private function buildOrder()
