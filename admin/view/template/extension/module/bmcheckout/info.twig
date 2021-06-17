@@ -6,17 +6,5 @@
                 {{ warning_url_message }}
             </div>
         {% endif %}
-        <div class="form-group">
-            <label class="col-sm-2 control-label">
-                    {{ text_callback_urls_title }}
-            </label>
-            <div class="col-sm-10">
-                {% for url in callback_urls %}
-                    <div class="col-sm-10 media">
-                        {{ url }}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
     </div>
 </div>
