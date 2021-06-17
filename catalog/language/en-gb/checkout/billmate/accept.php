@@ -1,9 +1,7 @@
 <?php
 
 // Errors
-$_['error_no_request']     = '[ACCEPT] Failed to collect request data.';
-$_['error_no_connection']  = '[ACCEPT] Failed to initialize connection.';
-$_['error_no_payment']     = '[ACCEPT] Failed to collect payment data.';
-$_['error_no_session']     = '[ACCEPT] Failed to collect session data.';
-$_['error_create_order']   = '[ACCEPT] Failed to create an order.';
-$_['error_update_payment'] = '[ACCEPT] Failed to update payment data.';
+$_['error_no_request']  = '[ACCEPT] Failed to collect "request" data';
+$_['error_no_number']   = '[ACCEPT] Failed to collect "number"';
+$_['error_no_order_id'] = '[ACCEPT] Failed to collect "orderid"';
+$_['error_no_order']    = '[ACCEPT] Failed to load order with given "orderid"';
