@@ -1,231 +1,142 @@
 <?php
-class ControllerExtensionPaymentBillmateCheckout extends Controller {
-
-    const REQUEST_METHOD = 'POST';
-
-    const DEFAULT_MODULE_SETTINGS = [
-        'payment_billmate_checkout_status' => 0,
-        'payment_billmate_checkout_bm_id' => '',
-        'payment_billmate_checkout_secret' => '',
-        'payment_billmate_checkout_test_mode' => 1,
-        'payment_billmate_checkout_invoice_message' => 1,
-        'payment_billmate_checkout_push_events' => 0,
-        'payment_billmate_checkout_activate_status_id' => 2,
-        'payment_billmate_checkout_cancel_status_id' => 7,
-        'payment_billmate_checkout_order_status_id' => 15,
-        'payment_billmate_checkout_gdpr_link' => '',
-        'payment_billmate_checkout_privacy_policy_link' => '',
-        'payment_billmate_checkout_logo' => '',
-        'payment_billmate_checkout_log_enabled' => 0,
-        'payment_billmate_checkout_sent_email_status' => 1,
-        'payment_billmate_checkout_invoice_fee' => 0,
-        'payment_billmate_checkout_inv_fee_tax' => 0,
-        'payment_billmate_checkout_is_company_view' => 0,
-    ];
-
-    const MODULE_CODE = 'payment_billmate_checkout';
-
-    /**
-     * @var ModelBillmateConfigValidator
-     */
-    protected $configValidator;
-
-    /**
-     * ControllerExtensionModuleBillmateCheckout constructor.
-     *
-     * @param $registry
-     */
-    public function __construct($registry)
-    {
-        parent::__construct($registry);
-        $this->load->language('extension/payment/billmate_checkout');
-        $this->load->model('localisation/order_status');
-        $this->load->model('setting/setting');
-        $this->load->model('localisation/order_status');
-        $this->load->model('setting/setting');
-        $this->load->model('billmate/config/validator');
-        $this->load->model('billmate/payment/bmsetup');
-        $this->helperBillmate  = new Helperbm($registry);
-    }
-
-    /**
-     * @var array
-     */
-    protected $templateData = [];
+class ControllerExtensionPaymentBillmateCheckout extends Controller
+{
+    private $error = [];
 
     public function index()
     {
-        if ($this->request->server['REQUEST_METHOD'] == self::REQUEST_METHOD) {
-            if ($this->isValidData()) {
-                $this->saveRequestedOptions();
-                $values = $this->request->post;
-                $this->model_setting_setting->editSetting(self::MODULE_CODE, $values);
-                $this->templateData['success_message'] = $this->language->get('text_change_settings_success');
+        $this->load->model('setting/setting');
+
+        $this->load->language('extension/payment/billmate_checkout');
+
+        $this->document->setTitle($this->language->get('heading_title'));
+
+        if ($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validate()) {
+            $this->model_setting_setting->editSetting('payment_billmate_checkout', $this->request->post);
+
+            $this->session->data['success'] = $this->language->get('text_success');
+
+            $this->response->redirect($this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true));
+        }
+
+        // Make upgrade a bit easier...
+        if (!$this->config->get('payment_billmate_checkout_merchant_id') && $this->config->get('payment_billmate_checkout_bm_id')) {
+            $this->config->set('payment_billmate_checkout_merchant_id', $this->config->get('payment_billmate_checkout_bm_id'));
+        }
+
+        $data['breadcrumbs'] = [];
+
+        $data['breadcrumbs'][] = [
+            'text' => $this->language->get('text_home'),
+            'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true)
+        ];
+
+        $data['breadcrumbs'][] = [
+            'text' => $this->language->get('text_extension'),
+            'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true)
+        ];
+
+        $data['breadcrumbs'][] = [
+            'text' => $this->language->get('heading_title'),
+            'href' => $this->url->link('extension/payment/billmate_checkout', 'user_token=' . $this->session->data['user_token'], true)
+        ];
+
+        $data['action'] = $this->url->link('extension/payment/billmate_checkout', 'user_token=' . $this->session->data['user_token'], 'SSL');
+        $data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', 'SSL');
+
+        $fields = [
+            'merchant_id'              => '',
+            'secret'                   => '',
+            'terms_id'                 => null,
+            'policy_id'                => null,
+            'created_status_id'        => 2,
+            'pending_status_id'        => 1,
+            'payed_status_id'          => 15,
+            'canceled_status_id'       => 7,
+            'auto_activate'            => false,
+            'logo'                     => '',
+            'invoice_fee'              => 0,
+            'invoice_fee_tax_class_id' => 0,
+            'b2b_mode'                 => false,
+            'test_mode'                => true,
+            'debug_mode'               => true,
+            'status'                   => true,
+        ];
+
+        foreach ($fields as $field => $default) {
+            if (isset($this->request->post['payment_billmate_checkout_' . $field])) {
+                $data['payment_billmate_checkout_' . $field] = $this->request->post['payment_billmate_checkout_' . $field];
+            } elseif ($this->config->has('payment_billmate_checkout_' . $field)) {
+                $data['payment_billmate_checkout_' . $field] = $this->config->get('payment_billmate_checkout_' . $field);
             } else {
-                $this->config->set('payment_billmate_checkout_status', 0);
+                $data['payment_billmate_checkout_' . $field] = $default;
             }
         }
 
-        $this->document->addScript('view/javascript/bm-options.js');
-        $this->document->addStyle('view/stylesheet/billmatecheckout.css');
-        $this->runEditModuleSettings();
-    }
-
-    protected function runEditModuleSettings()
-    {
-        $this->loadTemplateData()
-            ->loadBaseBlocks()
-            ->loadBreadcrumbs();
-        $this->loadConfiguredValues();
-        $this->document->setTitle($this->language->get('heading_title'));
-
-        $templateData = $this->getTemplateData();
-        $htmlOutput = $this->load->view('extension/module/bmcheckout/settings', $templateData);
-        $this->response->setOutput($htmlOutput);
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isValidData()
-    {
-        $this->config->set('payment_billmate_checkout_bm_id', $this->request->post['payment_billmate_checkout_bm_id']);
-        $this->config->set('payment_billmate_checkout_secret', $this->request->post['payment_billmate_checkout_secret']);
-
-        $isValid = $this->getConfigValidator()->isConnectionValid();
-        if (!$isValid) {
-            $this->templateData['error_message'] = $this->language->get('error_billmate_connection');
-            return false;
+        if (isset($this->error['warning'])) {
+            $data['error_warning'] = $this->error['warning'];
+        } else {
+            $data['error_warning'] = '';
         }
 
-        return true;
+        if (isset($this->error['error_payment_billmate_checkout_merchant_id'])) {
+            $data['error_merchant_id'] = $this->error['error_payment_billmate_checkout_merchant_id'];
+        } else {
+            $data['error_merchant_id'] = '';
+        }
+
+        if (isset($this->error['error_payment_billmate_checkout_secret'])) {
+            $data['error_secret'] = $this->error['error_payment_billmate_checkout_secret'];
+        } else {
+            $data['error_secret'] = '';
+        }
+
+        $this->load->model('localisation/order_status');
+        $this->load->model('localisation/tax_class');
+        $this->load->model('catalog/information');
+
+        $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+        $data['tax_classes'] =  $this->model_localisation_tax_class->getTaxClasses();
+        $data['information_pages'] =  $this->model_catalog_information->getInformations();
+
+        $data['user_token'] = $this->session->data['user_token'];
+
+        $data['header'] = $this->load->controller('common/header');
+        $data['column_left'] = $this->load->controller('common/column_left');
+        $data['footer'] = $this->load->controller('common/footer');
+
+        $this->response->setOutput($this->load->view('extension/payment/billmate_checkout', $data));
     }
 
-    protected function saveRequestedOptions()
-    {
-        foreach($this->getOptionsNames() as $optionName ) {
-            $this->config->set($optionName, $this->request->post[$optionName]);
+    public function install() {
+        if ($this->user->hasPermission('modify', 'marketplace/extension')) {
+            $this->load->model('extension/payment/billmate_checkout');
+
+            $this->model_extension_payment_billmate_checkout->install();
         }
     }
 
-    public function install()
-    {
-        $this->getBMPaymentSetup()->registerEvents();
-        $this->getBMPaymentSetup()->addModifications();
-        $this->model_setting_setting->editSetting(self::MODULE_CODE, self::DEFAULT_MODULE_SETTINGS);
-    }
+    public function uninstall() {
+        if ($this->user->hasPermission('modify', 'marketplace/extension')) {
+            $this->load->model('extension/payment/billmate_checkout');
 
-    public function uninstall()
-    {
-        $this->getBMPaymentSetup()->unregisterEvents();
-        $this->getBMPaymentSetup()->deleteModifications();
-        $this->model_setting_setting->deleteSetting(self::MODULE_CODE);
-    }
-
-    /**
-     * @return $this
-     */
-    protected function loadTemplateData() {
-        $this->templateData['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
-        $this->templateData['plugin_version'] = Billmate::PLUGIN_VERSION;
-        $this->templateData['action'] = $this->url->link(
-            'extension/payment/billmate_checkout',
-            'user_token=' . $this->session->data['user_token'],
-            true
-        );
-        $this->templateData['invoice_fee_block'] = $this->load->controller('extension/payment/billmate_invoice_fee');
-        $this->templateData['info_block'] = $this->load->controller('extension/payment/billmate_info');
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function loadBaseBlocks()
-    {
-        $this->templateData['header'] = $this->load->controller('common/header');
-        $this->templateData['column_left'] = $this->load->controller('common/column_left');
-        $this->templateData['footer'] = $this->load->controller('common/footer');
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function loadConfiguredValues() {
-        foreach($this->getOptionsNames() as $optionName ) {
-            $this->templateData[$optionName] = $this->config->get($optionName);
+            $this->model_extension_payment_billmate_checkout->uninstall();
         }
-        return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function loadBreadcrumbs() {
-
-        $this->templateData['breadcrumbs'][] = array(
-            'text' => $this->language->get('text_home'),
-            'href' => $this->url->link(
-                'common/dashboard',
-                'user_token=' . $this->session->data['user_token'],
-                true
-            )
-        );
-
-        $this->templateData['breadcrumbs'][] = array(
-            'text' => $this->language->get('text_extension'),
-            'href' => $this->url->link(
-                'marketplace/extension',
-                'user_token=' . $this->session->data['user_token'] . '&type=payment',
-                true
-            )
-        );
-
-        $this->templateData['breadcrumbs'][] = array(
-            'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link(
-                'extension/payment/billmate_checkout',
-                'user_token=' . $this->session->data['user_token'],
-                true
-            )
-        );
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getOptionsNames()
-    {
-        return array_keys(self::DEFAULT_MODULE_SETTINGS);
-    }
-
-    /**
-     * @return array
-     */
-    protected function getTemplateData()
-    {
-        return $this->templateData;
-    }
-
-    /**
-     * @return ModelBillmateConfigValidator
-     */
-    protected function getConfigValidator()
-    {
-        if (is_null($this->configValidator)) {
-            $this->configValidator = $this->model_billmate_config_validator;
+    protected function validate() {
+        if (!$this->user->hasPermission('modify', 'extension/payment/billmate_checkout')) {
+            $this->error['warning'] = $this->language->get('error_permission');
         }
-        return $this->configValidator;
-    }
 
-    /**
-     * @return ModelBillmatePaymentBmsetup
-     */
-    protected function getBMPaymentSetup()
-    {
-        return $this->model_billmate_payment_bmsetup;
+        if (!$this->request->post['payment_billmate_checkout_merchant_id']) {
+            $this->error['error_payment_billmate_checkout_merchant_id'] = $this->language->get('error_merchant_id');
+        }
+
+        if (!$this->request->post['payment_billmate_checkout_secret']) {
+            $this->error['error_payment_billmate_checkout_secret'] = $this->language->get('error_secret');
+        }
+
+        return !$this->error;
     }
 }
