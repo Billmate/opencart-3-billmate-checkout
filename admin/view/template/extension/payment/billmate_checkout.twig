@@ -1,0 +1,289 @@
+{{ header }}
+{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-payment" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                    <i class="fa fa-save"></i>
+                </button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger alert-dismissible">
+                <i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success alert-dismissible">
+                <i class="fa fa-check-circle"></i> {{ success }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-pencil"></i> {{ text_edit }}
+                </h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-payment" class="form-horizontal">
+                    <ul class="nav nav-tabs">
+                        <li class="active" id="li-tab-settings"><a href="#tab-settings" data-toggle="tab">{{ tab_settings }}</a></li>
+                        <li class="" id="li-tab-order-status"><a href="#tab-order-status" data-toggle="tab">{{ tab_order_status }}</a></li>
+                        <li class="" id="li-tab-invoice"><a href="#tab-invoice" data-toggle="tab">{{ tab_invoice }}</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab-settings">
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-merchant-id">
+                                    <span data-toggle="tooltip" title="{{ help_merchant_id }}">{{ entry_merchant_id }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_billmate_checkout_merchant_id" value="{{ payment_billmate_checkout_merchant_id }}" placeholder="{{ entry_merchant_id }}" id="input-billmate-checkout-merchant-id" class="form-control" />
+                                    {% if error_merchant_id %}
+                                        <div class="text-danger">{{ error_merchant_id }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-secret">
+                                    <span data-toggle="tooltip" title="{{ help_secret }}">{{ entry_secret }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_billmate_checkout_secret" value="{{ payment_billmate_checkout_secret }}" placeholder="{{ entry_secret }}" id="input-billmate-checkout-secret" class="form-control" />
+                                    {% if error_secret %}
+                                        <div class="text-danger">{{ error_secret }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-terms-id">
+                                    <span data-toggle="tooltip" title="{{ help_terms_id }}">{{ entry_terms_id }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_terms_id" id="input-billmate-checkout-terms-id" class="form-control">
+                                        {% for information in information_pages %}
+                                            {% if information.information_id == payment_billmate_checkout_terms_id %}
+                                                <option value="{{ information.information_id }}" selected="selected">{{ information.title }}</option>
+                                            {% else %}
+                                                <option value="{{ information.information_id }}">{{ information.title }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-policy-id">
+                                    <span data-toggle="tooltip" title="{{ help_policy_id }}">{{ entry_policy_id }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_policy_id" id="input-billmate-checkout-policy-id" class="form-control">
+                                        {% for information in information_pages %}
+                                            {% if information.information_id == payment_billmate_checkout_policy_id %}
+                                                <option value="{{ information.information_id }}" selected="selected">{{ information.title }}</option>
+                                            {% else %}
+                                                <option value="{{ information.information_id }}">{{ information.title }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-b2b-mode">
+                                    <span data-toggle="tooltip" title="{{ help_b2b_mode }}">{{ entry_b2b_mode }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_b2b_mode" id="input-billmate-b2b-mode" class="form-control">
+                                        {% if payment_billmate_checkout_b2b_mode %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-test-mode">
+                                    <span data-toggle="tooltip" title="{{ help_test_mode }}">{{ entry_test_mode }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_test_mode" id="input-billmate-checkout-test-mode" class="form-control">
+                                        {% if payment_billmate_checkout_test_mode %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-debug-mode">
+                                    <span data-toggle="tooltip" title="{{ help_debug_mode }}">{{ entry_debug_mode }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_debug_mode" id="input-billmate-checkout-debug-mode" class="form-control">
+                                        {% if payment_billmate_checkout_debug_mode %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-status">
+                                    <span data-toggle="tooltip" title="{{ help_status }}">{{ entry_status }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_status" id="input-billmate-checkout-status" class="form-control">
+                                        {% if payment_billmate_checkout_status %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab-order-status">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-created-status-id">
+                                    <span data-toggle="tooltip" title="{{ help_created_status_id }}">{{ entry_created_status_id }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_created_status_id" id="input-billmate-checkout-created-status-id" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == payment_billmate_checkout_created_status_id %}
+                                                <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-pending-status-id">
+                                    <span data-toggle="tooltip" title="{{ help_pending_status_id }}">{{ entry_pending_status_id }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_pending_status_id" id="input-billmate-checkout-pending-status-id" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == payment_billmate_checkout_pending_status_id %}
+                                                <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-payed-status-id">
+                                    <span data-toggle="tooltip" title="{{ help_payed_status_id }}">{{ entry_payed_status_id }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_payed_status_id" id="input-billmate-checkout-payed-status-id" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == payment_billmate_checkout_payed_status_id %}
+                                                <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-canceled-status-id">
+                                    <span data-toggle="tooltip" title="{{ help_canceled_status_id }}">{{ entry_canceled_status_id }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_canceled_status_id" id="input-billmate-checkout-canceled-status-id" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == payment_billmate_checkout_canceled_status_id %}
+                                                <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-auto-activate">
+                                    <span data-toggle="tooltip" title="{{ help_auto_activate }}">{{ entry_auto_activate }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_auto_activate" id="input-billmate-checkout-auto-activate" class="form-control">
+                                        {% if payment_billmate_checkout_auto_activate %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab-invoice">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-logo">
+                                    <span data-toggle="tooltip" title="{{ help_logo }}">{{ entry_logo }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_billmate_checkout_logo" value="{{ payment_billmate_checkout_logo }}" placeholder="Ex: Logo1.png" id="input-billmate-checkout-logo" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-invoice-fee">
+                                    <span data-toggle="tooltip" title="{{ help_invoice_fee }}">{{ entry_invoice_fee }}</span>
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_billmate_checkout_invoice_fee" value="{{ payment_billmate_checkout_invoice_fee }}" placeholder="{{ entry_invoice_fee }}" id="input-billmate-checkout-invoice-fee" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-billmate-checkout-invoice-fee-tax-class-id">{{ entry_invoice_fee_tax_class_id }}</label>
+                                <div class="col-sm-10">
+                                    <select name="payment_billmate_checkout_invoice_fee_tax_class_id" id="input-billmate-checkout-invoice-fee-tax-class-id" class="form-control">
+                                        <option value="0">{{ text_none }}</option>
+                                        {% for tax_class in tax_classes %}
+                                            {% if tax_class.tax_class_id == payment_billmate_checkout_invoice_fee_tax_class_id %}
+                                                <option value="{{ tax_class.tax_class_id }}" selected="selected">{{ tax_class.title }}</option>
+                                            {% else %}
+                                                <option value="{{ tax_class.tax_class_id }}">{{ tax_class.title }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{ footer }}
