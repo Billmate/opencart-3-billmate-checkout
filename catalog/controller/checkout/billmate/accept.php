@@ -16,7 +16,7 @@ class ControllerCheckoutBillmateAccept extends Controller
         $this->load->model('checkout/billmate/order');
 
         $billmate = new Billmate(
-            $this->config->get('payment_billmate_checkout_bm_id'),
+            $this->config->get('payment_billmate_checkout_merchant_id'),
             $this->config->get('payment_billmate_checkout_secret'),
             $this->config->get('payment_billmate_checkout_test_mode')
         );
@@ -63,7 +63,7 @@ class ControllerCheckoutBillmateAccept extends Controller
 
     private function writeToCustomLog($data)
     {
-        if (!$this->config->get('payment_billmate_checkout_log_enabled')) {
+        if (!$this->config->get('payment_billmate_checkout_debug_mode')) {
             return;
         }
 

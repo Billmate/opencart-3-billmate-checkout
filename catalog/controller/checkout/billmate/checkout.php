@@ -87,7 +87,7 @@ class ControllerCheckoutBillmateCheckout extends Controller
         $this->load->model('checkout/billmate/shipping');
 
         $billmate = new Billmate(
-            $this->config->get('payment_billmate_checkout_bm_id'),
+            $this->config->get('payment_billmate_checkout_merchant_id'),
             $this->config->get('payment_billmate_checkout_secret'),
             $this->config->get('payment_billmate_checkout_test_mode')
         );
@@ -97,13 +97,13 @@ class ControllerCheckoutBillmateCheckout extends Controller
         $checkout->addCheckoutData('terms', $this->model_checkout_billmate_helper->getTermsUrl());
         $checkout->addCheckoutData('privacyPolicy', $this->model_checkout_billmate_helper->getPolicyUrl());
         $checkout->addCheckoutData('redirectOnSuccess', 'true');
-        $checkout->addCheckoutData('companyView', $this->config->get('payment_billmate_checkout_is_company_view') ? 'true' : 'false');
+        $checkout->addCheckoutData('companyView', $this->config->get('payment_billmate_checkout_b2b_mode') ? 'true' : 'false');
 
         $checkout->addPaymentData('orderid', $order['order_id']);
         $checkout->addPaymentData('currency', $this->session->data['currency']);
         $checkout->addPaymentData('language', $this->model_checkout_billmate_helper->getLanguage());
         $checkout->addPaymentData('country', $this->model_checkout_billmate_helper->getCountry());
-        $checkout->addPaymentData('autoactivate', $this->config->get('payment_billmate_checkout_push_events') ? 'true' : 'false');
+        $checkout->addPaymentData('autoactivate', $this->config->get('payment_billmate_checkout_auto_activate') ? 'true' : 'false');
         $checkout->addPaymentData('logo', $this->config->get('payment_billmate_checkout_logo'));
         $checkout->addPaymentData('returnmethod', 'POST');
         $checkout->addPaymentData('accepturl', $this->url->link('checkout/billmate/accept', '', true));
@@ -170,7 +170,7 @@ class ControllerCheckoutBillmateCheckout extends Controller
 
         if (!empty($this->config->get('payment_billmate_checkout_invoice_fee'))) {
             $handling_fee = $this->config->get('payment_billmate_checkout_invoice_fee') * 100;
-            $tax_class_id = $this->config->get('payment_billmate_checkout_inv_fee_tax');
+            $tax_class_id = $this->config->get('payment_billmate_checkout_invoice_fee_tax_class_id');
             $tax_rate = $this->model_checkout_billmate_helper->getTaxRateById($tax_class_id);
 
             $checkout->addCart('Handling', 'withouttax', $handling_fee);

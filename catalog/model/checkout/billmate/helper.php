@@ -4,18 +4,12 @@ class ModelCheckoutBillmateHelper extends Model
 {
     public function getTermsUrl()
     {
-        // @todo: Fix when admin is rebuilt
-        return $this->config->get('payment_billmate_checkout_gdpr_link');
-
-        return $this->url->link('information/information', 'information_id=' . $this->config->get('billmate_checkout_terms_id'));
+        return $this->url->link('information/information', 'information_id=' . $this->config->get('payment_billmate_checkout_terms_id'));
     }
 
     public function getPolicyUrl()
     {
-        // @todo: Fix when admin is rebuilt
-        return $this->config->get('payment_billmate_checkout_gdpr_link');
-
-        return $this->url->link('information/information', 'information_id=' . $this->config->get('billmate_checkout_policy_id'));
+        return $this->url->link('information/information', 'information_id=' . $this->config->get('payment_billmate_checkout_policy_id'));
     }
 
     public function getCurrency()
@@ -75,16 +69,22 @@ class ModelCheckoutBillmateHelper extends Model
     {
         switch ($status) {
             case 'Paid':
-                return $this->config->get('payment_billmate_checkout_activate_status_id');
+            case 'Factoring':
+            case 'PartPayment':
+                return $this->config->get('payment_billmate_checkout_payed_status_id');
 
             case 'Cancelled':
                 return $this->config->get('payment_billmate_checkout_cancel_status_id');
 
             case 'Created':
-                return $this->config->get('payment_billmate_checkout_order_status_id');
+            case 'Handling':
+                return $this->config->get('payment_billmate_checkout_created_status_id');
+
+           case 'Pending':
+               return $this->config->get('payment_billmate_checkout_pending_status_id');
 
             default:
-                return $this->config->get('payment_billmate_checkout_order_status_id');
+                return $this->config->get('payment_billmate_checkout_created_status_id');
         }
     }
 
