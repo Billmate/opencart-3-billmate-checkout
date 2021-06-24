@@ -1,60 +1,55 @@
 <?php
-$_['heading_title'] = 'Billmate Checkout';
-$_['text_billmate_checkout'] = '<img src="view/image/payment/billmate_chekcout.png" alt="Billmate Checkout" title="Billmate Checkout">';
+// Heading
+$_['heading_title']                  = 'Billmate Checkout';
+
+// Tab
+$_['tab_settings']                   = 'Inställningar';
+$_['tab_order_status']               = 'Orderstatus';
+$_['tab_invoice']                    = 'Faktura';
 
 // Text
-$_['text_extension']		= 'Extensions';
-$_['text_change_settings_success']		= 'Inställningarna uppdaterades framgångsrikt';
-$_['text_edit']			= 'Inställningar';
-$_['text_callback_urls_title']			= 'URL för återuppringning';
-$_['text_checkout_consumer_view']			= 'Konsument';
-$_['text_checkout_company_view']			= 'Företag';
+$_['text_extension']                 = 'Moduler';
+$_['text_success']                   = 'Klart: Dina inställningar för Billmate Checkout har nu uppdaterats!';
+$_['text_edit']                      = 'Ändra Billmate Checkout';
+$_['text_billmate_checkout']         = '<a href="https://www.billmate.se" target="_blank"><img src="view/image/payment/billmate_checkout.png" alt="Billmate Checkout" title="Billmate Checkout"></a>';
+$_['text_payment']                   = 'Betalning';
+
 // Entry
-$_['entry_billmate_status']		= 'Billmate Checkout';
-$_['entry_billmate_id']		= 'Billmate ID';
-$_['entry_billmate_secret']		= 'Billmate Secret';
-$_['entry_enable_bmc']			= 'Aktivera Billmate Checkout';
-$_['entry_enable_invoice_message'] 	= 'Visa ordernoteringar på Checkout sida';
-$_['entry_enable_test_mode'] 	= ' Aktivera Testläge';
-$_['text_enabled'] 	= 'Aktiverad';
-$_['text_disabled'] 	= 'Inaktiverad';
-$_['entry_billmate_activate_status'] = 'Orderstatus för automatisk order aktivering i Billmate Online';
-$_['entry_billmate_credit_status'] 	= 'Order status för automatisk kreditering i Billmate Online';
-$_['entry_billmate_cancel_status'] 	= 'Order status för automatisk markulering i Billmate Online';
-$_['entry_enable_push_events'] 	= 'Aktivera fakturor automatiskt i Billmate Online när ordern får vald status:';
-$_['entry_default_order_status'] 	= 'Sätt standard orderstatus';
-$_['entry_billmate_invoice_fee'] 	= 'Fakturaravgift';
-$_['entry_billmate_invoice_fee_tax'] 	= 'Fakturagebyrsskattklass';
-$_['entry_link_terms_cond'] = 'Butiksvillkor';
-$_['entry_link_privacy_policy'] = 'Integritetspolicy';
-$_['entry_billmate_logo'] = 'Logotype som visas på fakturan';
-$_['entry_enable_logging_bm_requests'] = 'Aktivera felsökningsläge (för utvecklare)';
-$_['entry_sent_callback_email_status'] = 'Skicka e-post efter Billmate-statusuppdatering';
-$_['entry_checkout_view_mode'] 	= 'Kassaläge';
-// Placeholder
-$_['placeholder_name'] 		= '';
+$_['entry_merchant_id']              = 'Billmate ID';
+$_['entry_secret']                   = 'Billmate nyckel';
+$_['entry_terms_id']                 = 'Köpvillkor ';
+$_['entry_policy_id']                = 'Integritetspolicy';
+$_['entry_b2b_mode']                 = 'B2B-läge';
+$_['entry_test_mode']                = 'Testmiljö';
+$_['entry_debug_mode']               = 'Loggning';
+$_['entry_status']                   = 'Status';
+
+$_['entry_created_status_id']        = 'Created';
+$_['entry_pending_status_id']        = 'Pending';
+$_['entry_payed_status_id']          = 'Activated';
+$_['entry_canceled_status_id']       = 'Cancelled';
+$_['entry_auto_activate']            = 'Automatisk aktivering';
+$_['entry_logo']                     = 'Logotyp';
+$_['entry_invoice_fee']              = 'Fakturaavgift';
+$_['entry_invoice_fee_tax_class_id'] = 'Momsklass';
+
 // Help
-$_['help_gdpr_message'] 		= 'Länk till sida som innehåller butiksvillkor';
-$_['help_logo_message'] 	    = 'Ändra logotyp för betalningen. Du hittar referensen till din logotyp i ditt billmate online-konto';
-$_['help_privacy_policy_message'] 		= 'Länk till sida som innehåller Integritetspolicy';
-$_['help_invoice_fee_message'] 		= 'Anges i basvaluta. Fakturavgiften konverteras automatiskt till den använda valutan för slutkunden.';
-$_['help_invoice_fee_tax_message'] 		= 'Välj den skatteklass som ska användas för fakturavgiften.';
-$_['help_checkout_view_message'] 		= 'Välj om du vill betona shopping som företag eller konsument först i Billmate Checkout';
+$_['help_merchant_id']               = 'Ditt personliga Billmate ID.';
+$_['help_secret']                    = 'Din personliga nyckel från Billmate.';
+$_['help_terms_id']                  = 'Informationssida som länkas under Köpvillkor i kassan.';
+$_['help_policy_id']                 = 'Informationssida som länkas under Integritetspolicy i kassan.';
+$_['help_b2b_mode']                  = 'Aktivera om du vill kunna ta emot betalningar för företag.';
+$_['help_test_mode']                 = 'Aktivera testmiljö för att kunna göra betalningar under test.';
+$_['help_debug_mode']                = 'Aktivera extra loggning för enklare felsökning. Notera att känslig data skrivs i loggfilerna.';
+$_['help_created_status_id']         = 'Orderstatus som sätts när en betalning inte ännu är aktiverad.';
+$_['help_pending_status_id']         = 'Orderstatus som sätts när en betalning är under behandlning av Billmate.';
+$_['help_payed_status_id']           = 'Orderstatus som sätts när en betalning är aktiverad.';
+$_['help_canceled_status_id']        = 'Orderstatus som sätts när en betalning annullerad.';
+$_['help_auto_activate']             = 'Aktivera om du vill att betalningar ska aktiveras automatisk.';
+$_['help_logo']                      = 'Välj logotyp som ska skriva ut på fakturan. Logotypen laddar du upp i Billmate Online.';
+$_['help_invoice_fee']               = 'Fakturaavgift (exkl.moms) som adderas på beställningen vid faktuabetalning.';
 
 // Error
-$_['error_name'] 		= 'Modul ID tomt';
-//$_['error_message'] 		= 'Message field blank';
-$_['error_billmate_connection'] = 'Billmate-anslutningsfel : ';
-$_['error_link_privacy_policy'] = 'Fortrolighedspolitik kan ikke være tom';
-$_['error_age'] 		= 'Ålder måste vara numerisk';
-$_['error_redirect_url'] 	= 'URL kan inte vara tomt';
-
-$_['error_warning'] 		= 'Det finns problem med uppgifterna';
-$_['error_permission'] 		= 'Du har inte behörighet att redigera detta.';
-$_['warning_url_message'] 	= '!!Viktig!! - När en butikskonfiguration är klar, se till att samma port används för återuppringningsadresserna.';
-
-// Button
-$_['button_save'] 		= 'Spara formulär';
-$_['button_cancel'] 		= 'Annullera';
-
-$_['entry_order_invoice_number'] 		= 'Billmate faktura nummer';
+$_['error_permission']               = 'Varning: Du har inte rättigheter att ändra inställningar för Billmate Checkout!';
+$_['error_merchant_id']              = 'Billmate ID krävs!';
+$_['error_secret']                   = 'Billmate nyckel krävs!';

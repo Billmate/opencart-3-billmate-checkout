@@ -1,60 +1,55 @@
 <?php
-$_['heading_title'] = 'Billmate Checkout';
-$_['text_billmate_checkout'] = '<img src="view/image/payment/billmate_chekcout.png" alt="Billmate Checkout" title="Billmate Checkout">';
+// Heading
+$_['heading_title']                  = 'Billmate Checkout';
+
+// Tab
+$_['tab_settings']                   = 'Settings';
+$_['tab_order_status']               = 'Order Statuses';
+$_['tab_invoice']                    = 'Invoice';
 
 // Text
-$_['text_extension']		= 'Extensions';
-$_['text_change_settings_success']		= 'Settings was updated successfully';
-$_['text_edit']			= 'Settings';
-$_['text_callback_urls_title']			= 'Callback URL\'s';
-$_['text_checkout_consumer_view']			= 'Consumer';
-$_['text_checkout_company_view']			= 'Company';
+$_['text_extension']                 = 'Extensions';
+$_['text_success']                   = 'Success: You have modified Billmate Checkout payment module!';
+$_['text_edit']                      = 'Edit Billmate Checkout';
+$_['text_billmate_checkout']         = '<a href="https://www.billmate.se" target="_blank"><img src="view/image/payment/billmate_checkout.png" alt="Billmate Checkout" title="Billmate Checkout"></a>';
+$_['text_payment']                   = 'Payment';
 
 // Entry
-$_['entry_billmate_status']		= 'Billmate Checkout Status';
-$_['entry_billmate_id']		= 'Billmate ID';
-$_['entry_billmate_secret']		= 'Billmate Secret';
-$_['entry_enable_bmc']			= 'Enable Billmate Checkout';
-$_['entry_enable_invoice_message'] 	= 'Enable order message field on the checkout page';
-$_['entry_enable_test_mode'] 	= 'Enable Test Mode';
-$_['entry_enable_push_events'] 	= 'Enable invoices automatically in Billmate Online when the order receives the selected status:';
-$_['entry_default_order_status'] 	= 'Default Order Status';
-$_['entry_billmate_invoice_fee'] 	= 'Invoice Fee';
-$_['entry_billmate_invoice_fee_tax'] 	= 'Invoice fee tax class';
-$_['entry_checkout_view_mode'] 	= 'Checkout Mode';
+$_['entry_merchant_id']              = 'Billmate ID';
+$_['entry_secret']                   = 'Billmate Key';
+$_['entry_terms_id']                 = 'Terms & Conditions';
+$_['entry_policy_id']                = 'Privacy Policy';
+$_['entry_b2b_mode']                 = 'B2B Mode';
+$_['entry_test_mode']                = 'Test Mode';
+$_['entry_debug_mode']               = 'Debug Mode';
+$_['entry_status']                   = 'Status';
 
-$_['entry_billmate_activate_status'] = 'Order status for automatic order activation in Billmate Online';
-$_['entry_billmate_credit_status'] 	= 'Order status for automatic credit in Billmate Online';
-$_['entry_billmate_cancel_status'] 	= 'Order status for automatic cancel in Billmate Online';
+$_['entry_created_status_id']        = 'Created';
+$_['entry_pending_status_id']        = 'Pending';
+$_['entry_payed_status_id']          = 'Activated';
+$_['entry_canceled_status_id']       = 'Cancelled';
+$_['entry_auto_activate']            = 'Autoactivate payments';
+$_['entry_logo']                     = 'Logotype';
+$_['entry_invoice_fee']              = 'Invoice fee';
+$_['entry_invoice_fee_tax_class_id'] = 'Tax class';
 
-$_['entry_link_terms_cond'] = 'Store Terms';
-$_['entry_link_privacy_policy'] = 'Privacy Policy';
-$_['entry_billmate_logo'] = 'Logotype displayed on the invoice';
-$_['entry_enable_logging_bm_requests'] = 'Enable debug mode (for developers)';
-$_['entry_sent_callback_email_status'] = 'Send email after Billmate status update';
-// Placeholder
-$_['placeholder_name'] 		= '';
 // Help
-$_['help_gdpr_message'] 		= 'Link to page that contain store terms and conditions';
-$_['help_logo_message'] 	    = 'Change logo for the payment. You will find the reference to your logo in your billmate online account';
-$_['help_privacy_policy_message'] 		= 'Link to page that contain store privacy policy';
-$_['help_invoice_fee_message'] 		= 'Specified in base currency. The invoice fee will be automatically converted into the used currency for the end customer.';
-$_['help_invoice_fee_tax_message'] 		= 'Select the tax class to be used for the invoice fee.';
-$_['help_checkout_view_message'] 		= 'Choose whether you want to emphasize shopping as a company or consumer first in Billmate Checkout';
+$_['help_merchant_id']               = 'Your personal Billmate ID. Can be found at Billmate Online.';
+$_['help_secret']                    = 'Your personal Billmate key. Can be found at Billmate Online.';
+$_['help_terms_id']                  = 'Page that will be link from the Terms & Conditions link at the checkout.';
+$_['help_policy_id']                 = 'Page that will be link from the Privacy Policy link at the checkout.';
+$_['help_b2b_mode']                  = 'Whether you want to accept payments from companies.';
+$_['help_test_mode']                 = 'Enabling test mode will disable real payments.';
+$_['help_debug_mode']                = 'Enabling debug mode will write sensitive data to a log file.';
+$_['help_created_status_id']         = 'The order status when the payment has to be activated by the merchant.';
+$_['help_pending_status_id']         = 'The order status when the payment still is pending at Billmate.';
+$_['help_payed_status_id']           = 'The order status when the payment has been activated by the merchant.';
+$_['help_canceled_status_id']        = 'The order status when the payment is cancelled.';
+$_['help_auto_activate']             = 'Determines if the payments should be automatically activated.';
+$_['help_logo']                      = 'Prints a specific logotype on the invoice. Upload the logotype in Billamte Online.';
+$_['help_invoice_fee']               = 'Invoice fee (excl. tax) to be applied for invoice payments.';
+
 // Error
-$_['error_name'] 		= 'Module ID blank';
-//$_['error_message'] 		= 'Message field blank';
-$_['error_billmate_connection'] = 'Billmate connection error : ';
-$_['error_link_privacy_policy'] = 'Privacy policy cannot be empty';
-$_['error_age'] 		= 'Age must be numeric';
-$_['error_redirect_url'] 	= 'URL can not be empty';
-$_['warning_url_message'] 	= '!!Important!! - When a Store configuration is done, make sure that the same port will be used for the callback URL´s.';
-
-$_['error_warning'] 		= 'There are problems with data provided';
-$_['error_permission'] 		= 'You don\'t have permission to edit this.';
-
-// Button
-$_['button_save'] 		= 'Save form';
-$_['button_cancel'] 		= 'Cancel';
-
-$_['entry_order_invoice_number'] 		= 'Billmate Invoice number';
+$_['error_permission']               = 'Warning: You do not have permission to modify payment Billmate Checkout!';
+$_['error_merchant_id']              = 'Billmate ID Required!';
+$_['error_secret']                   = 'Billmate Key Required!';
