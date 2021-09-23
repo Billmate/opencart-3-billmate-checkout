@@ -129,18 +129,21 @@ class ControllerCheckoutBillmateCheckout extends Controller
 
         $order['totals'] = $this->model_checkout_order->getOrderTotals($order['order_id']);
 
-        $totals = ['total', 'tax'];
-
         foreach ($order['totals'] as $total) {
             switch ($total['code']) {
+                case 'credit':
+                case 'klarna_fee':
+                case 'sub_total':
+                case 'tax':
+                case 'total':
+                    break;
+
                 case 'shipping':
                     $checkout->addCart('Shipping', 'withouttax', $total['value'] * 100);
                     $checkout->addCart('Shipping', 'taxrate', $this->model_checkout_billmate_helper->getShippingTaxRate());
                     break;
 
                 case 'coupon':
-                    $totals['coupon'] = floatval($total['value'] * 100);
-
                     $checkout->addArticle([
                         'artnr'      => 'coupon',
                         'title'      => $total['title'],
@@ -153,8 +156,6 @@ class ControllerCheckoutBillmateCheckout extends Controller
                     break;
 
                 case 'voucher':
-                    $totals['voucher'] = floatval($total['value'] * 100);
-
                     $checkout->addArticle([
                         'artnr'      => 'voucher',
                         'title'      => $total['title'],
@@ -165,6 +166,20 @@ class ControllerCheckoutBillmateCheckout extends Controller
                         'discount'   => 0,
                     ]);
                     break;
+
+                default:
+                    if (!$this->config->get('payment_billmate_checkout_custom_totals')) {
+                         $checkout->addArticle([
+                            'artnr'      => $total['code'],
+                            'title'      => $total['title'],
+                            'quantity'   => 1,
+                            'aprice'     => ($total['value'] * 100),
+                            'taxrate'    => 0,
+                            'withouttax' => ($total['value'] * 100),
+                            'discount'   => 0,
+                        ]);
+                    }
+
             }
         }
 
@@ -178,6 +193,11 @@ class ControllerCheckoutBillmateCheckout extends Controller
         }
 
         $checkout->calculateCart();
+
+if (!empty($_GET['die'])) {
+    var_dump($checkout);
+    die();
+}
 
         $response = $billmate->initCheckout($checkout);
 
