@@ -168,7 +168,7 @@ class ControllerCheckoutBillmateCheckout extends Controller
                     break;
 
                 default:
-                    if (!$this->config->get('payment_billmate_checkout_custom_totals')) {
+                    if ($this->config->get('payment_billmate_checkout_custom_totals')) {
                          $checkout->addArticle([
                             'artnr'      => $total['code'],
                             'title'      => $total['title'],
