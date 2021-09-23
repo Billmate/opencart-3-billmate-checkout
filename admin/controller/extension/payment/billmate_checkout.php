@@ -49,11 +49,8 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller
             'secret'                   => '',
             'terms_id'                 => null,
             'policy_id'                => null,
-            'created_status_id'        => 2,
-            'pending_status_id'        => 1,
-            'paid_status_id'           => 15,
+            'default_status_id'        => 5,
             'denied_status_id'         => 8,
-            'cancelled_status_id'      => 7,
             'auto_activate'            => false,
             'logo'                     => '',
             'invoice_fee'              => 0,
@@ -61,6 +58,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller
             'b2b_mode'                 => false,
             'test_mode'                => true,
             'debug_mode'               => true,
+            'custom_totals'            => false,
             'status'                   => true,
         ];
 
