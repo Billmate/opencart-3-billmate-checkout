@@ -6,6 +6,7 @@ $_['heading_title']                  = 'Billmate Checkout';
 $_['tab_settings']                   = 'Inställningar';
 $_['tab_order_status']               = 'Orderstatus';
 $_['tab_invoice']                    = 'Faktura';
+$_['tab_advanced']                   = 'Avancerat';
 
 // Text
 $_['text_extension']                 = 'Moduler';
@@ -21,15 +22,13 @@ $_['entry_terms_id']                 = 'Köpvillkor ';
 $_['entry_policy_id']                = 'Integritetspolicy';
 $_['entry_b2b_mode']                 = 'B2B-läge';
 $_['entry_test_mode']                = 'Testmiljö';
-$_['entry_debug_mode']               = 'Loggning';
+$_['entry_debug_mode']               = 'Felsökningsläge';
+$_['entry_custom_totals']            = 'Tredjeparts-stöd';
 $_['entry_status']                   = 'Status';
 
-$_['entry_created_status_id']        = 'Created';
-$_['entry_pending_status_id']        = 'Pending';
-$_['entry_paid_status_id']           = 'Activated';
-$_['entry_denied_status_id']         = 'Denied';
-$_['entry_cancelled_status_id']      = 'Cancelled';
-$_['entry_auto_activate']            = 'Automatisk aktivering';
+$_['entry_default_status_id']        = 'Betald status';
+$_['entry_denied_status_id']         = 'Nekad status';
+$_['entry_auto_activate']            = 'Auto aktivering';
 $_['entry_logo']                     = 'Logotyp';
 $_['entry_invoice_fee']              = 'Fakturaavgift';
 $_['entry_invoice_fee_tax_class_id'] = 'Momsklass';
@@ -42,14 +41,12 @@ $_['help_policy_id']                 = 'Informationssida som länkas under Integ
 $_['help_b2b_mode']                  = 'Aktivera om du vill kunna ta emot betalningar för företag.';
 $_['help_test_mode']                 = 'Aktivera testmiljö för att kunna göra betalningar under test.';
 $_['help_debug_mode']                = 'Aktivera extra loggning för enklare felsökning. Notera att känslig data skrivs i loggfilerna.';
-$_['help_created_status_id']         = 'Orderstatus som sätts när en betalning inte ännu är aktiverad.';
-$_['help_pending_status_id']         = 'Orderstatus som sätts när en betalning är under behandlning av Billmate.';
-$_['help_paid_status_id']            = 'Orderstatus som sätts när en betalning är aktiverad.';
+$_['help_custom_totals']             = 'Aktivera för att använd &quot;order totals&quot; från tredje part i kassan. Obs! Notera att detta kan orska problem!';
+$_['help_default_status_id']         = 'Orderstatus som sätts när en ny betalning skapas.';
 $_['help_denied_status_id']          = 'Orderstatus som sätts när en betalning är nekas.';
-$_['help_cancelled_status_id']       = 'Orderstatus som sätts när en betalning annullerad.';
 $_['help_auto_activate']             = 'Aktivera om du vill att betalningar ska aktiveras automatisk.';
 $_['help_logo']                      = 'Välj logotyp som ska skriva ut på fakturan. Logotypen laddar du upp i Billmate Online.';
-$_['help_invoice_fee']               = 'Fakturaavgift (exkl.moms) som adderas på beställningen vid faktuabetalning.';
+$_['help_invoice_fee']               = 'Fakturaavgift (exkl.moms) som adderas på beställningen vid fakturabetalning.';
 
 // Error
 $_['error_permission']               = 'Varning: Du har inte rättigheter att ändra inställningar för Billmate Checkout!';
