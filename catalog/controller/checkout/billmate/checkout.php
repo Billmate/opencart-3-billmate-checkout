@@ -194,11 +194,6 @@ class ControllerCheckoutBillmateCheckout extends Controller
 
         $checkout->calculateCart();
 
-if (!empty($_GET['die'])) {
-    var_dump($checkout);
-    die();
-}
-
         $response = $billmate->initCheckout($checkout);
 
         if (empty($response) || !empty($response['code'])) {
