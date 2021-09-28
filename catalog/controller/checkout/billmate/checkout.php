@@ -120,9 +120,9 @@ class ControllerCheckoutBillmateCheckout extends Controller
                 'artnr'      => $product['model'],
                 'title'      => $product['name'],
                 'quantity'   => (float)$product['quantity'],
-                'aprice'     => ($product['price'] * 100),
+                'aprice'     => ceil($product['price'] * 100),
                 'taxrate'    => $this->model_checkout_billmate_helper->getTaxRate($product['price'], $product['tax']),
-                'withouttax' => ($product['price'] * 100) * $product['quantity'],
+                'withouttax' => ceil($product['price'] * 100) * $product['quantity'],
                 'discount'   => 0,
             ]);
         }
@@ -139,7 +139,7 @@ class ControllerCheckoutBillmateCheckout extends Controller
                     break;
 
                 case 'shipping':
-                    $checkout->addCart('Shipping', 'withouttax', $total['value'] * 100);
+                    $checkout->addCart('Shipping', 'withouttax', ceil($total['value'] * 100));
                     $checkout->addCart('Shipping', 'taxrate', $this->model_checkout_billmate_helper->getShippingTaxRate());
                     break;
 
@@ -148,9 +148,9 @@ class ControllerCheckoutBillmateCheckout extends Controller
                         'artnr'      => 'coupon',
                         'title'      => $total['title'],
                         'quantity'   => 1,
-                        'aprice'     => ($total['value'] * 100),
+                        'aprice'     => ceil(($total['value'] * 100)),
                         'taxrate'    => 25,
-                        'withouttax' => ($total['value'] * 100),
+                        'withouttax' => ceil(($total['value'] * 100)),
                         'discount'   => 0,
                     ]);
                     break;
@@ -160,9 +160,9 @@ class ControllerCheckoutBillmateCheckout extends Controller
                         'artnr'      => 'voucher',
                         'title'      => $total['title'],
                         'quantity'   => 1,
-                        'aprice'     => ($total['value'] * 100),
+                        'aprice'     => ceil($total['value'] * 100),
                         'taxrate'    => 0,
-                        'withouttax' => ($total['value'] * 100),
+                        'withouttax' => ceil($total['value'] * 100),
                         'discount'   => 0,
                     ]);
                     break;
@@ -173,9 +173,9 @@ class ControllerCheckoutBillmateCheckout extends Controller
                             'artnr'      => $total['code'],
                             'title'      => $total['title'],
                             'quantity'   => 1,
-                            'aprice'     => ($total['value'] * 100),
+                            'aprice'     => ceil($total['value'] * 100),
                             'taxrate'    => 0,
-                            'withouttax' => ($total['value'] * 100),
+                            'withouttax' => ceil($total['value'] * 100),
                             'discount'   => 0,
                         ]);
                     }
