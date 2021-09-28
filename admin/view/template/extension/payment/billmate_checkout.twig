@@ -240,15 +240,7 @@
                                     <span data-toggle="tooltip" title="{{ help_custom_totals }}">{{ entry_custom_totals }}</span>
                                 </label>
                                 <div class="col-sm-10">
-                                    <select name="payment_billmate_checkout_custom_totals" id="input-billmate-checkout-custom-totals" class="form-control">
-                                        {% if payment_billmate_checkout_custom_totals %}
-                                            <option value="1" selected="selected">{{ text_enabled }}</option>
-                                            <option value="0">{{ text_disabled }}</option>
-                                        {% else %}
-                                            <option value="1">{{ text_enabled }}</option>
-                                            <option value="0" selected="selected">{{ text_disabled }}</option>
-                                        {% endif %}
-                                    </select>
+                                    <input type="text" name="payment_billmate_checkout_custom_totals" value="{{ payment_billmate_checkout_custom_totals }}" placeholder="{{ entry_custom_totals_help }}" id="input-billmate-checkout-custom-totals" class="form-control" />
                                 </div>
                             </div>
                             <div class="form-group">

@@ -24,6 +24,8 @@ $_['entry_b2b_mode']                 = 'B2B-läge';
 $_['entry_test_mode']                = 'Testmiljö';
 $_['entry_debug_mode']               = 'Felsökningsläge';
 $_['entry_custom_totals']            = 'Tredjeparts-stöd';
+$_['entry_custom_totals_help']       = 'Kommaseparerad lista med total_code';
+
 $_['entry_status']                   = 'Status';
 
 $_['entry_default_status_id']        = 'Betald status';

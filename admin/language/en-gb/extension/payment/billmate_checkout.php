@@ -24,6 +24,7 @@ $_['entry_b2b_mode']                 = 'B2B mode';
 $_['entry_test_mode']                = 'Test mode';
 $_['entry_debug_mode']               = 'Debug mode';
 $_['entry_custom_totals']            = 'Third party support';
+$_['entry_custom_totals_help']       = 'Comma-separated list with total_code';
 $_['entry_status']                   = 'Status';
 
 $_['entry_default_status_id']        = 'Completed status';
