@@ -129,6 +129,8 @@ class ControllerCheckoutBillmateCheckout extends Controller
 
         $order['totals'] = $this->model_checkout_order->getOrderTotals($order['order_id']);
 
+        $custom_totals = explode(',', $this->config->get('payment_billmate_checkout_custom_totals'));
+
         foreach ($order['totals'] as $total) {
             switch ($total['code']) {
                 case 'credit':
@@ -168,7 +170,7 @@ class ControllerCheckoutBillmateCheckout extends Controller
                     break;
 
                 default:
-                    if ($this->config->get('payment_billmate_checkout_custom_totals')) {
+                    if (in_array($total['code'], $custom_totals)) {
                          $checkout->addArticle([
                             'artnr'      => $total['code'],
                             'title'      => $total['title'],
@@ -244,6 +246,7 @@ class ControllerCheckoutBillmateCheckout extends Controller
 
     private function totals()
     {
+        // @todo Use custom model instead of duplicated code
         $this->load->model('setting/extension');
 
         $totals = [];
@@ -260,6 +263,18 @@ class ControllerCheckoutBillmateCheckout extends Controller
             $sort_order = [];
 
             $results = $this->model_setting_extension->getExtensions('total');
+
+            $custom_totals = explode(',', $this->config->get('payment_billmate_checkout_custom_totals'));
+
+            $valid_totals = array_merge($custom_totals, [
+                'shipping', 'sub_total', 'tax', 'total',
+                'credit', 'handling', 'low_order_fee',
+                'coupon', 'reward', 'voucher',
+            ]);
+
+            $results = array_filter($results, function($item) use ($valid_totals) {
+                return in_array($item['code'], $valid_totals);
+            });
 
             foreach ($results as $key => $value) {
                 $sort_order[$key] = $this->config->get('total_' . $value['code'] . '_sort_order');

@@ -357,6 +357,18 @@ class ModelCheckoutBillmateOrder extends Model
 
         $results = $this->model_setting_extension->getExtensions('total');
 
+        $custom_totals = explode(',', $this->config->get('payment_billmate_checkout_custom_totals'));
+
+        $valid_totals = array_merge($custom_totals, [
+            'shipping', 'sub_total', 'tax', 'total',
+            'credit', 'handling', 'low_order_fee',
+            'coupon', 'reward', 'voucher',
+        ]);
+
+        $results = array_filter($results, function($item) use ($valid_totals) {
+            return in_array($item['code'], $valid_totals);
+        });
+
         foreach ($results as $key => $value) {
             $sort_order[$key] = $this->config->get('total_' . $value['code'] . '_sort_order');
         }
