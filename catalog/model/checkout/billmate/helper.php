@@ -68,27 +68,11 @@ class ModelCheckoutBillmateHelper extends Model
     public function getOrderStatus($status)
     {
         switch ($status) {
-            case 'Paid':
-            case 'Factoring':
-            case 'PartPayment':
-            case 'Handling':
-                return $this->config->get('payment_billmate_checkout_paid_status_id');
-
             case 'Denied':
                 return $this->config->get('payment_billmate_checkout_denied_status_id');
 
-            case 'Cancelled':
-                return $this->config->get('payment_billmate_checkout_cancelled_status_id');
-
-            case 'Created':
-            case 'Approved':
-                return $this->config->get('payment_billmate_checkout_created_status_id');
-
-           case 'Pending':
-               return $this->config->get('payment_billmate_checkout_pending_status_id');
-
             default:
-                return $this->config->get('payment_billmate_checkout_created_status_id');
+                return $this->config->get('payment_billmate_checkout_denied_status_id');
         }
     }
 
