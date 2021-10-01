@@ -60,14 +60,18 @@ class Checkout
         $this->setValue('paymentInfo', $key, $value);
     }
 
-    public function addArticle($value)
+    public function addArticle($value, $format = true)
     {
-        $this->articles[] = $value;
+        $this->articles[] = ($format && is_array($value))
+            ? $this->transformValues($value)
+            : $value;
     }
 
-    public function addCart($key, $subkey, $value)
+    public function addCart($key, $subkey, $value, $format = true)
     {
-        $this->cart[$key][$subkey] = $value;
+        $this->cart[$key][$subkey] = ($format && $this->isMonetaryKey($subkey))
+            ? $this->transformPrice($value)
+            : $this->transformValue($value);
     }
 
     public function setValue($group, $key, $value)
@@ -98,9 +102,35 @@ class Checkout
 
         $withtax = $withouttax + $tax;
 
-        $this->addCart('Total', 'withtax', $withtax);
-        $this->addCart('Total', 'rounding', 0);
-        $this->addCart('Total', 'withouttax', $withouttax);
-        $this->addCart('Total', 'tax', $tax);
+        $this->addCart('Total', 'withtax', $withtax, false);
+        $this->addCart('Total', 'rounding', 0, false);
+        $this->addCart('Total', 'withouttax', $withouttax, false);
+        $this->addCart('Total', 'tax', $tax, false);
+    }
+
+    private function isMonetaryKey($key)
+    {
+        return in_array($key, ['aprice', 'tax', 'withtax', 'withouttax', 'discount']);
+    }
+
+    private function transformValues($data)
+    {
+        foreach ($data as $key => $value) {
+            $data[$key] = ($this->isMonetaryKey($key))
+                ? $this->transformPrice($value)
+                : $this->transformValue($value);
+        }
+
+        return $data;
+    }
+
+    private function transformValue($value)
+    {
+        return is_numeric($value) ? intval($value) : strval($value);
+    }
+
+    private function transformPrice($price)
+    {
+        return intval(round($price * 100));
     }
 }
