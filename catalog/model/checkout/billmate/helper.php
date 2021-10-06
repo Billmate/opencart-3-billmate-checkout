@@ -72,7 +72,7 @@ class ModelCheckoutBillmateHelper extends Model
                 return $this->config->get('payment_billmate_checkout_denied_status_id');
 
             default:
-                return $this->config->get('payment_billmate_checkout_denied_status_id');
+                return $this->config->get('payment_billmate_checkout_default_status_id');
         }
     }
 
