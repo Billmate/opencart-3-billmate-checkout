@@ -49,7 +49,9 @@ class ControllerCheckoutBillmateAccept extends Controller
 
     public function success($hash = null)
     {
-        return $this->response->redirect($this->url->link('checkout/billmate/success', 'checkout=' . $hash, true));
+        return ($this->config->get('payment_billmate_checkout_success_page'))
+            ? $this->response->redirect($this->url->link('checkout/billmate/success', 'checkout=' . $hash, true))
+            : $this->response->redirect($this->url->link('checkout/success', 'checkout=' . $hash, true));
     }
 
     public function failure($error = null)
