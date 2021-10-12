@@ -23,11 +23,10 @@ $_['entry_policy_id']                = 'Integritetspolicy';
 $_['entry_b2b_mode']                 = 'B2B-läge';
 $_['entry_test_mode']                = 'Testmiljö';
 $_['entry_debug_mode']               = 'Felsökningsläge';
+$_['entry_success_page']             = 'Anpassad tacksida';
 $_['entry_custom_totals']            = 'Tredjeparts-stöd';
 $_['entry_custom_totals_help']       = 'Kommaseparerad lista med total_code';
-
 $_['entry_status']                   = 'Status';
-
 $_['entry_default_status_id']        = 'Betald status';
 $_['entry_denied_status_id']         = 'Nekad status';
 $_['entry_auto_activate']            = 'Auto aktivering';
@@ -43,6 +42,7 @@ $_['help_policy_id']                 = 'Informationssida som länkas under Integ
 $_['help_b2b_mode']                  = 'Aktivera om du vill kunna ta emot betalningar för företag.';
 $_['help_test_mode']                 = 'Aktivera testmiljö för att kunna göra betalningar under test.';
 $_['help_debug_mode']                = 'Aktivera extra loggning för enklare felsökning. Notera att känslig data skrivs i loggfilerna.';
+$_['help_success_page']              = 'Aktivera om du vill använda Billmates tacksida istället för OpenCarts tacksida.';
 $_['help_custom_totals']             = 'Aktivera för att använd &quot;order totals&quot; från tredje part i kassan. Obs! Notera att detta kan orska problem!';
 $_['help_default_status_id']         = 'Orderstatus som sätts när en ny betalning skapas.';
 $_['help_denied_status_id']          = 'Orderstatus som sätts när en betalning är nekas.';

@@ -58,6 +58,7 @@ class ControllerExtensionPaymentBillmateCheckout extends Controller
             'b2b_mode'                 => false,
             'test_mode'                => true,
             'debug_mode'               => true,
+            'success_page'             => true,
             'custom_totals'            => false,
             'status'                   => true,
         ];
