@@ -16,7 +16,7 @@
  */
 class Billmate {
 
-    const PLUGIN_VERSION = '1.2.0';
+    const PLUGIN_VERSION = '1.2.1';
 
     var $ID = "";
     var $KEY = "";
