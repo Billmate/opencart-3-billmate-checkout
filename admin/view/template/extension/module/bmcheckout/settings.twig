@@ -242,6 +242,7 @@
                                    class="form-control" />
                         </div>
                     </div>
+                    
                     <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-status">{{ entry_enable_logging_bm_requests }}</label>
                         <div class="col-sm-10">
@@ -258,8 +259,32 @@
                         </div>
                     </div>
                 </form>
+               
+               
+                
             </div>
         </div>
+        
+       
+<form id="custom-module-setting" method="POST">
+              
+         
+         
+        
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="currency-status">Currency setting</label>
+            <div class="col-sm-10">
+              <select name="currency-status" id="currency-status" class="form-control">
+               
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+              
+              </select>
+            </div>
+          </div>
+          
+               </form>
+               <button name="add_currency" value="add_currency">save</button>
         {{ info_block }}
     </div>
 </div>
@@ -267,5 +292,30 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $.fn.pushEventsSwitcher.init();
+        
+      
     });
 </script>
+<script>
+ $(document).ready(function() {
+$('button[name="add_currency"]').click(function(){
+     
+  var form= $("#custom-module-setting");
+  var name=$('#input-title').val();
+$.ajax({
+   type:"POST",
+  url: "/admin/currency/currency.php",
+  data:form.serialize(),
+  success: function(response){
+    alert(response);
+  }
+});
+
+});
+  });
+</script>
+<style>
+button[name="add_currency"] {
+    margin: 10px;
+}
+</style>
