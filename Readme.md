@@ -1,3 +1,7 @@
+## NO LONGER UPDATED / SUPPORTED
+### Billmate no longer updates or offers support for this payment module.
+
+
 # Billmate Payment Gateway for OpenCart 3
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
